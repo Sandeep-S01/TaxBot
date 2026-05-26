@@ -12,7 +12,17 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
+// Fallback dummy WebSocket for Node.js versions < 22 (like Render's default Node 20)
+if (typeof globalThis.WebSocket === 'undefined') {
+  (globalThis as any).WebSocket = class {};
+}
+
 export const supabase = createClient(
   supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-anon-key'
+  supabaseAnonKey || 'placeholder-anon-key',
+  {
+    auth: {
+      persistSession: false,
+    },
+  }
 );
