@@ -73,7 +73,28 @@ ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE gst_returns ENABLE ROW LEVEL SECURITY;
 
+-- 4. CA (Chartered Accountants) Table
+CREATE TABLE IF NOT EXISTS cas (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    name TEXT NOT NULL,
+    firm_name TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Alter clients table to link them to a CA
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS ca_id UUID REFERENCES cas(id) ON DELETE SET NULL;
+
+ALTER TABLE cas ENABLE ROW LEVEL SECURITY;
+
 -- Allow full access to service role / service account
 CREATE POLICY "Allow all access to service_role" ON clients TO service_role USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all access to service_role" ON transactions TO service_role USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all access to service_role" ON gst_returns TO service_role USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all access to service_role" ON cas TO service_role USING (true) WITH CHECK (true);
+
+-- Index for clients managed by CAs
+CREATE INDEX IF NOT EXISTS idx_clients_ca_id ON clients(ca_id);
+

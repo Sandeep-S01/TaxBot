@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaxBot CA Partner Console</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="images/logo.png" type="image/png">
+</head>
+<body>
+
+  <!-- Auth Layout -->
+  <div id="auth-container" class="auth-page">
+    <div class="auth-card">
+      <div class="auth-header">
+        <img src="images/logo.png" alt="TaxBot Logo" class="logo-img" style="margin: 0 auto 16px auto; display: block;">
+        <h3 id="auth-title">CA Partner Login</h3>
+        <p id="auth-subtitle">Access your reseller dashboard and bulk client files.</p>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" class="form-input" placeholder="ca.sharma@firm.com" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Sign In</button>
+      </form>
+
+      <!-- Register Form (Hidden by default) -->
+      <form id="register-form" style="display: none;">
+        <div class="form-group">
+          <label for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="CA Sandeep Sharma" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="ca.sharma@firm.com" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-firm">CA Firm Name (Optional)</label>
+          <input type="text" id="reg-firm" class="form-input" placeholder="Sandeep & Associates">
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" class="form-input" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Create Partner Account</button>
+      </form>
+
+      <div class="auth-footer">
+        <span id="auth-switch-text">Don't have a partner account?</span>
+        <a href="#" id="btn-switch-auth">Sign Up</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Console Layout (Hidden until Login) -->
+  <div id="console-container" class="dashboard-container" style="display: none;">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-wrapper">
+          <img src="images/logo.png" alt="TaxBot Logo" class="logo-img">
+          <span class="brand-name">TaxBot CA</span>
+        </div>
+      </div>
+      
+      <ul class="sidebar-nav">
+        <li class="sidebar-item active" data-tab="clients-tab">
+          <a href="#"><span class="sidebar-icon">👥</span> Clients Ledgers</a>
+        </li>
+        <li class="sidebar-item" data-tab="gst-report-tab">
+          <a href="#"><span class="sidebar-icon">📊</span> Consolidated GST Report</a>
+        </li>
+        <li class="sidebar-item" data-tab="reseller-pricing-tab">
+          <a href="#"><span class="sidebar-icon">🏷️</span> Reseller Pricing Tier</a>
+        </li>
+      </ul>
+
+      <div class="sidebar-user">
+        <div class="user-info">
+          <span class="user-name" id="ca-display-name">CA Sandeep</span>
+          <span class="user-email" id="ca-display-email">ca@taxbot.in</span>
+        </div>
+        <button class="btn-logout" id="btn-logout" title="Log Out">✖</button>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+      <!-- Header -->
+      <div class="dashboard-header">
+        <div class="dashboard-title">
+          <h2 id="tab-title">Clients Bookkeeping Ledgers</h2>
+          <p id="tab-subtitle">View WhatsApp transaction files and export records in bulk.</p>
+        </div>
+        <div class="dashboard-actions">
+          <button id="btn-add-client-modal" class="btn-primary">➕ Add New Client</button>
+        </div>
+      </div>
+
+      <!-- Tab Content: Clients Ledgers -->
+      <div id="clients-tab" class="tab-pane">
+        <!-- Metric Cards -->
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-details">
+              <h4>Active Clients</h4>
+              <div class="metric-number" id="metric-clients-count">0</div>
+            </div>
+            <div class="metric-icon">👥</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-details">
+              <h4>Current Reseller Tier</h4>
+              <div class="metric-number" id="metric-reseller-tier">₹149/mo</div>
+            </div>
+            <div class="metric-icon">🏷️</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-details">
+              <h4>Digital Books Verified</h4>
+              <div class="metric-number" id="metric-compliance-text">IT ACT Compliant</div>
+            </div>
+            <div class="metric-icon">🛡️</div>
+          </div>
+        </div>
+
+        <!-- Clients Table Container -->
+        <div class="table-card">
+          <div class="table-header">
+            <h3>Registered Business Ledgers</h3>
+          </div>
+          <div class="custom-table-wrapper">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Client / Business Name</th>
+                  <th>Phone Number</th>
+                  <th>GSTIN</th>
+                  <th>Active Plan</th>
+                  <th>Linked At</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="clients-table-body">
+                <!-- Dynamically Rendered -->
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--text-dim); padding: 30px;">
+                    No clients added yet. Click "Add New Client" to start managing business ledgers.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Consolidated GST Report -->
+      <div id="gst-report-tab" class="tab-pane" style="display: none;">
+        <div class="table-card" style="margin-bottom: 24px;">
+          <div class="table-header">
+            <h3>Select Filing Period</h3>
+            <div class="form-group" style="margin-bottom: 0;">
+              <input type="month" id="report-period-picker" class="form-input" style="padding: 8px 12px; width: 180px;">
+            </div>
+          </div>
+        </div>
+
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-details">
+              <h4>Aggregated Sales (Excl. Tax)</h4>
+              <div class="metric-number" id="gst-metric-sales">₹0.00</div>
+            </div>
+            <div class="metric-icon" style="color: var(--color-success); background-color: var(--color-success-glow);">📥</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-details">
+              <h4>Aggregated Input Tax Credit (ITC)</h4>
+              <div class="metric-number" id="gst-metric-itc">₹0.00</div>
+            </div>
+            <div class="metric-icon" style="color: var(--color-primary); background-color: var(--color-primary-glow);">📤</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-details">
+              <h4>Consolidated GST Payable</h4>
+              <div class="metric-number" id="gst-metric-payable">₹0.00</div>
+            </div>
+            <div class="metric-icon" style="color: var(--color-danger); background: rgba(239, 68, 68, 0.08);">💸</div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">
+            <h3>GSTR Consolidated Summary Table</h3>
+            <button class="btn-outline" id="btn-export-consolidated-gst" style="font-size: 13px; padding: 8px 16px;">Download GSTR Summary (CSV)</button>
+          </div>
+          <div class="custom-table-wrapper">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Business / Name</th>
+                  <th>GSTIN</th>
+                  <th>Outward Taxable Value</th>
+                  <th>Outward Tax (CGST/SGST/IGST)</th>
+                  <th>Inward Taxable Value</th>
+                  <th>Inward ITC Available</th>
+                  <th style="text-align: right;">Net GST Liability</th>
+                </tr>
+              </thead>
+              <tbody id="gst-report-table-body">
+                <!-- Dynamically Rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Reseller Pricing Tier -->
+      <div id="reseller-pricing-tab" class="tab-pane" style="display: none;">
+        <div class="pricing-calculator-card" style="max-width: 100%; margin-top: 0;">
+          <div class="pricing-header">
+            <h3>Reseller License Pricing Dashboard</h3>
+            <p>Manage bulk purchases and view active discount tiers dynamically.</p>
+          </div>
+          
+          <div class="slider-container">
+            <div class="slider-labels">
+              <span>Clients License: <span id="reseller-slider-count-display">1</span></span>
+              <span id="reseller-tier-indicator" class="discount-tag">Pro Tier</span>
+            </div>
+            <input type="range" min="1" max="150" value="1" class="range-slider" id="reseller-slider">
+          </div>
+
+          <div class="pricing-display">
+            <div class="price-box">
+              <h4>Price Per Client License</h4>
+              <div class="price-value" id="reseller-unit-price">₹149</div>
+              <div class="price-subtext">per client / month</div>
+            </div>
+            <div class="price-box">
+              <h4>Reseller Monthly Bill</h4>
+              <div class="price-value" id="reseller-total-bill">₹149</div>
+              <div class="price-subtext" id="reseller-discount-display">Link 10+ clients to save 20%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: Add New Client -->
+  <div id="modal-add-client" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Link New Client Business</h3>
+        <button class="btn-close" id="btn-close-client-modal">✖</button>
+      </div>
+      <form id="add-client-form">
+        <div class="form-group">
+          <label for="client-name">Owner/Client Full Name</label>
+          <input type="text" id="client-name" class="form-input" placeholder="Rajesh Patel" required>
+        </div>
+        <div class="form-group">
+          <label for="client-phone">WhatsApp Number (with Country Code)</label>
+          <input type="tel" id="client-phone" class="form-input" placeholder="919876543210" required>
+        </div>
+        <div class="form-group">
+          <label for="client-business">Business / Shop Name</label>
+          <input type="text" id="client-business" class="form-input" placeholder="Patel Kirana Store" required>
+        </div>
+        <div class="form-group">
+          <label for="client-gstin">GSTIN (15-digit)</label>
+          <input type="text" id="client-gstin" class="form-input" placeholder="27AAAAA1111A1Z1">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="client-plan">Pricing Plan</label>
+            <select id="client-plan" class="form-input" style="background-color: var(--bg-canvas);">
+              <option value="trial">Trial Plan (14d)</option>
+              <option value="starter">Starter Plan</option>
+              <option value="pro" selected>Pro Reseller Plan</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="client-gst-registered">GST Registered?</label>
+            <select id="client-gst-registered" class="form-input" style="background-color: var(--bg-canvas);">
+              <option value="true" selected>Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">Link & Authorize Ledger</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Drawer: Client WhatsApp Ledger Drawer -->
+  <div id="drawer-ledger" class="drawer-overlay">
+    <div class="drawer-content">
+      <div class="drawer-header">
+        <div>
+          <h3 id="drawer-client-name">Patel Kirana Store</h3>
+          <p id="drawer-client-phone" style="color: var(--text-muted); font-size: 13px;">Phone: 919876543210</p>
+        </div>
+        <button class="btn-close" id="btn-close-ledger-drawer">✖</button>
+      </div>
+      
+      <div class="drawer-body">
+        <!-- Client stats -->
+        <div class="client-meta-box">
+          <div class="meta-item">
+            <h5>GSTIN</h5>
+            <p id="drawer-client-gstin">27AAAAA1111A1Z1</p>
+          </div>
+          <div class="meta-item">
+            <h5>Active Plan</h5>
+            <p id="drawer-client-plan"><span class="badge-status pro">Pro Reseller</span></p>
+          </div>
+          <div class="meta-item">
+            <h5>Month Ledger Exports</h5>
+            <p style="color: var(--color-success);">
+              <a href="#" id="drawer-export-csv" class="btn-link">CSV</a> | 
+              <a href="#" id="drawer-export-tally" class="btn-link">Tally XML</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- Ledger table -->
+        <h4 style="margin-bottom: 16px;">WhatsApp Logged Transactions (This Month)</h4>
+        <div class="custom-table-wrapper">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Party / Vendor</th>
+                <th>Amount</th>
+                <th>Tax</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody id="drawer-transactions-body">
+              <!-- Dynamically populated -->
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-dim); padding: 20px;">
+                  No transactions logged by this business yet.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification element -->
+  <div id="toast" class="toast">
+    <span class="toast-message">Notification message here</span>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

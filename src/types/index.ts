@@ -6,9 +6,21 @@ export interface Client {
   gstin: string | null;
   gst_registered: boolean;
   plan: 'trial' | 'starter' | 'pro';
+  ca_id?: string | null;
   created_at: string;
   updated_at: string;
 }
+
+export interface CA {
+  id: string;
+  email: string;
+  password_hash: string;
+  name: string;
+  firm_name: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 
 export type TransactionCategory = 'sales' | 'purchase' | 'expense' | 'salary' | 'other';
 export type GstCategory = 'B2B' | 'B2C' | 'B2CL' | 'exempt' | 'nil_rated';

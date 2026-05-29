@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaxBot - WhatsApp-First AI Bookkeeper for Indian SMBs</title>
+  <meta name="description" content="Manage accounting, log voice notes, scan receipts, auto-generate Tally XML and CSV ledgers directly on WhatsApp. Securely built for Indian small businesses.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="images/logo.png" type="image/png">
+</head>
+<body>
+
+  <!-- Premium Header -->
+  <header>
+    <div class="container nav-bar">
+      <div class="logo-wrapper">
+        <img src="images/logo.png" alt="TaxBot Logo" class="logo-img">
+        <span class="brand-name">TaxBot</span>
+      </div>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#features" class="nav-link">Features</a></li>
+          <li><a href="#security" class="nav-link">Security & Compliance</a></li>
+          <li><a href="#pricing" class="nav-link">CA Reseller Program</a></li>
+          <li><a href="console.html" class="btn-outline">CA Partner Console</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="badge-new">
+        <span></span> Meta Cloud API Verified Sandbox & Production Ready
+      </div>
+      <h1>
+        WhatsApp-First AI Accounting<br>
+        For <span class="gradient-text">Indian Small Businesses</span>
+      </h1>
+      <p class="hero-subtitle">
+        Say goodbye to complicated ERP software. Send bills, type expenses, or dictate voice notes in Hindi/English on WhatsApp. TaxBot updates your ledger instantly.
+      </p>
+      <div class="hero-actions">
+        <a href="https://wa.me/919876543210" target="_blank" class="btn-primary">
+          Start Free Bookkeeping
+        </a>
+        <a href="#pricing" class="btn-outline">
+          View CA Reseller Pricing
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Features Section -->
+  <section id="features" class="container" style="padding: 60px 0;">
+    <div class="section-title-wrapper">
+      <h2>Bookkeeping on Autopilot</h2>
+      <p>Powerful AI utilities working directly in your favorite chat application.</p>
+    </div>
+    <div class="features-grid">
+      <!-- Feature 1 -->
+      <div class="feature-card">
+        <div class="feature-icon">🎙️</div>
+        <h3>Voice Accounting</h3>
+        <p>Dictate notes in Hindi, English, or Hinglish like *"Aaj ₹1200 ka diesel kharcha kiya"*. TaxBot transcribes it, categorizes it as fuel expense, and logs it.</p>
+      </div>
+      <!-- Feature 2 -->
+      <div class="feature-card">
+        <div class="feature-icon">📸</div>
+        <h3>UPI Screenshot Scanner</h3>
+        <p>Send a screenshot of PhonePe, GPay, or Paytm confirmations. TaxBot extracts the UPI Transaction ID/UTR, paid amount, and sender name automatically.</p>
+      </div>
+      <!-- Feature 3 -->
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3>CA-Ready Tally Export</h3>
+        <p>Instantly export accounting ledger details. Receive a secure, temporary download link containing CSV files and Tally ERP 9 / Prime XML envelopes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security & Compliance Section (Point 5) -->
+  <section id="security" class="security-section">
+    <div class="container">
+      <div class="section-title-wrapper">
+        <h2>Visible Security & Digital Compliance</h2>
+        <p>Your ledger data is protected under banking-grade security and Indian IT compliance standards.</p>
+      </div>
+      <div class="badges-grid">
+        <!-- Badge 1 -->
+        <div class="badge-card">
+          <span class="badge-icon">🔒</span>
+          <h4>AES-256 Encryption</h4>
+          <p>All client credentials, financial figures, phone records, and transaction logs are encrypted at rest with AES-256 cryptographic standards.</p>
+        </div>
+        <!-- Badge 2 -->
+        <div class="badge-card">
+          <span class="badge-icon">🇮🇳</span>
+          <h4>Data Residency - India Local</h4>
+          <p>To assure sovereign safety, all databases and compute instances are strictly hosted in secure cloud availability zones located in Mumbai, India.</p>
+        </div>
+        <!-- Badge 3 -->
+        <div class="badge-card">
+          <span class="badge-icon">📜</span>
+          <h4>Indian IT Act, 2000 Compliant</h4>
+          <p>Audit logs and electronic bookkeeping structures strictly comply with Section 4 of the Indian IT Act, 2000 for digital accounting records.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Calculator Section (Point 4) -->
+  <section id="pricing" class="pricing-section">
+    <div class="container">
+      <div class="section-title-wrapper">
+        <h2>Reseller Program for CAs</h2>
+        <p>Link your clients, view their WhatsApp ledgers, and export standard reports in bulk. Grow your firm together.</p>
+      </div>
+      <div class="pricing-calculator-card">
+        <div class="pricing-header">
+          <h3>Interactive Bulk Pricing Calculator</h3>
+          <p>CAs unlock volume reseller discounts as they link more business accounts.</p>
+        </div>
+        <div class="slider-container">
+          <div class="slider-labels">
+            <span>Clients: <span id="client-count-display">10</span></span>
+            <span id="reseller-tier-badge" class="discount-tag">Starter Tier</span>
+          </div>
+          <input type="range" min="1" max="150" value="10" class="range-slider" id="client-slider">
+        </div>
+        <div class="pricing-display">
+          <div class="price-box">
+            <h4>Price Per Client</h4>
+            <div class="price-value" id="price-per-client">₹119</div>
+            <div class="price-subtext">per client / month</div>
+          </div>
+          <div class="price-box">
+            <h4>Total Monthly Investment</h4>
+            <div class="price-value" id="total-monthly-price">₹1,190</div>
+            <div class="price-subtext" id="savings-display">Save 20% compared to base plan</div>
+          </div>
+        </div>
+        <ul class="calculator-features">
+          <li>Reseller Console access with secure login</li>
+          <li>Unlimited client transactions</li>
+          <li>WhatsApp invoice & receipt scanning</li>
+          <li>UPI receipt verification</li>
+          <li>Hindi/English Voice transaction logs</li>
+          <li>One-click Bulk Tally ERP / Prime Export</li>
+        </ul>
+        <div style="text-align: center;">
+          <a href="console.html?action=register" class="btn-primary" style="display: inline-flex;">
+            Register as CA Partner
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Premium Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo-wrapper">
+            <img src="images/logo.png" alt="TaxBot Logo" class="logo-img">
+            <span class="brand-name">TaxBot</span>
+          </div>
+          <p>
+            An AI-first financial bookkeeping system optimized for Indian SMBs and merchants. Compliant, fast, and simple.
+          </p>
+        </div>
+        <div class="footer-links">
+          <h5>Platform</h5>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#security">Security</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h5>Partners</h5>
+          <ul>
+            <li><a href="console.html">CA Partner Console</a></li>
+            <li><a href="console.html?action=register">Register as CA</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 TaxBot. All rights reserved. Developed under Indian IT Guidelines.</p>
+        <p>Support: info@theanantastore.in</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
