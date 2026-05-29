@@ -3,6 +3,7 @@ import { executeHelp } from './commands/help';
 import { executeGstin } from './commands/gstin';
 import { executeGst } from './commands/gst';
 import { executeReport } from './commands/report';
+import { executeExport } from './commands/export';
 import { createTransaction } from '../db/transactions';
 import { askClaude } from '../ai/claude';
 import { askGemini } from '../ai/gemini';
@@ -48,6 +49,14 @@ export async function handleText(client: Client, text: string): Promise<void> {
     const parts = cleanText.split(/\s+/);
     const period = parts.find((p) => /^\d{4}-\d{2}$/.test(p));
     await executeReport(client, period);
+    return;
+  }
+
+  // 5. CA Export command
+  if (lowerText.startsWith('export')) {
+    const parts = cleanText.split(/\s+/);
+    const period = parts.find((p) => /^\d{4}-\d{2}$/.test(p));
+    await executeExport(client, period);
     return;
   }
 

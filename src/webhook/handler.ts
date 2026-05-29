@@ -3,6 +3,7 @@ import { getClientByPhone, createClient } from '../db/clients';
 import { handleText } from '../handlers/text';
 import { handleImage } from '../handlers/image';
 import { handleDocument } from '../handlers/document';
+import { handleAudio } from '../handlers/audio';
 import { sendMessage } from '../whatsapp/send';
 import { WhatsAppIncomingNotification, WhatsAppMessage } from '../types';
 
@@ -88,10 +89,9 @@ async function processIncomingMessage(phone: string, contactName: string, messag
         break;
 
       case 'audio':
-        await sendMessage(
-          phone,
-          'Sorry, I cannot process voice messages yet. Please send a text query or document image instead.'
-        );
+        if (message.audio?.id) {
+          await handleAudio(client, message.audio.id, message.audio.mime_type || 'audio/ogg');
+        }
         break;
 
       default:

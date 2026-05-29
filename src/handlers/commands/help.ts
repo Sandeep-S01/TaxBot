@@ -17,6 +17,7 @@ Send a PDF bank statement. I will extract transactions and log them for you.
 📊 *Financial Reports*
 • Type *report* or *pl* - Get your monthly Profit & Loss summary.
 • Type *gst* - Get your GSTR-3B tax summary with estimated filing figures.
+• Type *export* - Get Excel CSV and Tally XML ledger download links. (e.g. *export 2026-05*)
 
 ⚙️ *GSTIN Validation & Setup*
 • Type *gstin 29ABCDE1234F1Z5* - Validate against the GST database and register your GSTIN.

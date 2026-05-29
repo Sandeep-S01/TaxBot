@@ -82,3 +82,64 @@ export async function askGemini(
     return fallback;
   }
 }
+
+/**
+ * Helper to call Gemini API for processing audio inputs (multimodal)
+ */
+export async function askGeminiAudio(
+  audioBuffer: Buffer,
+  mimeType: string,
+  systemPrompt: string,
+  userPrompt: string
+): Promise<string> {
+  if (!GEMINI_API_KEY) {
+    throw new Error('GEMINI_API_KEY is not defined in the environment.');
+  }
+
+  const base64Data = audioBuffer.toString('base64');
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  
+  const payload = {
+    contents: [
+      {
+        role: 'user',
+        parts: [
+          {
+            inlineData: {
+              mimeType: mimeType,
+              data: base64Data,
+            },
+          },
+          {
+            text: userPrompt,
+          },
+        ],
+      },
+    ],
+    systemInstruction: {
+      parts: [
+        {
+          text: systemPrompt,
+        },
+      ],
+    },
+    generationConfig: {
+      temperature: 0.1,
+      maxOutputTokens: 1000,
+      responseMimeType: 'application/json',
+    },
+  };
+
+  const apiCall = axios.post(url, payload, {
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  const response = await withTimeout(apiCall, DEFAULT_TIMEOUT_MS, 'Audio processing timed out.');
+  const content = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  if (!content) {
+    throw new Error('No content returned from Gemini Audio API');
+  }
+
+  return content;
+}
