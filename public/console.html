@@ -61,6 +61,8 @@
 
   <!-- Dashboard Console Layout (Hidden until Login) -->
   <div id="console-container" class="dashboard-container" style="display: none;">
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
@@ -95,6 +97,11 @@
     <main class="main-content">
       <!-- Header -->
       <div class="dashboard-header">
+        <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle Sidebar">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
         <div class="dashboard-title">
           <h2 id="tab-title">Clients Bookkeeping Ledgers</h2>
           <p id="tab-subtitle">View WhatsApp transaction files and export records in bulk.</p>

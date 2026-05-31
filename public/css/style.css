@@ -1118,14 +1118,304 @@ footer {
   border-left-color: var(--color-danger);
 }
 
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-canvas);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-surface-solid);
+  border: 2px solid var(--bg-canvas);
+  border-radius: var(--radius-round);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-glow);
+}
+
+/* Mobile Navigation Button (Landing Page) */
+.mobile-nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 110;
+}
+
+.mobile-nav-toggle span {
+  width: 100%;
+  height: 2px;
+  background-color: var(--text-main);
+  border-radius: var(--radius-round);
+  transition: transform var(--transition-normal), opacity var(--transition-normal);
+}
+
+.mobile-nav-toggle.active span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+  background-color: #fff;
+}
+.mobile-nav-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+.mobile-nav-toggle.active span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+  background-color: #fff;
+}
+
+/* Sidebar Toggle Button (Dashboard Console) */
+.sidebar-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-right: 16px;
+  z-index: 951;
+  align-self: center;
+}
+
+.sidebar-toggle span {
+  width: 100%;
+  height: 2px;
+  background-color: var(--text-main);
+  border-radius: var(--radius-round);
+  transition: transform var(--transition-normal), opacity var(--transition-normal);
+}
+
+.sidebar-toggle.active span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+.sidebar-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+.sidebar-toggle.active span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Sidebar Overlay for Mobile Console */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 940;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Smooth HTML scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Premium Card Refinements */
+.feature-card, .badge-card, .pricing-calculator-card, .auth-card, .table-card, .metric-card {
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* Range slider improvements */
+.range-slider {
+  background: rgba(255, 255, 255, 0.05);
+  height: 6px;
+}
+
 /* Responsive Overrides */
 @media (max-width: 768px) {
-  .hero h1 { font-size: 40px; }
-  .features-grid { grid-template-columns: 1fr; }
-  .pricing-display { grid-template-columns: 1fr; }
-  .calculator-features { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr; }
-  .dashboard-container { flex-direction: column; }
-  .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); }
-  .main-content { max-width: 100%; padding: 24px; }
+  /* Landing page responsive navigation */
+  .mobile-nav-toggle {
+    display: flex;
+  }
+  
+  .nav-bar {
+    height: 70px;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 70px);
+    background-color: rgba(9, 11, 16, 0.96);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-color);
+    flex-direction: column;
+    padding: 60px 24px;
+    gap: 32px;
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform var(--transition-normal), opacity var(--transition-normal);
+    z-index: 99;
+  }
+  
+  .nav-links.active {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nav-links li {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .nav-links .btn-outline {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  .hero {
+    padding: 60px 0 40px 0;
+  }
+  
+  .hero h1 {
+    font-size: 32px;
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+    margin-bottom: 28px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+
+  .hero-actions .btn-primary, .hero-actions .btn-outline {
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin: 40px 0;
+  }
+
+  .pricing-calculator-card {
+    padding: 24px;
+  }
+
+  .pricing-display {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .calculator-features {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  /* Console Dashboard Responsive Design */
+  .sidebar-toggle {
+    display: flex;
+  }
+
+  .dashboard-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 950;
+    transform: translateX(-100%);
+    transition: transform var(--transition-normal);
+    box-shadow: var(--shadow-md);
+    background-color: var(--bg-surface-solid);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    max-width: 100%;
+    padding: 20px;
+  }
+
+  .dashboard-header {
+    margin-bottom: 24px;
+    align-items: center;
+    gap: 16px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .dashboard-title {
+    flex-grow: 1;
+  }
+
+  .dashboard-title h2 {
+    font-size: 24px;
+  }
+
+  .dashboard-actions {
+    width: 100%;
+  }
+
+  .dashboard-actions .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .metrics-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .table-card {
+    padding: 20px;
+  }
+  
+  .client-meta-box {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .custom-table th, .custom-table td {
+    padding: 12px 14px;
+  }
 }
+

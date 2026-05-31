@@ -19,6 +19,49 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- Mobile Nav Toggle (Landing Page) ---
+  const mobileToggle = document.getElementById('mobile-nav-toggle');
+  const navLinks = document.querySelector('.nav-links');
+  if (mobileToggle && navLinks) {
+    mobileToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      mobileToggle.classList.toggle('active');
+    });
+    // Close mobile menu when clicking a link
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        mobileToggle.classList.remove('active');
+      });
+    });
+  }
+
+  // --- Sidebar Mobile Toggle (Console Page) ---
+  const sidebarToggle = document.getElementById('sidebar-toggle');
+  const sidebar = document.querySelector('.sidebar');
+  const sidebarOverlay = document.getElementById('sidebar-overlay');
+  
+  if (sidebarToggle && sidebar && sidebarOverlay) {
+    const toggleSidebar = () => {
+      sidebar.classList.toggle('active');
+      sidebarToggle.classList.toggle('active');
+      sidebarOverlay.classList.toggle('active');
+    };
+    
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', toggleSidebar);
+    
+    // Close sidebar when selecting a sidebar navigation item on mobile
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    sidebarItems.forEach(item => {
+      item.addEventListener('click', () => {
+        if (sidebar.classList.contains('active')) {
+          toggleSidebar();
+        }
+      });
+    });
+  }
+
   // --- CA Partner Console Auth & Operations ---
   const authContainer = document.getElementById('auth-container');
   const consoleContainer = document.getElementById('console-container');
