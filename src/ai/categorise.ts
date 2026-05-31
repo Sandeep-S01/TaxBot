@@ -174,6 +174,7 @@ The response must conform exactly to this schema:
       "gst_category": "B2B" | "B2C" | "B2CL" | "exempt" | "nil_rated" | null,
       "hsn_sac": "string or null",
       "invoice_number": "string or null",
+      "vendor_gstin": "string or null",
       "confidence": "high" | "medium" | "low"
     }
   ]

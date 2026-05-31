@@ -89,19 +89,19 @@
       </div>
       <div class="badges-grid">
         <!-- Badge 1 -->
-        <div class="badge-card">
+        <div class="badge-card" id="card-sec-encryption" style="cursor: pointer;">
           <span class="badge-icon">🔒</span>
           <h4>AES-256 Encryption</h4>
           <p>All client credentials, financial figures, phone records, and transaction logs are encrypted at rest with AES-256 cryptographic standards.</p>
         </div>
         <!-- Badge 2 -->
-        <div class="badge-card">
+        <div class="badge-card" id="card-sec-residency" style="cursor: pointer;">
           <span class="badge-icon">🇮🇳</span>
           <h4>Data Residency - India Local</h4>
           <p>To assure sovereign safety, all databases and compute instances are strictly hosted in secure cloud availability zones located in Mumbai, India.</p>
         </div>
         <!-- Badge 3 -->
-        <div class="badge-card">
+        <div class="badge-card" id="card-sec-compliance" style="cursor: pointer;">
           <span class="badge-icon">📜</span>
           <h4>Indian IT Act, 2000 Compliant</h4>
           <p>Audit logs and electronic bookkeeping structures strictly comply with Section 4 of the Indian IT Act, 2000 for digital accounting records.</p>
@@ -193,6 +193,19 @@
       </div>
     </div>
   </footer>
+
+  <!-- Modal: Security & Compliance Verification Details -->
+  <div id="modal-security" class="modal-overlay">
+    <div class="modal-content" style="max-width: 550px;">
+      <div class="modal-header">
+        <h3 id="sec-modal-title">Security Verification</h3>
+        <button class="btn-close" id="btn-close-sec-modal">✖</button>
+      </div>
+      <div id="sec-modal-body" style="font-size: 14px; color: var(--text-muted); text-align: left; line-height: 1.7;">
+        <!-- Filled dynamically via app.js -->
+      </div>
+    </div>
+  </div>
 
   <script src="js/app.js"></script>
 </body>

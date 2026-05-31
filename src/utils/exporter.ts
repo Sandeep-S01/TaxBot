@@ -52,8 +52,13 @@ export function exportToCSV(transactions: Transaction[]): string {
  * Generates a Tally-compliant XML string for importing accounting vouchers into Tally Prime / ERP 9.
  * Uses standard voucher types: Sales, Purchase, and Payment.
  */
-export function exportToTallyXML(transactions: Transaction[], clientBusinessName: string): string {
+export function exportToTallyXML(
+  transactions: Transaction[], 
+  clientBusinessName: string,
+  clientGstin?: string | null
+): string {
   const businessName = clientBusinessName || 'Client Account';
+  const cGstin = clientGstin ? clientGstin.trim().toUpperCase() : '';
   
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   xml += `<ENVELOPE>\n`;
@@ -75,12 +80,20 @@ export function exportToTallyXML(transactions: Transaction[], clientBusinessName
     const vendor = tx.vendor_name || 'Cash/Sundry Creditor';
     const invoiceNo = tx.invoice_number || '';
     const desc = tx.description || `${tx.category} transaction`;
+    const vGstin = tx.vendor_gstin ? tx.vendor_gstin.trim().toUpperCase() : '';
 
     let vchType = 'Payment';
     if (tx.category === 'sales') {
       vchType = 'Sales';
     } else if (tx.category === 'purchase') {
       vchType = 'Purchase';
+    }
+
+    // Determine if it is Intra-State or Inter-State GST split
+    // GSTIN first 2 characters represent the state code (e.g. "27" for Maharashtra)
+    let isIntra = true;
+    if (cGstin.length >= 2 && vGstin.length >= 2) {
+      isIntra = cGstin.substring(0, 2) === vGstin.substring(0, 2);
     }
 
     xml += `        <TALLYMESSAGE xmlns:UDF="TallyUDF">\n`;
@@ -93,49 +106,84 @@ export function exportToTallyXML(transactions: Transaction[], clientBusinessName
 
     if (vchType === 'Sales') {
       // SALES VOUCHER: Debit Cash/Debtor, Credit Sales, Credit GST Output
-      // Debited account (negative in Tally XML representation of ledgers list)
       xml += `            <ALLLEDGERENTRIES.LIST>\n`;
       xml += `              <LEDGERNAME>Cash/Bank Account</LEDGERNAME>\n`;
       xml += `              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n`;
       xml += `              <AMOUNT>-${total.toFixed(2)}</AMOUNT>\n`;
       xml += `            </ALLLEDGERENTRIES.LIST>\n`;
 
-      // Credited Sales Account (positive in Tally XML)
       xml += `            <ALLLEDGERENTRIES.LIST>\n`;
       xml += `              <LEDGERNAME>Sales Account</LEDGERNAME>\n`;
       xml += `              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n`;
       xml += `              <AMOUNT>${amount.toFixed(2)}</AMOUNT>\n`;
       xml += `            </ALLLEDGERENTRIES.LIST>\n`;
 
-      // Credited GST Output Account
+      // Split tax if applicable
       if (tax > 0) {
-        const gstLedgerName = tx.gst_rate > 0 ? `Output GST @ ${tx.gst_rate}%` : 'Output GST';
-        xml += `            <ALLLEDGERENTRIES.LIST>\n`;
-        xml += `              <LEDGERNAME>${gstLedgerName}</LEDGERNAME>\n`;
-        xml += `              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n`;
-        xml += `              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n`;
-        xml += `            </ALLLEDGERENTRIES.LIST>\n`;
+        if (isIntra) {
+          const halfTax = tax / 2;
+          const halfRate = tx.gst_rate / 2;
+          const cgstLedger = tx.gst_rate > 0 ? `Output CGST @ ${halfRate}%` : 'Output CGST';
+          const sgstLedger = tx.gst_rate > 0 ? `Output SGST @ ${halfRate}%` : 'Output SGST';
+
+          xml += `            <ALLLEDGERENTRIES.LIST>\n`;
+          xml += `              <LEDGERNAME>${cgstLedger}</LEDGERNAME>\n`;
+          xml += `              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n`;
+          xml += `              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n`;
+          xml += `            </ALLLEDGERENTRIES.LIST>\n`;
+
+          xml += `            <ALLLEDGERENTRIES.LIST>\n`;
+          xml += `              <LEDGERNAME>${sgstLedger}</LEDGERNAME>\n`;
+          xml += `              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n`;
+          xml += `              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n`;
+          xml += `            </ALLLEDGERENTRIES.LIST>\n`;
+        } else {
+          // Inter-state: IGST
+          const igstLedger = tx.gst_rate > 0 ? `Output IGST @ ${tx.gst_rate}%` : 'Output IGST';
+          xml += `            <ALLLEDGERENTRIES.LIST>\n`;
+          xml += `              <LEDGERNAME>${igstLedger}</LEDGERNAME>\n`;
+          xml += `              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n`;
+          xml += `              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n`;
+          xml += `            </ALLLEDGERENTRIES.LIST>\n`;
+        }
       }
     } else if (vchType === 'Purchase') {
       // PURCHASE VOUCHER: Debit Purchase, Debit GST Input, Credit Cash/Creditor
-      // Debited Purchase Account
       xml += `            <ALLLEDGERENTRIES.LIST>\n`;
       xml += `              <LEDGERNAME>Purchase Account</LEDGERNAME>\n`;
       xml += `              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n`;
       xml += `              <AMOUNT>${amount.toFixed(2)}</AMOUNT>\n`;
       xml += `            </ALLLEDGERENTRIES.LIST>\n`;
 
-      // Debited GST Input Account
       if (tax > 0) {
-        const gstLedgerName = tx.gst_rate > 0 ? `Input GST @ ${tx.gst_rate}%` : 'Input GST';
-        xml += `            <ALLLEDGERENTRIES.LIST>\n`;
-        xml += `              <LEDGERNAME>${gstLedgerName}</LEDGERNAME>\n`;
-        xml += `              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n`;
-        xml += `              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n`;
-        xml += `            </ALLLEDGERENTRIES.LIST>\n`;
+        if (isIntra) {
+          const halfTax = tax / 2;
+          const halfRate = tx.gst_rate / 2;
+          const cgstLedger = tx.gst_rate > 0 ? `Input CGST @ ${halfRate}%` : 'Input CGST';
+          const sgstLedger = tx.gst_rate > 0 ? `Input SGST @ ${halfRate}%` : 'Input SGST';
+
+          xml += `            <ALLLEDGERENTRIES.LIST>\n`;
+          xml += `              <LEDGERNAME>${cgstLedger}</LEDGERNAME>\n`;
+          xml += `              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n`;
+          xml += `              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n`;
+          xml += `            </ALLLEDGERENTRIES.LIST>\n`;
+
+          xml += `            <ALLLEDGERENTRIES.LIST>\n`;
+          xml += `              <LEDGERNAME>${sgstLedger}</LEDGERNAME>\n`;
+          xml += `              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n`;
+          xml += `              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n`;
+          xml += `            </ALLLEDGERENTRIES.LIST>\n`;
+        } else {
+          // Inter-state: IGST
+          const igstLedger = tx.gst_rate > 0 ? `Input IGST @ ${tx.gst_rate}%` : 'Input IGST';
+          xml += `            <ALLLEDGERENTRIES.LIST>\n`;
+          xml += `              <LEDGERNAME>${igstLedger}</LEDGERNAME>\n`;
+          xml += `              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n`;
+          xml += `              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n`;
+          xml += `            </ALLLEDGERENTRIES.LIST>\n`;
+        }
       }
 
-      // Credited Vendor Account
       xml += `            <ALLLEDGERENTRIES.LIST>\n`;
       xml += `              <LEDGERNAME>${vendor}</LEDGERNAME>\n`;
       xml += `              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n`;
@@ -143,7 +191,6 @@ export function exportToTallyXML(transactions: Transaction[], clientBusinessName
       xml += `            </ALLLEDGERENTRIES.LIST>\n`;
     } else {
       // PAYMENT/EXPENSE VOUCHER: Debit Expense, Debit GST Input, Credit Cash/Bank
-      // Debited Expense Account
       const expenseLedgerName = tx.description ? `${tx.description.substring(0, 30)} Ledger` : 'General Expense';
       xml += `            <ALLLEDGERENTRIES.LIST>\n`;
       xml += `              <LEDGERNAME>${expenseLedgerName}</LEDGERNAME>\n`;
@@ -151,17 +198,35 @@ export function exportToTallyXML(transactions: Transaction[], clientBusinessName
       xml += `              <AMOUNT>${amount.toFixed(2)}</AMOUNT>\n`;
       xml += `            </ALLLEDGERENTRIES.LIST>\n`;
 
-      // Debited GST Input Account
       if (tax > 0) {
-        const gstLedgerName = tx.gst_rate > 0 ? `Input GST @ ${tx.gst_rate}%` : 'Input GST';
-        xml += `            <ALLLEDGERENTRIES.LIST>\n`;
-        xml += `              <LEDGERNAME>${gstLedgerName}</LEDGERNAME>\n`;
-        xml += `              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n`;
-        xml += `              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n`;
-        xml += `            </ALLLEDGERENTRIES.LIST>\n`;
+        if (isIntra) {
+          const halfTax = tax / 2;
+          const halfRate = tx.gst_rate / 2;
+          const cgstLedger = tx.gst_rate > 0 ? `Input CGST @ ${halfRate}%` : 'Input CGST';
+          const sgstLedger = tx.gst_rate > 0 ? `Input SGST @ ${halfRate}%` : 'Input SGST';
+
+          xml += `            <ALLLEDGERENTRIES.LIST>\n`;
+          xml += `              <LEDGERNAME>${cgstLedger}</LEDGERNAME>\n`;
+          xml += `              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n`;
+          xml += `              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n`;
+          xml += `            </ALLLEDGERENTRIES.LIST>\n`;
+
+          xml += `            <ALLLEDGERENTRIES.LIST>\n`;
+          xml += `              <LEDGERNAME>${sgstLedger}</LEDGERNAME>\n`;
+          xml += `              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n`;
+          xml += `              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n`;
+          xml += `            </ALLLEDGERENTRIES.LIST>\n`;
+        } else {
+          // Inter-state: IGST
+          const igstLedger = tx.gst_rate > 0 ? `Input IGST @ ${tx.gst_rate}%` : 'Input IGST';
+          xml += `            <ALLLEDGERENTRIES.LIST>\n`;
+          xml += `              <LEDGERNAME>${igstLedger}</LEDGERNAME>\n`;
+          xml += `              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n`;
+          xml += `              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n`;
+          xml += `            </ALLLEDGERENTRIES.LIST>\n`;
+        }
       }
 
-      // Credited Cash/Bank Account
       xml += `            <ALLLEDGERENTRIES.LIST>\n`;
       xml += `              <LEDGERNAME>Cash/Bank Account</LEDGERNAME>\n`;
       xml += `              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n`;

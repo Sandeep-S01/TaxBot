@@ -24,12 +24,13 @@ The response must conform exactly to this schema:
   "gst_category": "B2B" | "B2C" | "B2CL" | "exempt" | "nil_rated" | null,
   "hsn_sac": "string or null",
   "invoice_number": "string or null (store the UPI Transaction ID / UTR here for UPI screens)",
+  "vendor_gstin": "string or null (the 15-digit GSTIN of the supplier/vendor/customer if visible on the receipt)",
   "confidence": "high" | "medium" | "low"
 }`;
 
 export const RECEIPT_EXTRACTION_USER_PROMPT = `Extract: date, vendor_name, description, amount (excl. tax),
 tax_amount, gst_rate (5/12/18/28/0), category (sales/purchase/expense),
-gst_category (B2B/B2C/exempt), hsn_sac, invoice_number (store UPI Transaction ID / UTR if applicable), confidence (high/medium/low)`;
+gst_category (B2B/B2C/exempt), hsn_sac, invoice_number (store UPI Transaction ID / UTR if applicable), vendor_gstin, confidence (high/medium/low)`;
 
 export const CONVERSATIONAL_ASSISTANT_SYSTEM_PROMPT = `You are TaxBot, a friendly Indian tax and accounting assistant for small businesses.
 Rules:

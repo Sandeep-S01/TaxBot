@@ -4,6 +4,7 @@ import { handleText } from '../handlers/text';
 import { handleImage } from '../handlers/image';
 import { handleDocument } from '../handlers/document';
 import { handleAudio } from '../handlers/audio';
+import { handleInteractive } from '../handlers/interactive';
 import { sendMessage } from '../whatsapp/send';
 import { WhatsAppIncomingNotification, WhatsAppMessage } from '../types';
 
@@ -91,6 +92,12 @@ async function processIncomingMessage(phone: string, contactName: string, messag
       case 'audio':
         if (message.audio?.id) {
           await handleAudio(client, message.audio.id, message.audio.mime_type || 'audio/ogg');
+        }
+        break;
+
+      case 'interactive':
+        if (message.interactive) {
+          await handleInteractive(client, message.interactive);
         }
         break;
 

@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupAuthSubmits();
     setupDashboardInteractions();
   }
+  setupSecurityModals();
 });
 
 /**
@@ -583,6 +584,7 @@ async function downloadClientFile(clientId, format) {
       mimeType = 'application/xml;charset=utf-8;';
       fileName += '.xml';
 
+      const cGstin = data.client.gstin ? data.client.gstin.trim().toUpperCase() : '';
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<ENVELOPE>\n  <HEADER>\n    <TALLYREQUEST>Import Data</TALLYREQUEST>\n  </HEADER>\n  <BODY>\n    <IMPORTDATA>\n      <REQUESTDESC>\n        <REPORTNAME>Vouchers</REPORTNAME>\n      </REQUESTDESC>\n      <REQUESTDATA>\n`;
 
       transactions.forEach(tx => {
@@ -593,30 +595,70 @@ async function downloadClientFile(clientId, format) {
         const vendor = tx.vendor_name || 'Cash/Sundry Creditor';
         const invoiceNo = tx.invoice_number || '';
         const desc = tx.description || `${tx.category} transaction`;
+        const vGstin = tx.vendor_gstin ? tx.vendor_gstin.trim().toUpperCase() : '';
         let vchType = tx.category === 'sales' ? 'Sales' : (tx.category === 'purchase' ? 'Purchase' : 'Payment');
+
+        // Determine if it is Intra-State or Inter-State GST split
+        let isIntra = true;
+        if (cGstin.length >= 2 && vGstin.length >= 2) {
+          isIntra = cGstin.substring(0, 2) === vGstin.substring(0, 2);
+        }
 
         xml += `        <TALLYMESSAGE xmlns:UDF="TallyUDF">\n          <VOUCHER VCHTYPE="${vchType}" ACTION="Create">\n            <DATE>${tallyDate}</DATE>\n            <VOUCHERTYPENAME>${vchType}</VOUCHERTYPENAME>\n            <REFERENCE>${invoiceNo}</REFERENCE>\n            <NARRATION>${desc}</NARRATION>\n            <EFFECTIVEDATE>${tallyDate}</EFFECTIVEDATE>\n`;
 
         if (vchType === 'Sales') {
           xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>Cash/Bank Account</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>-${total.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
           xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>Sales Account</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>${amount.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+          
           if (tax > 0) {
-            const gstLedgerName = tx.gst_rate > 0 ? `Output GST @ ${tx.gst_rate}%` : 'Output GST';
-            xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${gstLedgerName}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+            if (isIntra) {
+              const halfTax = tax / 2;
+              const halfRate = tx.gst_rate / 2;
+              const cgstLedger = tx.gst_rate > 0 ? `Output CGST @ ${halfRate}%` : 'Output CGST';
+              const sgstLedger = tx.gst_rate > 0 ? `Output SGST @ ${halfRate}%` : 'Output SGST';
+
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${cgstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${sgstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+            } else {
+              const igstLedger = tx.gst_rate > 0 ? `Output IGST @ ${tx.gst_rate}%` : 'Output IGST';
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${igstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+            }
           }
         } else if (vchType === 'Purchase') {
           xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>Purchase Account</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${amount.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+          
           if (tax > 0) {
-            const gstLedgerName = tx.gst_rate > 0 ? `Input GST @ ${tx.gst_rate}%` : 'Input GST';
-            xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${gstLedgerName}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+            if (isIntra) {
+              const halfTax = tax / 2;
+              const halfRate = tx.gst_rate / 2;
+              const cgstLedger = tx.gst_rate > 0 ? `Input CGST @ ${halfRate}%` : 'Input CGST';
+              const sgstLedger = tx.gst_rate > 0 ? `Input SGST @ ${halfRate}%` : 'Input SGST';
+
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${cgstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${sgstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+            } else {
+              const igstLedger = tx.gst_rate > 0 ? `Input IGST @ ${tx.gst_rate}%` : 'Input IGST';
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${igstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+            }
           }
           xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${vendor}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>-${total.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
         } else {
           const expenseLedgerName = tx.description ? `${tx.description.substring(0, 30)} Ledger` : 'General Expense';
           xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${expenseLedgerName}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${amount.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+          
           if (tax > 0) {
-            const gstLedgerName = tx.gst_rate > 0 ? `Input GST @ ${tx.gst_rate}%` : 'Input GST';
-            xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${gstLedgerName}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+            if (isIntra) {
+              const halfTax = tax / 2;
+              const halfRate = tx.gst_rate / 2;
+              const cgstLedger = tx.gst_rate > 0 ? `Input CGST @ ${halfRate}%` : 'Input CGST';
+              const sgstLedger = tx.gst_rate > 0 ? `Input SGST @ ${halfRate}%` : 'Input SGST';
+
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${cgstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${sgstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+            } else {
+              const igstLedger = tx.gst_rate > 0 ? `Input IGST @ ${tx.gst_rate}%` : 'Input IGST';
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${igstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+            }
           }
           xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>Cash/Bank Account</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>-${total.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
         }
@@ -746,4 +788,95 @@ function showToast(message, type = 'success') {
   setTimeout(() => {
     toast.classList.remove('show');
   }, 4000);
+}
+
+/**
+ * Sets up clickable security cards and dynamic modal details on the landing page
+ */
+function setupSecurityModals() {
+  const modal = document.getElementById('modal-security');
+  const closeBtn = document.getElementById('btn-close-sec-modal');
+  const title = document.getElementById('sec-modal-title');
+  const body = document.getElementById('sec-modal-body');
+
+  const cardEncryption = document.getElementById('card-sec-encryption');
+  const cardResidency = document.getElementById('card-sec-residency');
+  const cardCompliance = document.getElementById('card-sec-compliance');
+
+  if (!modal || !closeBtn) return;
+
+  const openModal = (modalTitle, modalHtml) => {
+    title.textContent = modalTitle;
+    body.innerHTML = modalHtml;
+    modal.classList.add('active');
+  };
+
+  closeBtn.addEventListener('click', () => {
+    modal.classList.remove('active');
+  });
+
+  // Click outside to close
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.remove('active');
+    }
+  });
+
+  if (cardEncryption) {
+    cardEncryption.addEventListener('click', () => {
+      const html = `
+        <p style="margin-bottom:16px;"><strong>Cryptographic Data Protection:</strong></p>
+        <p style="margin-bottom:16px;">TaxBot utilizes standard 256-bit Advanced Encryption Standard (AES-256) encryption. This ensures all sensitive entries (including your financial details, business contacts, and tax logs) are encrypted before writing to persistent storage layers.</p>
+        <p style="margin-bottom:16px;"><strong>WhatsApp Integration Security Boundary:</strong></p>
+        <pre style="background:rgba(255,255,255,0.03); padding:16px; border-radius:8px; font-family:monospace; font-size:12px; border:1px solid var(--border-color); margin-bottom:16px; color:#fff;">
+[User Phone]
+     │ (WhatsApp End-to-End Encryption)
+     ▼
+[Meta Cloud Gateway API]
+     │ (Secure TLS 1.3 Transport)
+     ▼
+[TaxBot App Server (Render HTTPS)]
+     │ (AES-256 App-Level Encrypt)
+     ▼
+[Supabase Database (Mumbai Region)]
+        </pre>
+        <p>Your WhatsApp chats are transported via Meta's secure cloud APIs using TLS 1.3. Once the input reaches our server, we encrypt the data and write it to our vault. We do not sell data to third-party ad networks.</p>
+      `;
+      openModal('AES-256 Vault Encryption Standards', html);
+    });
+  }
+
+  if (cardResidency) {
+    cardResidency.addEventListener('click', () => {
+      const html = `
+        <p style="margin-bottom:16px;"><strong>Sovereign India Data Residency:</strong></p>
+        <p style="margin-bottom:16px;">In compliance with Reserve Bank of India (RBI) directives for financial data localization, TaxBot maintains all compute nodes and database clusters strictly within the sovereign borders of India.</p>
+        <p style="margin-bottom:16px;"><strong>Hosting Infrastructure details:</strong></p>
+        <ul style="margin-left:20px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;">
+          <li><strong>Cloud Provider:</strong> AWS (Amazon Web Services) & Supabase Secure Cloud</li>
+          <li><strong>Primary Region:</strong> Asia Pacific (Mumbai) / ap-south-1</li>
+          <li><strong>Disaster Recovery:</strong> Real-time replication across secondary Indian availability zones.</li>
+        </ul>
+        <p>By hosting your accounting ledger locally in Mumbai, we guarantee high-speed API performance, absolute compliance with national data privacy rules, and complete independence from foreign data jurisdictions.</p>
+      `;
+      openModal('India Data Residency & Sovereign Cloud', html);
+    });
+  }
+
+  if (cardCompliance) {
+    cardCompliance.addEventListener('click', () => {
+      const html = `
+        <p style="margin-bottom:16px;"><strong>Digital Bookkeeping under Indian IT Act, 2000:</strong></p>
+        <p style="margin-bottom:16px;">TaxBot's digital ledger structure has been designed in strict accordance with the legal guidelines set by the Government of India for maintaining books of accounts in electronic format.</p>
+        <p style="margin-bottom:16px;"><strong>Compliance Features:</strong></p>
+        <ul style="margin-left:20px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;">
+          <li><strong>Section 4 IT Act compliance:</strong> Legal recognition of electronic records matching physical notebooks.</li>
+          <li><strong>Unmodifiable Audit Logs:</strong> Every transaction is tagged with its source type (WhatsApp text, receipt OCR, PDF, manual entry) and confidence metrics to prevent ledger manipulation.</li>
+          <li><strong>GST-Ready exports:</strong> LEDGER formats fully support standard Tally Prime XML rules for error-free audits.</li>
+        </ul>
+        <p>CAs can import TaxBot transaction ledgers directly into Tally ERP 9 or Tally Prime, maintaining full digital compliance for annual income tax audits.</p>
+      `;
+      openModal('Indian Information Technology Act, 2000 Compliance', html);
+    });
+  }
 }

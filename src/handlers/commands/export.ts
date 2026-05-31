@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { Client } from '../../types';
-import { sendMessage } from '../../whatsapp/send';
+import { sendMessage, sendInteractiveButtons } from '../../whatsapp/send';
 
 // Secret token base
 const SECRET = process.env.SUPABASE_ANON_KEY || 'default-secret';
@@ -44,22 +44,11 @@ export async function executeExport(client: Client, periodParam?: string): Promi
     period = `${yyyy}-${mm}`;
   }
 
-  const todayStr = new Date().toISOString().split('T')[0];
-  const token = generateExportToken(client.id, period, todayStr);
+  const message = `📤 *CA Export Prepared!* (${period})\n\nChoose the file format you want to download. You can import these directly into your accounting software.`;
+  const buttons = [
+    { id: `exp_${period}_csv`, title: 'Excel CSV' },
+    { id: `exp_${period}_xml`, title: 'Tally XML' }
+  ];
 
-  // Host URL from environment or fallback to local
-  const host = process.env.NODE_ENV === 'production' 
-    ? 'https://taxbot-u2vh.onrender.com' 
-    : `http://localhost:${process.env.PORT || 3000}`;
-
-  const csvUrl = `${host}/export/${client.id}?format=csv&period=${period}&token=${token}`;
-  const xmlUrl = `${host}/export/${client.id}?format=xml&period=${period}&token=${token}`;
-
-  const message = `📤 *CA Export Prepared!* (${period})\n\n` +
-    `Your files have been generated. Click the links below to download them directly. These links are secure and valid for 24 hours.\n\n` +
-    `📊 *Download Excel CSV:*\n${csvUrl}\n\n` +
-    `🧾 *Download Tally XML:*\n${xmlUrl}\n\n` +
-    `_Tip: Send these files to your Chartered Accountant (CA) to import transactions directly._`;
-
-  await sendMessage(client.phone, message);
+  await sendInteractiveButtons(client.phone, message, buttons);
 }

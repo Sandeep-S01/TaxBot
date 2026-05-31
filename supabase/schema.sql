@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     gst_rate NUMERIC(5,2) DEFAULT 0.00 CHECK (gst_rate IN (0, 5, 12, 18, 28)),
     hsn_sac TEXT,
     invoice_number TEXT,
+    vendor_gstin TEXT,
     source TEXT NOT NULL CHECK (source IN ('whatsapp_image', 'whatsapp_text', 'whatsapp_pdf', 'manual')),
     raw_text TEXT,
     confidence TEXT DEFAULT 'medium' CHECK (confidence IN ('high', 'medium', 'low')),

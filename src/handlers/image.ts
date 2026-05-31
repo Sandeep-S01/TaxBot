@@ -1,5 +1,5 @@
 import { Client } from '../types';
-import { sendMessage } from '../whatsapp/send';
+import { sendMessage, sendInteractiveList } from '../whatsapp/send';
 import { downloadMedia } from '../whatsapp/media';
 import { categoriseReceipt } from '../ai/categorise';
 import { createTransaction } from '../db/transactions';
@@ -52,6 +52,7 @@ export async function handleImage(client: Client, mediaId: string, mimeType: str
       gst_rate: extraction.gst_rate || 0,
       hsn_sac: extraction.hsn_sac || null,
       invoice_number: extraction.invoice_number || null,
+      vendor_gstin: extraction.vendor_gstin || null,
       source: 'whatsapp_image',
       raw_text: JSON.stringify(extraction),
       confidence: extraction.confidence || 'medium',
@@ -77,13 +78,34 @@ export async function handleImage(client: Client, mediaId: string, mimeType: str
       message += `• *HSN/SAC:* ${tx.hsn_sac}\n`;
     }
 
+    if (tx.category === 'sales') {
+      const renderHost = process.env.RENDER_EXTERNAL_URL || 'https://taxbot-u2vh.onrender.com';
+      message += `\n🔗 *Customer Pay Link:* ${renderHost}/pay/${tx.id}\n`;
+    }
+    
     if (tx.confidence === 'low') {
       message += `\n⚠️ *Warning: Low confidence extraction.* Please verify these figures in your ledger. If incorrect, you can replace this by sending a clearer photo or adding it manually.`;
     } else {
       message += `\n✨ *Confidence:* High (Auto-categorized)`;
     }
 
-    await sendMessage(client.phone, message);
+    await sendInteractiveList(
+      client.phone,
+      message,
+      'Change Category',
+      [
+        {
+          title: 'Correct Category',
+          rows: [
+            { id: `cat_${tx.id}_sales`, title: 'Sales', description: 'Inward business revenue' },
+            { id: `cat_${tx.id}_purchase`, title: 'Purchase', description: 'Cost of goods/stock' },
+            { id: `cat_${tx.id}_expense`, title: 'Expense', description: 'General business expense' },
+            { id: `cat_${tx.id}_salary`, title: 'Salary', description: 'Staff payroll/wages' },
+            { id: `cat_${tx.id}_other`, title: 'Other', description: 'Miscellaneous' }
+          ]
+        }
+      ]
+    );
   } catch (error: any) {
     console.error('Error handling receipt image:', error);
     await sendMessage(

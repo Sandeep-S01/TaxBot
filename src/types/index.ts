@@ -41,6 +41,7 @@ export interface Transaction {
   gst_rate: GstRate;
   hsn_sac: string | null;
   invoice_number: string | null;
+  vendor_gstin?: string | null;
   source: TransactionSource;
   raw_text: string | null;
   confidence: ConfidenceLevel;
@@ -87,7 +88,7 @@ export interface WhatsAppMessage {
   from: string; // e.g. "919876543210"
   id: string;
   timestamp: string;
-  type: 'text' | 'image' | 'document' | 'audio' | 'unsupported';
+  type: 'text' | 'image' | 'document' | 'audio' | 'interactive' | 'unsupported';
   text?: {
     body: string;
   };
@@ -98,6 +99,18 @@ export interface WhatsAppMessage {
   };
   audio?: WhatsAppMedia & {
     mime_type?: string;
+  };
+  interactive?: {
+    type: 'button_reply' | 'list_reply';
+    button_reply?: {
+      id: string;
+      title: string;
+    };
+    list_reply?: {
+      id: string;
+      title: string;
+      description?: string;
+    };
   };
 }
 
@@ -119,6 +132,7 @@ export interface ReceiptExtractionResult {
   gst_category: GstCategory;
   hsn_sac: string;
   invoice_number: string;
+  vendor_gstin: string | null;
   confidence: ConfidenceLevel;
   error?: string;
 }

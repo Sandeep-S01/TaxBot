@@ -89,3 +89,100 @@ export async function sendTemplate(
     throw error;
   }
 }
+
+/**
+ * Sends a message with interactive buttons (up to 3) via WhatsApp Cloud API
+ */
+export async function sendInteractiveButtons(
+  to: string,
+  bodyText: string,
+  buttons: Array<{ id: string; title: string }>
+): Promise<any> {
+  if (!WA_TOKEN || !WA_PHONE_ID) {
+    console.error('Cannot send interactive buttons: WA_TOKEN or WA_PHONE_ID is missing.');
+    return null;
+  }
+
+  if (buttons.length > 3) {
+    throw new Error('Meta interactive buttons are limited to a maximum of 3.');
+  }
+
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/messages`,
+      {
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to,
+        type: 'interactive',
+        interactive: {
+          type: 'button',
+          body: { text: bodyText },
+          action: {
+            buttons: buttons.map((btn) => ({
+              type: 'reply',
+              reply: { id: btn.id, title: btn.title },
+            })),
+          },
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${WA_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error('Error sending WhatsApp interactive buttons:', error.response?.data || error.message);
+    throw error;
+  }
+}
+
+/**
+ * Sends a list-menu interactive message (up to 10 choices) via WhatsApp Cloud API
+ */
+export async function sendInteractiveList(
+  to: string,
+  bodyText: string,
+  buttonText: string,
+  sections: Array<{ title?: string; rows: Array<{ id: string; title: string; description?: string }> }>
+): Promise<any> {
+  if (!WA_TOKEN || !WA_PHONE_ID) {
+    console.error('Cannot send interactive list: WA_TOKEN or WA_PHONE_ID is missing.');
+    return null;
+  }
+
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/messages`,
+      {
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to,
+        type: 'interactive',
+        interactive: {
+          type: 'list',
+          body: { text: bodyText },
+          action: {
+            button: buttonText,
+            sections,
+          },
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${WA_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error('Error sending WhatsApp interactive list:', error.response?.data || error.message);
+    throw error;
+  }
+}

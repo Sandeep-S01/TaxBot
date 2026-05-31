@@ -18,6 +18,21 @@ export async function createTransaction(
   return data;
 }
 
+export async function getTransactionById(id: string): Promise<Transaction | null> {
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error fetching transaction by ID:', error);
+    throw error;
+  }
+
+  return data;
+}
+
 export async function getTransactionsByDateRange(
   clientId: string,
   startDate: string,
@@ -198,3 +213,43 @@ export async function getGSTR3BSummary(
     inwardEligibleITC,
   };
 }
+
+export async function updateTransactionCategory(
+  id: string,
+  category: TransactionCategory
+): Promise<Transaction> {
+  const { data, error } = await supabase
+    .from('transactions')
+    .update({ category })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating transaction category:', error);
+    throw error;
+  }
+
+  return data;
+}
+
+export async function getTransactionsSince(
+  clientId: string,
+  since: string
+): Promise<Transaction[]> {
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('*')
+    .eq('client_id', clientId)
+    .gt('created_at', since)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching transactions since timestamp:', error);
+    throw error;
+  }
+
+  return data || [];
+}
+
+

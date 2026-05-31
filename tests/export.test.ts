@@ -73,7 +73,7 @@ describe('CA Export Generators (CSV and Tally XML)', () => {
     expect(csvContent).toContain('2026-05-15,Local Tea Vendor,EXPENSE,exempt,0,300,0,300,,"Office tea, coffee & snacks, with a comma and ""quotes"" in description",manual');
   });
 
-  it('should generate a valid Tally XML structure', () => {
+  it('should generate a valid Tally XML structure with local CGST and SGST splits', () => {
     const xmlContent = exportToTallyXML(mockTransactions, 'Ananta Store');
 
     // Verify envelope headers
@@ -81,19 +81,25 @@ describe('CA Export Generators (CSV and Tally XML)', () => {
     expect(xmlContent).toContain('<TALLYREQUEST>Import Data</TALLYREQUEST>');
     expect(xmlContent).toContain('<REPORTNAME>Vouchers</REPORTNAME>');
 
-    // Verify Sales Voucher
+    // Verify Sales Voucher with 50-50 CGST & SGST splits
     expect(xmlContent).toContain('<VOUCHER VCHTYPE="Sales" ACTION="Create">');
     expect(xmlContent).toContain('<DATE>20260510</DATE>');
     expect(xmlContent).toContain('<LEDGERNAME>Sales Account</LEDGERNAME>');
     expect(xmlContent).toContain('<AMOUNT>10000.00</AMOUNT>');
-    expect(xmlContent).toContain('<LEDGERNAME>Output GST @ 18%</LEDGERNAME>');
-    expect(xmlContent).toContain('<AMOUNT>1800.00</AMOUNT>');
+    expect(xmlContent).toContain('<LEDGERNAME>Output CGST @ 9%</LEDGERNAME>');
+    expect(xmlContent).toContain('<AMOUNT>900.00</AMOUNT>');
+    expect(xmlContent).toContain('<LEDGERNAME>Output SGST @ 9%</LEDGERNAME>');
+    expect(xmlContent).toContain('<AMOUNT>900.00</AMOUNT>');
 
-    // Verify Purchase Voucher
+    // Verify Purchase Voucher with Input CGST & SGST splits
     expect(xmlContent).toContain('<VOUCHER VCHTYPE="Purchase" ACTION="Create">');
     expect(xmlContent).toContain('<DATE>20260512</DATE>');
     expect(xmlContent).toContain('<LEDGERNAME>Local Distributor Inc.</LEDGERNAME>');
     expect(xmlContent).toContain('<AMOUNT>5000.00</AMOUNT>');
+    expect(xmlContent).toContain('<LEDGERNAME>Input CGST @ 6%</LEDGERNAME>');
+    expect(xmlContent).toContain('<AMOUNT>300.00</AMOUNT>');
+    expect(xmlContent).toContain('<LEDGERNAME>Input SGST @ 6%</LEDGERNAME>');
+    expect(xmlContent).toContain('<AMOUNT>300.00</AMOUNT>');
 
     // Verify Payment/Expense Voucher
     expect(xmlContent).toContain('<VOUCHER VCHTYPE="Payment" ACTION="Create">');
@@ -102,5 +108,25 @@ describe('CA Export Generators (CSV and Tally XML)', () => {
     expect(xmlContent).toContain('<AMOUNT>300.00</AMOUNT>');
 
     expect(xmlContent).toContain('</ENVELOPE>');
+  });
+
+  it('should generate a valid Tally XML structure with IGST split for inter-state transactions', () => {
+    // Set different GSTIN prefixes: Client: 27 (MH), Vendor: 09 (UP)
+    const clientGstin = '27AAAAA1111A1Z1';
+    const interStateTransactions: Transaction[] = [
+      {
+        ...mockTransactions[0],
+        vendor_gstin: '09BBBBB2222B2Z2'
+      }
+    ];
+
+    const xmlContent = exportToTallyXML(interStateTransactions, 'Ananta Store', clientGstin);
+
+    // Verify Sales Voucher has 100% IGST ledger and no CGST/SGST ledgers
+    expect(xmlContent).toContain('<VOUCHER VCHTYPE="Sales" ACTION="Create">');
+    expect(xmlContent).toContain('<LEDGERNAME>Output IGST @ 18%</LEDGERNAME>');
+    expect(xmlContent).toContain('<AMOUNT>1800.00</AMOUNT>');
+    expect(xmlContent).not.toContain('Output CGST');
+    expect(xmlContent).not.toContain('Output SGST');
   });
 });
