@@ -57,7 +57,7 @@ body {
   position: relative;
 }
 
-/* Cosmic background effects */
+/* Cosmic background effects with Grid Canvas overlay */
 body::before {
   content: '';
   position: absolute;
@@ -66,9 +66,12 @@ body::before {
   width: 100%;
   height: 100%;
   background-image: 
+    linear-gradient(rgba(99, 102, 241, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.02) 1px, transparent 1px),
     radial-gradient(at 5% 5%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
     radial-gradient(at 95% 15%, rgba(139, 92, 246, 0.06) 0px, transparent 50%),
     radial-gradient(at 50% 85%, rgba(16, 185, 129, 0.04) 0px, transparent 50%);
+  background-size: 50px 50px, 50px 50px, 100% 100%, 100% 100%, 100% 100%;
   z-index: -1;
   pointer-events: none;
 }
@@ -314,9 +317,50 @@ header {
   margin-right: 4px;
 }
 
+.trust-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.trust-icons-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trust-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-sm);
+}
+
+.trust-icon-wa {
+  background-color: rgba(16, 185, 129, 0.12);
+  color: var(--color-success);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.trust-icon-shield {
+  background-color: rgba(139, 92, 246, 0.12);
+  color: var(--color-secondary);
+  border-color: rgba(139, 92, 246, 0.25);
+}
+
+.trust-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
 .trust-marker {
-  font-size: 14px;
-  color: var(--text-dim);
+  font-size: 13.5px;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
@@ -670,38 +714,57 @@ header {
 
 .ocr-visual-mock {
   width: 100%;
-  height: 220px;
-  background-color: rgba(255,255,255,0.01);
+  height: 230px;
+  background-color: #05070b;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   position: relative;
   overflow: hidden;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.8);
 }
 
-.ocr-box {
-  width: 70%;
-  height: 70%;
-  border: 1px dashed var(--color-primary-glow);
+.ocr-receipt-img {
   position: absolute;
-  top: 15%;
-  left: 15%;
-  border-radius: 4px;
+  top: 50%;
+  left: 50%;
+  width: 85%;
+  height: 85%;
+  background: url('../images/crumpled_receipt.png') no-repeat center center;
+  background-size: contain;
+  transform: translate(-50%, -50%) rotate(-4deg);
+  opacity: 0.9;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+}
+
+.ocr-grid-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(99, 102, 241, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
 }
 
 .ocr-line-highlight {
   width: 100%;
-  height: 2px;
+  height: 3px;
   background-color: var(--color-primary);
-  box-shadow: 0 0 10px var(--color-primary);
+  box-shadow: 0 0 14px 3px var(--color-primary);
   position: absolute;
-  top: 25%;
-  animation: scan-line 3s infinite ease-in-out;
+  top: 0;
+  left: 0;
+  animation: scan-line 3.5s infinite ease-in-out;
+  pointer-events: none;
 }
 
 @keyframes scan-line {
-  0% { top: 10%; }
-  50% { top: 90%; }
-  100% { top: 10%; }
+  0% { top: 0%; }
+  50% { top: 100%; }
+  100% { top: 0%; }
 }
 
 /* Bento Right Layout */
@@ -758,43 +821,52 @@ header {
   justify-content: flex-start;
 }
 
-.gst-lines-mock {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.gst-chart-container {
+  width: 100%;
+  height: 110px;
   margin-top: auto;
+  position: relative;
+  overflow: hidden;
 }
 
-.gst-line {
-  height: 4px;
-  background-color: var(--color-success);
-  border-radius: var(--radius-round);
-  width: 85%;
+.gst-chart {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
-.gst-line:nth-child(2) {
-  width: 50%;
-  background-color: var(--color-primary);
+.chart-path-glow {
+  filter: drop-shadow(0 0 5px var(--color-success));
+  animation: chart-pulse 2s infinite ease-in-out;
+}
+
+@keyframes chart-pulse {
+  0% { opacity: 0.85; }
+  50% { opacity: 1; }
+  100% { opacity: 0.85; }
 }
 
 .tally-cli-mock {
   list-style: none;
   font-family: monospace;
-  font-size: 12px;
-  color: var(--text-dim);
+  font-size: 11.5px;
+  color: var(--text-muted);
   display: flex;
   flex-direction: column;
   gap: 6px;
-  background-color: rgba(0,0,0,0.25);
+  background-color: #05070b;
   padding: 16px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
   margin-top: auto;
   width: 100%;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
 }
 
 .tally-cli-mock .success-cli {
   color: var(--color-success);
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
 
 /* Security Section */
