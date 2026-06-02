@@ -3,7 +3,7 @@ import { anthropic, withTimeout } from './claude';
 import { RECEIPT_EXTRACTION_SYSTEM_PROMPT, RECEIPT_EXTRACTION_USER_PROMPT } from './prompts';
 import { ReceiptExtractionResult, GstRate } from '../types';
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.Gemini_API_KEY;
 const VALID_GST_RATES: GstRate[] = [0, 5, 12, 18, 28];
 
 export interface DocumentExtractionResult {
@@ -43,8 +43,8 @@ export async function categoriseReceipt(
 
     // If Gemini key is present, use Gemini 1.5 Flash (Free Tier)
     if (GEMINI_API_KEY) {
-      console.log('Using Gemini 1.5 Flash for receipt OCR (Free)...');
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+      console.log('Using Gemini 2.5 Flash for receipt OCR (Free)...');
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
       const payload = {
         contents: [
           {
@@ -184,8 +184,8 @@ The response must conform exactly to this schema:
     let content = '';
 
     if (GEMINI_API_KEY) {
-      console.log('Using Gemini 1.5 Flash for document text extraction (Free)...');
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+      console.log('Using Gemini 2.5 Flash for document text extraction (Free)...');
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
       const payload = {
         contents: [
           {

@@ -87,7 +87,7 @@ export async function handleText(client: Client, text: string): Promise<void> {
   const hasHindi = /[\u0900-\u097F]/.test(cleanText);
   const lang = hasHindi ? 'hi' : 'en';
 
-  const reply = process.env.GEMINI_API_KEY
+  const reply = (process.env.GEMINI_API_KEY || process.env.Gemini_API_KEY)
     ? await askGemini(CONVERSATIONAL_ASSISTANT_SYSTEM_PROMPT, cleanText, lang)
     : await askClaude(CONVERSATIONAL_ASSISTANT_SYSTEM_PROMPT, cleanText, lang);
   await sendMessage(client.phone, reply);
