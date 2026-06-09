@@ -22,14 +22,8 @@ walkDir(searchPath, (filePath) => {
   if (filePath.endsWith('.ts')) {
     const content = fs.readFileSync(filePath, 'utf-8');
     const lowerContent = content.toLowerCase();
-    if (lowerContent.includes('gemini-1.5-flash')) {
-      console.log(`Found "gemini-1.5-flash" in: ${filePath}`);
-    }
-    if (lowerContent.includes('gemini_api_key')) {
-      console.log(`Found "gemini_api_key" (any case) in: ${filePath}`);
-    }
-    if (lowerContent.includes('anthropic_api_key')) {
-      console.log(`Found "anthropic_api_key" (any case) in: ${filePath}`);
+    if (lowerContent.includes('an error occurred while processing')) {
+      console.log(`Found error string in: ${filePath}`);
     }
   }
 });
