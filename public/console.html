@@ -108,18 +108,40 @@
         }
     </script>
     <style>
-        /* Custom utilities */
+        /* Cosmic dark background */
+        body {
+            background: radial-gradient(circle at 50% 0%, #0c0e1a 0%, #040508 100%) !important;
+        }
+
+        /* Glassmorphism panel and premium card styles */
         .glass-panel {
-            background: rgba(30, 41, 59, 0.4);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid #334155;
+            background: rgba(15, 20, 38, 0.45) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .premium-card {
+            background: rgba(18, 22, 45, 0.4) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+            border-radius: 16px !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        
+        .premium-card:hover {
+            transform: translateY(-4px) !important;
+            border-color: rgba(99, 102, 241, 0.35) !important;
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
         }
         
         .bento-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: var(--spacing-md);
+            gap: 24px;
         }
         
         .workflow-line::after {
@@ -129,7 +151,7 @@
             right: -24px;
             width: 24px;
             height: 2px;
-            background-color: #334155;
+            background-color: rgba(255, 255, 255, 0.05);
             z-index: 0;
         }
         
@@ -141,19 +163,20 @@
         
         html { scroll-behavior: smooth; }
 
-        /* Dynamic styles for console tabs and overlays */
+        /* Dialog modals and overlays */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background-color: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(8px);
+            background-color: rgba(3, 4, 9, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             z-index: 100;
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .modal-overlay.active {
             opacity: 1;
@@ -166,56 +189,205 @@
             right: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
+            background-color: rgba(3, 4, 9, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             z-index: 150;
             display: flex;
             justify-content: flex-end;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .drawer-overlay.active {
             opacity: 1;
             pointer-events: auto;
         }
         .drawer-content {
-            background-color: #102034;
-            border-left: 1px solid #26364a;
+            background-color: #0c0e17 !important;
+            border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
             width: 100%;
             max-width: 650px;
             height: 100vh;
             padding: 32px;
             overflow-y: auto;
             transform: translateX(100%);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: -10px 0 40px rgba(0,0,0,0.6) !important;
         }
         .drawer-overlay.active .drawer-content {
             transform: translateX(0);
         }
 
+        /* Sidebar Styling */
+        .sidebar {
+            background: rgba(10, 13, 26, 0.7) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3) !important;
+        }
+        .sidebar-item a {
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            border-left: 3px solid transparent !important;
+            border-radius: 0 8px 8px 0 !important;
+            margin-right: 12px;
+        }
+        .sidebar-item a:hover {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+            color: #ffffff !important;
+        }
         .sidebar-item.active a {
-            background-color: rgba(195, 192, 255, 0.08) !important;
-            color: var(--tw-colors-primary) !important;
-            border-left: 3px solid var(--tw-colors-primary);
-            border-radius: 0 4px 4px 0;
+            background-color: rgba(99, 102, 241, 0.1) !important;
+            color: #c3c0ff !important;
+            border-left: 3px solid #6366f1 !important;
+            font-weight: 600 !important;
         }
 
-        /* Toast styles */
+        /* Modern Table styling */
+        .premium-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .premium-table th {
+            background: rgba(255, 255, 255, 0.01) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            color: #94a3b8 !important;
+            font-weight: 600 !important;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        .premium-table td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+            padding: 16px 20px !important;
+            transition: all 0.2s ease;
+        }
+        .premium-table tr:hover td {
+            background: rgba(255, 255, 255, 0.015) !important;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 99px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Input styling */
+        input, select, textarea {
+            transition: all 0.2s ease !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+            background-color: rgba(0, 0, 0, 0.25) !important;
+            border-radius: 8px !important;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25) !important;
+            background-color: rgba(0, 0, 0, 0.35) !important;
+        }
+
+        /* Status & Source badges */
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+        }
+        .badge-status.pro {
+            background: rgba(16, 185, 129, 0.1) !important;
+            color: #34d399 !important;
+            border: 1px solid rgba(16, 185, 129, 0.2) !important;
+        }
+        .badge-status.starter {
+            background: rgba(245, 158, 11, 0.1) !important;
+            color: #fbbf24 !important;
+            border: 1px solid rgba(245, 158, 11, 0.2) !important;
+        }
+        .badge-status.trial {
+            background: rgba(99, 102, 241, 0.1) !important;
+            color: #a5b4fc !important;
+            border: 1px solid rgba(99, 102, 241, 0.2) !important;
+        }
+
+        .badge-source {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+        .badge-source.whatsapp_image {
+            background: rgba(59, 130, 246, 0.1) !important;
+            color: #60a5fa !important;
+            border-color: rgba(59, 130, 246, 0.2) !important;
+        }
+        .badge-source.whatsapp_pdf {
+            background: rgba(239, 68, 68, 0.1) !important;
+            color: #f87171 !important;
+            border-color: rgba(239, 68, 68, 0.2) !important;
+        }
+        .badge-source.whatsapp_text {
+            background: rgba(16, 185, 129, 0.1) !important;
+            color: #34d399 !important;
+            border-color: rgba(16, 185, 129, 0.2) !important;
+        }
+        .badge-source.manual {
+            background: rgba(107, 114, 128, 0.1) !important;
+            color: #9ca3af !important;
+            border-color: rgba(107, 114, 128, 0.2) !important;
+        }
+
+        /* Action buttons in tables */
+        .action-btn {
+            background: rgba(255, 255, 255, 0.02) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            color: #94a3b8 !important;
+            border-radius: 8px !important;
+            padding: 8px !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .action-btn:hover {
+            background: rgba(99, 102, 241, 0.1) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            color: #ffffff !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15) !important;
+        }
+
+        /* Global Toast Notifications */
         .toast {
             position: fixed;
             bottom: 24px;
             right: 24px;
-            background-color: #1b2b3f;
-            border: 1px solid #c3c0ff;
-            color: #d3e4fe;
+            background-color: #0c0e17 !important;
+            border: 1px solid rgba(99, 102, 241, 0.3) !important;
+            color: #f8fafc !important;
             padding: 12px 24px;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
             z-index: 1000;
             opacity: 0;
             transform: translateY(20px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             pointer-events: none;
         }
         .toast.show {
@@ -224,10 +396,12 @@
             pointer-events: auto;
         }
         .toast.success {
-            border-color: #4edea3;
+            border-color: rgba(16, 185, 129, 0.4) !important;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1) !important;
         }
         .toast.error {
-            border-color: #ffb4ab;
+            border-color: rgba(239, 68, 68, 0.4) !important;
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.1) !important;
         }
     </style>
 </head>
@@ -567,7 +741,7 @@
             <!-- Metric Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-md mb-lg">
                 <!-- Card 1 -->
-                <div class="bg-surface-container border border-surface-variant rounded-xl p-md flex items-center justify-between shadow">
+                <div class="premium-card p-md flex items-center justify-between">
                     <div>
                         <h4 class="text-xs uppercase text-outline mb-xs">Active Clients</h4>
                         <div class="text-display-lg-mobile font-display-lg-mobile text-on-surface" id="metric-clients-count">0</div>
@@ -575,7 +749,7 @@
                     <span class="material-symbols-outlined text-primary text-[32px]">groups</span>
                 </div>
                 <!-- Card 2 -->
-                <div class="bg-surface-container border border-surface-variant rounded-xl p-md flex items-center justify-between shadow">
+                <div class="premium-card p-md flex items-center justify-between">
                     <div>
                         <h4 class="text-xs uppercase text-outline mb-xs">Current Reseller Tier</h4>
                         <div class="text-display-lg-mobile font-display-lg-mobile text-on-surface" id="metric-reseller-tier">₹149/mo</div>
@@ -583,7 +757,7 @@
                     <span class="material-symbols-outlined text-secondary text-[32px]">loyalty</span>
                 </div>
                 <!-- Card 3 -->
-                <div class="bg-surface-container border border-surface-variant rounded-xl p-md flex items-center justify-between shadow">
+                <div class="premium-card p-md flex items-center justify-between">
                     <div>
                         <h4 class="text-xs uppercase text-outline mb-xs">Digital Books Verified</h4>
                         <div class="text-display-lg-mobile font-display-lg-mobile text-on-surface" id="metric-compliance-text">IT ACT Compliant</div>
@@ -593,12 +767,12 @@
             </div>
 
             <!-- Clients Table Container -->
-            <div class="bg-surface-container border border-surface-variant rounded-xl p-md shadow">
+            <div class="premium-card p-md">
                 <h3 class="text-label-sm font-label-sm font-bold text-on-surface mb-sm">Registered Business Ledgers</h3>
-                <div class="overflow-x-auto border border-surface-variant rounded">
-                    <table class="w-full border-collapse text-left text-sm">
+                <div class="overflow-x-auto border border-white/5 rounded-xl">
+                    <table class="premium-table text-sm">
                         <thead>
-                            <tr class="bg-surface border-b border-surface-variant text-outline font-semibold">
+                            <tr class="bg-white/[0.01] border-b border-white/5 text-outline font-semibold">
                                 <th class="p-sm">Client / Business Name</th>
                                 <th class="p-sm">Phone Number</th>
                                 <th class="p-sm">GSTIN</th>
@@ -607,7 +781,7 @@
                                 <th class="p-sm text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="clients-table-body" class="divide-y divide-surface-variant/40">
+                        <tbody id="clients-table-body" class="divide-y divide-white/[0.03]">
                             <!-- Dynamically Rendered -->
                             <tr>
                                 <td colspan="6" class="p-lg text-center text-outline">
@@ -622,16 +796,16 @@
 
         <!-- Tab Content: Consolidated GST Report -->
         <div id="gst-report-tab" class="tab-pane" style="display: none;">
-            <div class="bg-surface-container border border-surface-variant rounded-xl p-md mb-lg shadow">
+            <div class="premium-card p-md mb-lg">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-sm">
                     <h3 class="text-label-sm font-label-sm font-bold text-on-surface">Select Filing Period</h3>
-                    <input type="month" id="report-period-picker" class="bg-surface-container-low border border-surface-variant rounded px-sm py-xs text-on-surface text-sm w-44">
+                    <input type="month" id="report-period-picker" class="bg-black/30 border border-white/5 rounded px-sm py-xs text-on-surface text-sm w-44">
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-md mb-lg">
                 <!-- Sales -->
-                <div class="bg-surface-container border border-surface-variant rounded-xl p-md flex items-center justify-between shadow">
+                <div class="premium-card p-md flex items-center justify-between">
                     <div>
                         <h4 class="text-xs uppercase text-outline mb-xs">Aggregated Sales (Excl. Tax)</h4>
                         <div class="text-display-lg-mobile font-display-lg-mobile text-secondary" id="gst-metric-sales">₹0.00</div>
@@ -639,7 +813,7 @@
                     <span class="material-symbols-outlined text-secondary text-[32px]">arrow_downward</span>
                 </div>
                 <!-- ITC -->
-                <div class="bg-surface-container border border-surface-variant rounded-xl p-md flex items-center justify-between shadow">
+                <div class="premium-card p-md flex items-center justify-between">
                     <div>
                         <h4 class="text-xs uppercase text-outline mb-xs">Aggregated Input Tax Credit (ITC)</h4>
                         <div class="text-display-lg-mobile font-display-lg-mobile text-primary" id="gst-metric-itc">₹0.00</div>
@@ -647,7 +821,7 @@
                     <span class="material-symbols-outlined text-primary text-[32px]">arrow_upward</span>
                 </div>
                 <!-- Liability -->
-                <div class="bg-surface-container border border-surface-variant rounded-xl p-md flex items-center justify-between shadow">
+                <div class="premium-card p-md flex items-center justify-between">
                     <div>
                         <h4 class="text-xs uppercase text-outline mb-xs">Consolidated GST Payable</h4>
                         <div class="text-display-lg-mobile font-display-lg-mobile text-error" id="gst-metric-payable">₹0.00</div>
@@ -656,15 +830,15 @@
                 </div>
             </div>
 
-            <div class="bg-surface-container border border-surface-variant rounded-xl p-md shadow">
+            <div class="premium-card p-md">
                 <div class="flex justify-between items-center mb-sm">
                     <h3 class="text-label-sm font-label-sm font-bold text-on-surface">GSTR Consolidated Summary Table</h3>
-                    <button class="px-md py-1 border border-surface-variant rounded text-on-surface hover:bg-surface-variant transition-colors text-xs font-medium" id="btn-export-consolidated-gst">Download GSTR Summary (CSV)</button>
+                    <button class="px-md py-1.5 border border-white/10 rounded-lg text-on-surface hover:bg-white/5 transition-all text-xs font-semibold" id="btn-export-consolidated-gst">Download GSTR Summary (CSV)</button>
                 </div>
-                <div class="overflow-x-auto border border-surface-variant rounded">
-                    <table class="w-full border-collapse text-left text-sm">
+                <div class="overflow-x-auto border border-white/5 rounded-xl">
+                    <table class="premium-table text-sm">
                         <thead>
-                            <tr class="bg-surface border-b border-surface-variant text-outline font-semibold">
+                            <tr class="bg-white/[0.01] border-b border-white/5 text-outline font-semibold">
                                 <th class="p-sm">Business / Name</th>
                                 <th class="p-sm">GSTIN</th>
                                 <th class="p-sm">Outward Taxable Value</th>
@@ -674,7 +848,7 @@
                                 <th class="p-sm text-right">Net GST Liability</th>
                             </tr>
                         </thead>
-                        <tbody id="gst-report-table-body" class="divide-y divide-surface-variant/40">
+                        <tbody id="gst-report-table-body" class="divide-y divide-white/[0.03]">
                             <!-- Dynamically Rendered -->
                         </tbody>
                     </table>
@@ -684,7 +858,7 @@
 
         <!-- Tab Content: Reseller Pricing Tier -->
         <div id="reseller-pricing-tab" class="tab-pane" style="display: none;">
-            <div class="bg-surface-container border border-surface-variant rounded-xl p-lg shadow-xl max-w-3xl">
+            <div class="premium-card p-lg max-w-3xl">
                 <div class="mb-md">
                     <h3 class="text-headline-md font-headline-md text-on-surface mb-xs">Reseller License Pricing Dashboard</h3>
                     <p class="text-body-md font-body-md text-on-surface-variant text-sm">Manage bulk purchases and view active discount tiers dynamically.</p>
@@ -695,16 +869,16 @@
                         <span>Clients License: <span id="reseller-slider-count-display" class="text-primary font-bold">1</span></span>
                         <span id="reseller-tier-indicator" class="bg-secondary/10 border border-secondary/20 text-secondary px-3 py-1 rounded-full text-xs font-bold">Pro Tier</span>
                     </div>
-                    <input type="range" min="1" max="150" value="1" class="w-full h-2 bg-surface-variant rounded-lg appearance-none cursor-pointer accent-primary" id="reseller-slider">
+                    <input type="range" min="1" max="150" value="1" class="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary" id="reseller-slider">
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-md bg-surface-container-low border border-surface-variant rounded-xl p-md text-center">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-md bg-black/35 border border-white/5 rounded-2xl p-md text-center">
                     <div class="price-box">
                         <h4 class="text-xs uppercase text-outline mb-xs">Price Per Client License</h4>
                         <div class="text-display-lg-mobile font-display-lg-mobile text-secondary" id="reseller-unit-price">₹149</div>
                         <div class="text-xs text-outline">per client / month</div>
                     </div>
-                    <div class="price-box border-t sm:border-t-0 sm:border-l border-surface-variant pt-sm sm:pt-0 sm:pl-md">
+                    <div class="price-box border-t sm:border-t-0 sm:border-l border-white/5 pt-sm sm:pt-0 sm:pl-md">
                         <h4 class="text-xs uppercase text-outline mb-xs">Reseller Monthly Bill</h4>
                         <div class="text-display-lg-mobile font-display-lg-mobile text-secondary" id="reseller-total-bill">₹149</div>
                         <div class="text-xs text-outline" id="reseller-discount-display">Link 10+ clients to save 20%</div>
@@ -717,32 +891,32 @@
 
 <!-- Modal: Add New Client -->
 <div id="modal-add-client" class="modal-overlay">
-    <div class="bg-surface-container border border-surface-variant rounded-xl p-lg max-w-xl w-[90%] relative shadow-2xl">
-        <div class="flex justify-between items-center border-b border-surface-variant pb-sm mb-md">
+    <div class="premium-card p-lg max-w-xl w-[90%] relative shadow-2xl">
+        <div class="flex justify-between items-center border-b border-white/5 pb-sm mb-md">
             <h3 class="text-headline-md font-headline-md text-on-surface">Link New Client Business</h3>
             <button class="text-outline hover:text-on-surface text-[20px]" id="btn-close-client-modal">✖</button>
         </div>
         <form id="add-client-form" class="space-y-sm">
             <div class="flex flex-col gap-xs">
                 <label for="client-name" class="text-xs font-semibold text-on-surface-variant">Owner/Client Full Name</label>
-                <input type="text" id="client-name" class="w-full bg-surface-container-low border border-surface-variant rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="Rajesh Patel" required>
+                <input type="text" id="client-name" class="w-full bg-black/30 border border-white/5 rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="Rajesh Patel" required>
             </div>
             <div class="flex flex-col gap-xs">
                 <label for="client-phone" class="text-xs font-semibold text-on-surface-variant">WhatsApp Number (with Country Code)</label>
-                <input type="tel" id="client-phone" class="w-full bg-surface-container-low border border-surface-variant rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="919876543210" required>
+                <input type="tel" id="client-phone" class="w-full bg-black/30 border border-white/5 rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="919876543210" required>
             </div>
             <div class="flex flex-col gap-xs">
                 <label for="client-business" class="text-xs font-semibold text-on-surface-variant">Business / Shop Name</label>
-                <input type="text" id="client-business" class="w-full bg-surface-container-low border border-surface-variant rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="Patel Kirana Store" required>
+                <input type="text" id="client-business" class="w-full bg-black/30 border border-white/5 rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="Patel Kirana Store" required>
             </div>
             <div class="flex flex-col gap-xs">
                 <label for="client-gstin" class="text-xs font-semibold text-on-surface-variant">GSTIN (15-digit)</label>
-                <input type="text" id="client-gstin" class="w-full bg-surface-container-low border border-surface-variant rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="27AAAAA1111A1Z1">
+                <input type="text" id="client-gstin" class="w-full bg-black/30 border border-white/5 rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="27AAAAA1111A1Z1">
             </div>
             <div class="grid grid-cols-2 gap-sm">
                 <div class="flex flex-col gap-xs">
                     <label for="client-plan" class="text-xs font-semibold text-on-surface-variant">Pricing Plan</label>
-                    <select id="client-plan" class="w-full bg-surface-container-low border border-surface-variant rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm">
+                    <select id="client-plan" class="w-full bg-black/30 border border-white/5 rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm">
                         <option value="trial">Trial Plan (14d)</option>
                         <option value="starter">Starter Plan</option>
                         <option value="pro" selected>Pro Reseller Plan</option>
@@ -750,7 +924,7 @@
                 </div>
                 <div class="flex flex-col gap-xs">
                     <label for="client-gst-registered" class="text-xs font-semibold text-on-surface-variant">GST Registered?</label>
-                    <select id="client-gst-registered" class="w-full bg-surface-container-low border border-surface-variant rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm">
+                    <select id="client-gst-registered" class="w-full bg-black/30 border border-white/5 rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm">
                         <option value="true" selected>Yes</option>
                         <option value="false">No</option>
                     </select>
@@ -764,7 +938,7 @@
 <!-- Drawer: Client WhatsApp Ledger Drawer -->
 <div id="drawer-ledger" class="drawer-overlay">
     <div class="drawer-content shadow-2xl flex flex-col gap-md">
-        <div class="flex justify-between items-center border-b border-surface-variant pb-sm">
+        <div class="flex justify-between items-center border-b border-white/5 pb-sm">
             <div>
                 <h3 id="drawer-client-name" class="text-headline-md font-headline-md text-on-surface">Patel Kirana Store</h3>
                 <p id="drawer-client-phone" class="text-xs text-outline">Phone: 919876543210</p>
@@ -774,12 +948,12 @@
         
         <div class="flex flex-col gap-md flex-grow overflow-y-auto">
             <!-- Client stats -->
-            <div class="grid grid-cols-3 gap-sm bg-surface-container-high border border-surface-variant rounded-xl p-md text-center">
-                <div class="border-r border-surface-variant/50">
+            <div class="grid grid-cols-3 gap-sm bg-black/30 border border-white/5 rounded-2xl p-md text-center">
+                <div class="border-r border-white/5">
                     <h5 class="text-xs uppercase text-outline mb-xs">GSTIN</h5>
-                    <p id="drawer-client-gstin" class="text-sm font-semibold truncate px-xs">27AAAAA1111A1Z1</p>
+                    <p id="drawer-client-gstin" class="text-sm font-semibold truncate px-xs text-on-surface">27AAAAA1111A1Z1</p>
                 </div>
-                <div class="border-r border-surface-variant/50">
+                <div class="border-r border-white/5">
                     <h5 class="text-xs uppercase text-outline mb-xs">Active Plan</h5>
                     <p id="drawer-client-plan" class="text-xs text-primary font-bold mt-1">PRO</p>
                 </div>
@@ -795,10 +969,10 @@
             <!-- Ledger table -->
             <div>
                 <h4 class="text-label-sm font-label-sm font-bold text-on-surface mb-sm">WhatsApp Logged Transactions (This Month)</h4>
-                <div class="overflow-x-auto border border-surface-variant rounded">
-                    <table class="w-full border-collapse text-left text-xs divide-y divide-surface-variant/40">
-                        <thead class="bg-surface font-semibold text-outline">
-                            <tr>
+                <div class="overflow-x-auto border border-white/5 rounded-xl">
+                    <table class="premium-table text-xs">
+                        <thead>
+                            <tr class="bg-white/[0.01] border-b border-white/5 text-outline font-semibold">
                                 <th class="p-xs">Date</th>
                                 <th class="p-xs">Type</th>
                                 <th class="p-xs">Party / Vendor</th>

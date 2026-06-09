@@ -466,18 +466,24 @@ async function loadClients() {
       
       row.innerHTML = `
         <td>
-          <div style="font-weight:600;">${client.business_name || 'Unnamed Shop'}</div>
-          <div style="font-size:12px; color:var(--text-muted);">${client.name || 'Owner'}</div>
+          <div style="font-weight:600; color: #f8fafc;">${client.business_name || 'Unnamed Shop'}</div>
+          <div style="font-size:12px; color: #94a3b8;">${client.name || 'Owner'}</div>
         </td>
-        <td>+${client.phone}</td>
-        <td><code style="font-family:monospace; color:var(--color-primary);">${client.gstin || 'N/A'}</code></td>
+        <td style="color: #cbd5e1; font-weight: 500;">+${client.phone}</td>
+        <td><code style="font-family: 'JetBrains Mono', monospace; color: #c3c0ff; font-weight: 500;">${client.gstin || 'N/A'}</code></td>
         <td><span class="badge-status ${client.plan}">${client.plan.toUpperCase()}</span></td>
-        <td>${joinedDate}</td>
+        <td style="color: #94a3b8;">${joinedDate}</td>
         <td style="text-align: right;">
-          <div class="action-buttons" style="justify-content: flex-end;">
-            <button class="btn-icon view-ledger-btn" title="View Ledger Drawer" data-id="${client.id}">📖</button>
-            <button class="btn-icon download-csv-btn" title="Download Excel CSV" data-id="${client.id}">📊</button>
-            <button class="btn-icon download-tally-btn" title="Download Tally XML" data-id="${client.id}">📦</button>
+          <div class="action-buttons flex items-center justify-end gap-2" style="justify-content: flex-end;">
+            <button class="action-btn view-ledger-btn" title="View Ledger Drawer" data-id="${client.id}">
+              <span class="material-symbols-outlined text-[18px]">menu_book</span>
+            </button>
+            <button class="action-btn download-csv-btn" title="Download Excel CSV" data-id="${client.id}">
+              <span class="material-symbols-outlined text-[18px]">table_chart</span>
+            </button>
+            <button class="action-btn download-tally-btn" title="Download Tally XML" data-id="${client.id}">
+              <span class="material-symbols-outlined text-[18px]">inventory_2</span>
+            </button>
           </div>
         </td>
       `;
