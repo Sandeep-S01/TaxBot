@@ -1,1043 +1,1327 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>TaxBot for CAs - Empower Your Practice</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    
-    <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
-    
-    <!-- Tailwind Theme Config -->
-    <script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              "colors": {
-                      "outline-variant": "#464555",
-                      "surface-container-high": "#1b2b3f",
-                      "tertiary-fixed-dim": "#ffb95f",
-                      "on-background": "#d3e4fe",
-                      "on-tertiary-container": "#ffd4a4",
-                      "secondary-fixed-dim": "#4edea3",
-                      "surface": "#031427",
-                      "secondary-fixed": "#6ffbbe",
-                      "tertiary-fixed": "#ffddb8",
-                      "on-tertiary-fixed-variant": "#653e00",
-                      "secondary-container": "#00a572",
-                      "surface-bright": "#2a3a4f",
-                      "on-secondary-fixed": "#002113",
-                      "on-tertiary": "#472a00",
-                      "secondary": "#4edea3",
-                      "on-secondary": "#003824",
-                      "tertiary-container": "#885500",
-                      "tertiary": "#ffb95f",
-                      "on-primary": "#1d00a5",
-                      "on-secondary-fixed-variant": "#005236",
-                      "on-surface-variant": "#c7c4d8",
-                      "surface-variant": "#26364a",
-                      "inverse-primary": "#4d44e3",
-                      "surface-container-low": "#0b1c30",
-                      "outline": "#918fa1",
-                      "primary": "#c3c0ff",
-                      "on-secondary-container": "#00311f",
-                      "primary-container": "#4f46e5",
-                      "background": "#031427",
-                      "surface-container-lowest": "#000f21",
-                      "surface-tint": "#c3c0ff",
-                      "surface-container": "#102034",
-                      "error": "#ffb4ab",
-                      "surface-dim": "#031427",
-                      "on-error": "#690005",
-                      "on-error-container": "#ffdad6",
-                      "on-surface": "#d3e4fe",
-                      "inverse-surface": "#d3e4fe",
-                      "primary-fixed": "#e2dfff",
-                      "inverse-on-surface": "#213145",
-                      "surface-container-highest": "#26364a",
-                      "on-primary-fixed": "#0f0069",
-                      "error-container": "#93000a",
-                      "primary-fixed-dim": "#c3c0ff",
-                      "on-primary-container": "#dad7ff",
-                      "on-primary-fixed-variant": "#3323cc",
-                      "on-tertiary-fixed": "#2a1700"
-              },
-              "borderRadius": {
-                      "DEFAULT": "0.125rem",
-                      "lg": "0.25rem",
-                      "xl": "0.5rem",
-                      "full": "0.75rem"
-              },
-              "spacing": {
-                      "gutter": "24px",
-                      "xs": "8px",
-                      "sm": "16px",
-                      "base": "4px",
-                      "md": "24px",
-                      "lg": "40px",
-                      "container-max": "1280px",
-                      "xl": "64px"
-              },
-              "fontFamily": {
-                      "body-md": ["Inter"],
-                      "mono-data": ["JetBrains Mono"],
-                      "headline-md": ["Inter"],
-                      "label-sm": ["Inter"],
-                      "display-lg": ["Inter"],
-                      "display-lg-mobile": ["Inter"],
-                      "body-lg": ["Inter"]
-              },
-              "fontSize": {
-                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
-                      "mono-data": ["14px", {"lineHeight": "1.4", "fontWeight": "400"}],
-                      "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                      "label-sm": ["13px", {"lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500"}],
-                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                      "display-lg-mobile": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
-              }
-            }
-          }
-        }
-    </script>
-    <style>
-        /* Cosmic dark background */
-        body {
-            background: radial-gradient(circle at 50% 0%, #0c0e1a 0%, #040508 100%) !important;
-        }
-
-        /* Glassmorphism panel and premium card styles */
-        .glass-panel {
-            background: rgba(15, 20, 38, 0.45) !important;
-            backdrop-filter: blur(20px) !important;
-            -webkit-backdrop-filter: blur(20px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.05) !important;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-        }
-
-        .premium-card {
-            background: rgba(18, 22, 45, 0.4) !important;
-            backdrop-filter: blur(20px) !important;
-            -webkit-backdrop-filter: blur(20px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.05) !important;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-            border-radius: 16px !important;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        }
-        
-        .premium-card:hover {
-            transform: translateY(-4px) !important;
-            border-color: rgba(99, 102, 241, 0.35) !important;
-            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
-        }
-        
-        .bento-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-        }
-        
-        .workflow-line::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            right: -24px;
-            width: 24px;
-            height: 2px;
-            background-color: rgba(255, 255, 255, 0.05);
-            z-index: 0;
-        }
-        
-        @media (max-width: 768px) {
-            .workflow-line::after {
-                display: none;
-            }
-        }
-        
-        html { scroll-behavior: smooth; }
-
-        /* Dialog modals and overlays */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(3, 4, 9, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        
-        .drawer-overlay {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(3, 4, 9, 0.6);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            z-index: 150;
-            display: flex;
-            justify-content: flex-end;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .drawer-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .drawer-content {
-            background-color: #0c0e17 !important;
-            border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
-            width: 100%;
-            max-width: 650px;
-            height: 100vh;
-            padding: 32px;
-            overflow-y: auto;
-            transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: -10px 0 40px rgba(0,0,0,0.6) !important;
-        }
-        .drawer-overlay.active .drawer-content {
-            transform: translateX(0);
-        }
-
-        /* Sidebar Styling */
-        .sidebar {
-            background: rgba(10, 13, 26, 0.7) !important;
-            backdrop-filter: blur(20px) !important;
-            -webkit-backdrop-filter: blur(20px) !important;
-            border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
-            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3) !important;
-        }
-        .sidebar-item a {
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            border-left: 3px solid transparent !important;
-            border-radius: 0 8px 8px 0 !important;
-            margin-right: 12px;
-        }
-        .sidebar-item a:hover {
-            background-color: rgba(255, 255, 255, 0.03) !important;
-            color: #ffffff !important;
-        }
-        .sidebar-item.active a {
-            background-color: rgba(99, 102, 241, 0.1) !important;
-            color: #c3c0ff !important;
-            border-left: 3px solid #6366f1 !important;
-            font-weight: 600 !important;
-        }
-
-        /* Modern Table styling */
-        .premium-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-        .premium-table th {
-            background: rgba(255, 255, 255, 0.01) !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-            color: #94a3b8 !important;
-            font-weight: 600 !important;
-            font-size: 11px;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
-        .premium-table td {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
-            padding: 16px 20px !important;
-            transition: all 0.2s ease;
-        }
-        .premium-table tr:hover td {
-            background: rgba(255, 255, 255, 0.015) !important;
-        }
-
-        /* Custom Scrollbars */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.2);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 99px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Input styling */
-        input, select, textarea {
-            transition: all 0.2s ease !important;
-            border-color: rgba(255, 255, 255, 0.08) !important;
-            background-color: rgba(0, 0, 0, 0.25) !important;
-            border-radius: 8px !important;
-        }
-        input:focus, select:focus, textarea:focus {
-            border-color: #6366f1 !important;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25) !important;
-            background-color: rgba(0, 0, 0, 0.35) !important;
-        }
-
-        /* Status & Source badges */
-        .badge-status {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 10px;
-            border-radius: 9999px;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.03em;
-        }
-        .badge-status.pro {
-            background: rgba(16, 185, 129, 0.1) !important;
-            color: #34d399 !important;
-            border: 1px solid rgba(16, 185, 129, 0.2) !important;
-        }
-        .badge-status.starter {
-            background: rgba(245, 158, 11, 0.1) !important;
-            color: #fbbf24 !important;
-            border: 1px solid rgba(245, 158, 11, 0.2) !important;
-        }
-        .badge-status.trial {
-            background: rgba(99, 102, 241, 0.1) !important;
-            color: #a5b4fc !important;
-            border: 1px solid rgba(99, 102, 241, 0.2) !important;
-        }
-
-        .badge-source {
-            display: inline-flex;
-            align-items: center;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 500;
-            border: 1px solid transparent;
-        }
-        .badge-source.whatsapp_image {
-            background: rgba(59, 130, 246, 0.1) !important;
-            color: #60a5fa !important;
-            border-color: rgba(59, 130, 246, 0.2) !important;
-        }
-        .badge-source.whatsapp_pdf {
-            background: rgba(239, 68, 68, 0.1) !important;
-            color: #f87171 !important;
-            border-color: rgba(239, 68, 68, 0.2) !important;
-        }
-        .badge-source.whatsapp_text {
-            background: rgba(16, 185, 129, 0.1) !important;
-            color: #34d399 !important;
-            border-color: rgba(16, 185, 129, 0.2) !important;
-        }
-        .badge-source.manual {
-            background: rgba(107, 114, 128, 0.1) !important;
-            color: #9ca3af !important;
-            border-color: rgba(107, 114, 128, 0.2) !important;
-        }
-
-        /* Action buttons in tables */
-        .action-btn {
-            background: rgba(255, 255, 255, 0.02) !important;
-            border: 1px solid rgba(255, 255, 255, 0.05) !important;
-            color: #94a3b8 !important;
-            border-radius: 8px !important;
-            padding: 8px !important;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .action-btn:hover {
-            background: rgba(99, 102, 241, 0.1) !important;
-            border-color: rgba(99, 102, 241, 0.3) !important;
-            color: #ffffff !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15) !important;
-        }
-
-        /* Global Toast Notifications */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background-color: #0c0e17 !important;
-            border: 1px solid rgba(99, 102, 241, 0.3) !important;
-            color: #f8fafc !important;
-            padding: 12px 24px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
-            z-index: 1000;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            pointer-events: none;
-        }
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-        .toast.success {
-            border-color: rgba(16, 185, 129, 0.4) !important;
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1) !important;
-        }
-        .toast.error {
-            border-color: rgba(239, 68, 68, 0.4) !important;
-            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.1) !important;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaxBot Partner Console | AI-First CA Platform</title>
+  <meta name="description" content="TaxBot Partner Console provides Chartered Accountants with automated bookkeeping, real-time GST reconciliation, AI client insights, and seamless WhatsApp document capture.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563EB' stroke-width='2'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E">
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Consolidated Stylesheet -->
+  <link rel="stylesheet" href="css/console.css">
 </head>
-<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen flex flex-col">
+<body>
 
-<!-- Auth Layout Container (Contains the CA Landing Page and Login Dialogs when unauthenticated) -->
-<div id="auth-container" class="w-full flex-col min-h-screen">
-    <!-- TopNavBar -->
-    <header class="bg-surface/80 dark:bg-surface/80 backdrop-blur-md top-0 sticky z-50 border-b border-surface-variant dark:border-outline-variant w-full">
-        <div class="flex justify-between items-center w-full px-md md:px-lg max-w-container-max mx-auto h-16">
-            <div class="flex items-center gap-md">
-                <a class="text-headline-md font-headline-md font-bold text-on-surface dark:text-on-surface" href="/">
-                    TaxBot
-                </a>
-            </div>
-            <nav class="hidden md:flex items-center gap-md">
-                <a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="/#features">Product</a>
-                <a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="/#problem">For Businesses</a>
-                <a class="text-primary dark:text-primary-fixed-dim font-semibold border-b-2 border-primary transition-colors duration-200 opacity-80 scale-95" href="#">For CAs</a>
-                <a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="/#pricing">Pricing</a>
-                <a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="/#how-it-works">Integrations</a>
-            </nav>
-            <div class="flex items-center gap-sm">
-                <button class="btn-open-login hidden md:block px-sm py-xs border border-outline-variant rounded text-on-surface hover:bg-surface-variant transition-colors text-label-sm font-label-sm">
-                    Book a Demo
-                </button>
-                <button class="btn-open-register px-sm py-xs bg-primary-container text-white rounded hover:bg-primary transition-colors text-label-sm font-label-sm border border-transparent">
-                    Start Free Trial
-                </button>
-            </div>
+  <!-- ==========================================================================
+       1. Authentication Layout (Login & Registration Screen)
+       ========================================================================== -->
+  <div class="auth-layout" id="auth-layout">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="brand-logo justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="brand-icon">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <span class="brand-name">TaxBot <span class="brand-badge">Partner</span></span>
         </div>
-    </header>
+        <h2 class="auth-title mt-16" id="auth-title">CA Partner Login</h2>
+        <p class="auth-subtitle mt-8" id="auth-subtitle">Access your reseller dashboard and bulk client files.</p>
+      </div>
 
-    <main class="flex-grow flex flex-col">
-        <!-- Hero Section -->
-        <section class="relative pt-xl pb-lg px-md md:px-lg max-w-container-max mx-auto w-full flex flex-col items-center text-center">
-            <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-surface-bright/20 via-background to-background opacity-70"></div>
-            <span class="px-sm py-xs bg-surface-container-high border border-outline-variant rounded-full text-label-sm font-label-sm text-secondary mb-md inline-flex items-center gap-xs">
-                <span class="material-symbols-outlined text-[16px]">verified</span>
-                CA Partner Program Now Live
-            </span>
-            <h1 class="text-display-lg-mobile md:text-display-lg font-display-lg-mobile md:font-display-lg max-w-4xl mb-md">
-                Empower Your Practice with <span class="text-primary">TaxBot</span>
-            </h1>
-            <p class="text-body-lg font-body-lg text-on-surface-variant max-w-2xl mb-lg">
-                Manage multiple clients with real-time data, automated GST reports, and seamless Tally exports. Become a CA Partner today.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-sm w-full sm:w-auto">
-                <button class="btn-open-register px-md py-sm bg-primary-container text-white rounded font-label-sm text-label-sm hover:bg-primary transition-colors">
-                    Apply for CA Partner Program
-                </button>
-                <button class="btn-open-login px-md py-sm bg-transparent border border-outline-variant text-on-surface rounded font-label-sm text-label-sm hover:bg-surface-container-high transition-colors">
-                    Schedule a Partner Demo
-                </button>
-            </div>
-        </section>
-
-        <!-- Trust Signals -->
-        <section class="py-md border-y border-surface-variant bg-surface-container-low w-full">
-            <div class="max-w-container-max mx-auto px-md md:px-lg flex flex-wrap justify-center items-center gap-lg md:gap-xl opacity-70">
-                <div class="flex items-center gap-xs text-label-sm font-label-sm text-on-surface-variant">
-                    <span class="material-symbols-outlined text-secondary">gpp_good</span>
-                    CGST Compliant
-                </div>
-                <div class="flex items-center gap-xs text-label-sm font-label-sm text-on-surface-variant">
-                    <span class="material-symbols-outlined text-secondary">gpp_good</span>
-                    SGST Compliant
-                </div>
-                <div class="flex items-center gap-xs text-label-sm font-label-sm text-on-surface-variant">
-                    <span class="material-symbols-outlined text-secondary">gpp_good</span>
-                    IGST Compliant
-                </div>
-                <div class="flex items-center gap-xs text-label-sm font-label-sm text-on-surface-variant">
-                    <span class="material-symbols-outlined text-primary">security</span>
-                    Bank-Grade Security
-                </div>
-            </div>
-        </section>
-
-        <!-- Bento Grid Features -->
-        <section class="py-xl px-md md:px-lg max-w-container-max mx-auto w-full">
-            <h2 class="text-headline-md font-headline-md mb-lg text-center">Enterprise Precision for Your Practice</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-sm md:gap-md">
-                <!-- Multi-client Dashboard (Span 2 cols) -->
-                <div class="md:col-span-2 bg-surface-container rounded-lg border border-surface-variant p-md relative overflow-hidden group hover:border-outline-variant transition-colors">
-                    <div class="absolute right-0 top-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10 group-hover:bg-primary/10 transition-all"></div>
-                    <div class="mb-md">
-                        <span class="material-symbols-outlined text-primary text-[32px] mb-xs block">dashboard</span>
-                        <h3 class="text-headline-md font-headline-md mb-xs">Multi-client Dashboard</h3>
-                        <p class="text-body-md font-body-md text-on-surface-variant">Monitor all client compliance statuses from a single, unified command center. No more switching contexts or logging in and out.</p>
-                    </div>
-                    <!-- Faux Ledger Table -->
-                    <div class="bg-surface-container-high rounded border border-surface-variant p-sm">
-                        <div class="flex justify-between items-center mb-xs pb-xs border-b border-surface-variant text-label-sm font-label-sm text-on-surface-variant uppercase">
-                            <span>Client Name</span>
-                            <span>Status</span>
-                        </div>
-                        <div class="flex justify-between items-center py-xs border-b border-surface-variant/50">
-                            <span class="text-body-md font-body-md">Acme Corp</span>
-                            <span class="px-xs py-[2px] bg-secondary/10 text-secondary rounded text-label-sm font-label-sm">Filed</span>
-                        </div>
-                        <div class="flex justify-between items-center py-xs border-b border-surface-variant/50">
-                            <span class="text-body-md font-body-md">TechFlow Logistics</span>
-                            <span class="px-xs py-[2px] bg-tertiary/10 text-tertiary rounded text-label-sm font-label-sm">Pending</span>
-                        </div>
-                        <div class="flex justify-between items-center py-xs">
-                            <span class="text-body-md font-body-md">Global Retail Inc</span>
-                            <span class="px-xs py-[2px] bg-error/10 text-error rounded text-label-sm font-label-sm">Overdue</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Automated Audit Trails -->
-                <div class="bg-surface-container rounded-lg border border-surface-variant p-md flex flex-col justify-between hover:border-outline-variant transition-colors">
-                    <div>
-                        <span class="material-symbols-outlined text-secondary text-[32px] mb-xs block">history</span>
-                        <h3 class="text-headline-md font-headline-md mb-xs">Automated Audit Trails</h3>
-                        <p class="text-body-md font-body-md text-on-surface-variant">Every transaction parsed via WhatsApp is permanently logged with timestamps and source references.</p>
-                    </div>
-                    <div class="mt-md bg-surface-container-high rounded p-sm border border-surface-variant">
-                        <div class="text-mono-data font-mono-data text-on-surface-variant text-[12px]">
-                            &gt; TXN_ID: 89342A<br/>
-                            &gt; PARSED: INV_001.pdf<br/>
-                            &gt; AMT: <span class="text-on-surface">₹45,200</span><br/>
-                            &gt; GST: <span class="text-secondary">VERIFIED</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Real-time GST Computation -->
-                <div class="bg-surface-container rounded-lg border border-surface-variant p-md hover:border-outline-variant transition-colors">
-                    <span class="material-symbols-outlined text-tertiary text-[32px] mb-xs block">calculate</span>
-                    <h3 class="text-headline-md font-headline-md mb-xs">Real-time GST Computation</h3>
-                    <p class="text-body-md font-body-md text-on-surface-variant mb-md">TaxBot’s engine calculates ITC and liabilities instantly as clients upload invoices.</p>
-                    <div class="flex justify-between items-end border-t border-surface-variant pt-sm mt-auto">
-                        <span class="text-label-sm font-label-sm text-on-surface-variant">Total ITC Available</span>
-                        <span class="text-headline-md font-headline-md text-on-surface font-mono-data">₹1,24,500</span>
-                    </div>
-                </div>
-                <!-- Instant Excel/Tally Export (Span 2 cols) -->
-                <div class="md:col-span-2 bg-surface-container rounded-lg border border-surface-variant p-md flex flex-col sm:flex-row items-center gap-md hover:border-outline-variant transition-colors">
-                    <div class="flex-1">
-                        <span class="material-symbols-outlined text-primary text-[32px] mb-xs block">import_export</span>
-                        <h3 class="text-headline-md font-headline-md mb-xs">Instant Excel &amp; Tally Export</h3>
-                        <p class="text-body-md font-body-md text-on-surface-variant">Export clean, structured data directly into Tally or Excel formats. Eliminate manual data entry and mapping errors completely.</p>
-                    </div>
-                    <div class="flex gap-sm">
-                        <div class="w-16 h-16 rounded bg-surface-container-high border border-surface-variant flex items-center justify-center">
-                            <span class="material-symbols-outlined text-secondary">table_view</span>
-                        </div>
-                        <div class="w-16 h-16 rounded bg-surface-container-high border border-surface-variant flex items-center justify-center">
-                            <span class="material-symbols-outlined text-primary">account_balance_wallet</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Workflow Section (Asymmetric) -->
-        <section class="py-xl px-md md:px-lg max-w-container-max mx-auto w-full bg-surface-container-lowest border-t border-surface-variant">
-            <h2 class="text-headline-md font-headline-md mb-lg text-center">The Frictionless Workflow</h2>
-            <div class="flex flex-col md:flex-row justify-center items-stretch gap-md relative">
-                <!-- Step 1 -->
-                <div class="flex-1 bg-surface-container rounded-lg border border-surface-variant p-md relative workflow-line z-10">
-                    <div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-label-sm font-label-sm mb-sm border border-primary/30">1</div>
-                    <span class="material-symbols-outlined text-[24px] mb-xs text-on-surface-variant">mark_chat_unread</span>
-                    <h4 class="text-body-lg font-body-lg font-semibold mb-xs">Client Sends Data</h4>
-                    <p class="text-body-md font-body-md text-on-surface-variant">Client drops invoices or bank statements directly into the TaxBot WhatsApp interface.</p>
-                </div>
-                <!-- Step 2 -->
-                <div class="flex-1 bg-surface-container rounded-lg border border-surface-variant p-md relative workflow-line z-10">
-                    <div class="w-8 h-8 rounded-full bg-secondary/20 text-secondary flex items-center justify-center text-label-sm font-label-sm mb-sm border border-secondary/30">2</div>
-                    <span class="material-symbols-outlined text-[24px] mb-xs text-on-surface-variant">fact_check</span>
-                    <h4 class="text-body-lg font-body-lg font-semibold mb-xs">Audit-Ready Records</h4>
-                    <p class="text-body-md font-body-md text-on-surface-variant">TaxBot parses, categorizes, and organizes the data into structured ledgers instantly.</p>
-                </div>
-                <!-- Step 3 -->
-                <div class="flex-1 bg-surface-container rounded-lg border border-primary/50 p-md relative z-10 shadow-[0_0_15px_rgba(79,70,229,0.15)]">
-                    <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-label-sm font-label-sm mb-sm">3</div>
-                    <span class="material-symbols-outlined text-[24px] mb-xs text-primary">task_alt</span>
-                    <h4 class="text-body-lg font-body-lg font-semibold mb-xs">Fast-Track Filing</h4>
-                    <p class="text-body-md font-body-md text-on-surface-variant">You review the pre-computed GST reports and file directly or export to Tally.</p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-surface-container-low dark:bg-surface-container-lowest w-full border-t border-surface-variant dark:border-outline-variant mt-auto">
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-md px-md md:px-lg py-xl max-w-container-max mx-auto">
-            <div class="col-span-2 lg:col-span-2">
-                <div class="text-headline-md font-headline-md font-bold text-on-surface dark:text-on-surface mb-sm">TaxBot</div>
-                <p class="text-body-md font-body-md text-on-surface-variant dark:text-on-surface-variant mb-md max-w-xs">
-                    Enterprise ERP power with the simplicity of a chat interface. Built for Indian SMBs and CAs.
-                </p>
-                <div class="text-label-sm font-label-sm text-on-surface-variant dark:text-on-surface-variant">
-                    © 2026 TaxBot India. GST Compliant.
-                </div>
-            </div>
-            <div class="flex flex-col gap-sm">
-                <a class="text-on-surface dark:text-on-surface font-medium text-label-sm font-label-sm focus:ring-1 focus:ring-primary rounded hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="/#features">Product</a>
-                <a class="text-on-surface-variant dark:text-on-surface-variant text-label-sm font-label-sm focus:ring-1 focus:ring-primary rounded hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="/#problem">Features</a>
-                <a class="text-on-surface-variant dark:text-on-surface-variant text-label-sm font-label-sm focus:ring-1 focus:ring-primary rounded hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="/#pricing">Pricing</a>
-            </div>
-            <div class="flex flex-col gap-sm">
-                <a class="text-on-surface-variant dark:text-on-surface-variant text-label-sm font-label-sm focus:ring-1 focus:ring-primary rounded hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="console.html">Company</a>
-                <a class="text-on-surface-variant dark:text-on-surface-variant text-label-sm font-label-sm focus:ring-1 focus:ring-primary rounded hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="/#pricing">About Us</a>
-                <a class="text-on-surface-variant dark:text-on-surface-variant text-label-sm font-label-sm focus:ring-1 focus:ring-primary rounded hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="#">Careers</a>
-            </div>
-            <div class="flex flex-col gap-sm">
-                <a class="text-on-surface-variant dark:text-on-surface-variant text-label-sm font-label-sm focus:ring-1 focus:ring-primary rounded hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="#security">Resources</a>
-                <a class="text-on-surface-variant dark:text-on-surface-variant text-label-sm font-label-sm focus:ring-1 focus:ring-primary rounded hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="#security">Blog</a>
-                <a class="text-on-surface-variant dark:text-on-surface-variant text-label-sm font-label-sm focus:ring-1 focus:ring-primary rounded hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="#security">Help Center</a>
-            </div>
-            <div class="flex flex-col gap-sm">
-                <a class="text-on-surface-variant dark:text-on-surface-variant text-label-sm font-label-sm focus:ring-1 focus:ring-primary rounded hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="#security">Compliance</a>
-                <a class="text-on-surface-variant dark:text-on-surface-variant text-label-sm font-label-sm focus:ring-1 focus:ring-primary rounded hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="#security">Terms</a>
-                <a class="text-on-surface-variant dark:text-on-surface-variant text-label-sm font-label-sm focus:ring-1 focus:ring-primary rounded hover:text-secondary dark:hover:text-secondary-fixed-dim transition-colors" href="#security">Privacy</a>
-            </div>
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form mt-24">
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" class="form-input" placeholder="ca.sharma@firm.com" required autocomplete="username">
         </div>
-    </footer>
-
-    <!-- Sleek Auth Modal containing Login/Register forms -->
-    <div id="auth-modal" class="fixed inset-0 z-50 items-center justify-center bg-black/60 backdrop-blur-sm hidden">
-        <div class="bg-surface-container border border-surface-variant rounded-xl p-lg max-w-md w-[90%] relative shadow-2xl">
-            <button class="absolute top-4 right-4 text-outline hover:text-on-surface text-[20px]" id="btn-close-auth-modal">✖</button>
-            <div class="text-center mb-md">
-                <h3 id="auth-title" class="text-headline-md font-headline-md text-on-surface mb-xs">CA Partner Login</h3>
-                <p id="auth-subtitle" class="text-body-md text-on-surface-variant text-sm">Access your reseller dashboard and bulk client files.</p>
-            </div>
-
-            <!-- Login Form -->
-            <form id="login-form" class="space-y-sm">
-                <div class="flex flex-col gap-xs">
-                    <label for="login-email" class="text-xs font-semibold text-on-surface-variant">Email Address</label>
-                    <input type="email" id="login-email" class="w-full bg-surface-container-low border border-surface-variant rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="ca.sharma@firm.com" required>
-                </div>
-                <div class="flex flex-col gap-xs">
-                    <label for="login-password" class="text-xs font-semibold text-on-surface-variant">Password</label>
-                    <input type="password" id="login-password" class="w-full bg-surface-container-low border border-surface-variant rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="w-full py-sm bg-primary-container text-on-primary-container rounded font-medium text-label-sm hover:brightness-110 transition-all flex items-center justify-center gap-xs">Sign In</button>
-            </form>
-
-            <!-- Register Form (Hidden by default) -->
-            <form id="register-form" class="space-y-sm" style="display: none;">
-                <div class="flex flex-col gap-xs">
-                    <label for="reg-name" class="text-xs font-semibold text-on-surface-variant">Full Name</label>
-                    <input type="text" id="reg-name" class="w-full bg-surface-container-low border border-surface-variant rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="CA Sandeep Sharma" required>
-                </div>
-                <div class="flex flex-col gap-xs">
-                    <label for="reg-email" class="text-xs font-semibold text-on-surface-variant">Email Address</label>
-                    <input type="email" id="reg-email" class="w-full bg-surface-container-low border border-surface-variant rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="ca.sharma@firm.com" required>
-                </div>
-                <div class="flex flex-col gap-xs">
-                    <label for="reg-firm" class="text-xs font-semibold text-on-surface-variant">CA Firm Name (Optional)</label>
-                    <input type="text" id="reg-firm" class="w-full bg-surface-container-low border border-surface-variant rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="Sandeep & Associates">
-                </div>
-                <div class="flex flex-col gap-xs">
-                    <label for="reg-password" class="text-xs font-semibold text-on-surface-variant">Password</label>
-                    <input type="password" id="reg-password" class="w-full bg-surface-container-low border border-surface-variant rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="w-full py-sm bg-primary-container text-on-primary-container rounded font-medium text-label-sm hover:brightness-110 transition-all flex items-center justify-center gap-xs">Create Partner Account</button>
-            </form>
-
-            <div class="text-center text-xs mt-md pt-sm border-t border-surface-variant text-on-surface-variant">
-                <span id="auth-switch-text">Don't have a partner account?</span>
-                <a href="#" id="btn-switch-auth" class="text-primary font-bold ml-xs hover:underline">Sign Up</a>
-            </div>
+        <div class="form-group mt-16">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
         </div>
+        <button type="submit" class="btn btn-primary btn-block mt-24">Sign In to Console</button>
+      </form>
+
+      <!-- Register Form (Hidden by default) -->
+      <form id="register-form" class="auth-form mt-24 hidden">
+        <div class="form-group">
+          <label for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="CA Sandeep Sharma" required autocomplete="name">
+        </div>
+        <div class="form-group mt-16">
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="ca.sharma@firm.com" required autocomplete="email">
+        </div>
+        <div class="form-group mt-16">
+          <label for="reg-firm">CA Firm Name (Optional)</label>
+          <input type="text" id="reg-firm" class="form-input" placeholder="Sharma & Associates" autocomplete="organization">
+        </div>
+        <div class="form-group mt-16">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" class="form-input" placeholder="••••••••" required autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block mt-24">Create Partner Account</button>
+      </form>
+
+      <div class="auth-footer mt-24">
+        <span id="auth-switch-text">Don't have a partner account?</span>
+        <button id="btn-switch-auth" class="auth-switch-btn ml-8 text-primary">Sign Up</button>
+      </div>
     </div>
-</div>
+  </div>
 
-<!-- Dashboard Console Layout (Hidden until Login) -->
-<div id="console-container" class="min-h-screen w-full flex bg-background text-on-background" style="display: none;">
-    <!-- Sidebar Overlay -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 md:hidden hidden transition-opacity duration-300"></div>
+  <!-- ==========================================================================
+       2. Console Layout Shell (Dashboard Workspace - Hidden until Authenticated)
+       ========================================================================== -->
+  <div class="app-layout" id="console-layout" style="display: none;">
+    <!-- Sidebar mobile backdrop overlay -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
     
-    <!-- Sidebar -->
-    <aside class="sidebar w-64 bg-surface-container border-r border-surface-variant p-md flex flex-col justify-between shrink-0 z-40 fixed md:relative h-full transition-transform duration-300 -translate-x-full md:translate-x-0">
-        <div class="flex flex-col gap-lg flex-grow">
-            <!-- Sidebar Brand Header -->
-            <div class="flex items-center gap-xs">
-                <span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">calculate</span>
-                <span class="text-headline-md font-headline-md font-bold text-on-surface tracking-tight">TaxBot CA</span>
-            </div>
-            
-            <ul class="flex flex-col gap-xs flex-grow list-none">
-                <li class="sidebar-item active group" data-tab="clients-tab">
-                    <a href="#" class="flex items-center gap-sm px-md py-xs rounded text-primary hover:bg-surface-variant text-label-sm font-label-sm font-medium">
-                        <span class="material-symbols-outlined text-[20px]">people</span>
-                        Clients Ledgers
-                    </a>
-                </li>
-                <li class="sidebar-item group" data-tab="gst-report-tab">
-                    <a href="#" class="flex items-center gap-sm px-md py-xs rounded text-on-surface-variant hover:text-primary hover:bg-surface-variant text-label-sm font-label-sm font-medium">
-                        <span class="material-symbols-outlined text-[20px]">analytics</span>
-                        Consolidated GST Report
-                    </a>
-                </li>
-                <li class="sidebar-item group" data-tab="reseller-pricing-tab">
-                    <a href="#" class="flex items-center gap-sm px-md py-xs rounded text-on-surface-variant hover:text-primary hover:bg-surface-variant text-label-sm font-label-sm font-medium">
-                        <span class="material-symbols-outlined text-[20px]">loyalty</span>
-                        Reseller Pricing Tier
-                    </a>
-                </li>
-            </ul>
+    <!-- Left Sidebar -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="brand-icon">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <span class="brand-name">TaxBot <span class="brand-badge">Partner</span></span>
         </div>
-
-        <div class="border-t border-surface-variant pt-md flex items-center justify-between">
-            <div class="flex flex-col min-w-0">
-                <span class="user-name text-on-surface font-semibold text-sm truncate" id="ca-display-name">CA Sandeep</span>
-                <span class="user-email text-xs text-outline truncate" id="ca-display-email">ca@taxbot.in</span>
-            </div>
-            <button class="btn-logout text-outline hover:text-error p-xs ml-xs shrink-0" id="btn-logout" title="Log Out">✖</button>
+        <button class="sidebar-collapse-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+          <i data-lucide="chevron-left"></i>
+        </button>
+      </div>
+      
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav">
+        <ul class="nav-list">
+          <li>
+            <a href="#overview" class="nav-link active" data-view="overview" id="nav-overview">
+              <i data-lucide="layout-dashboard"></i>
+              <span class="link-text">Overview</span>
+            </a>
+          </li>
+          <li>
+            <a href="#clients" class="nav-link" data-view="clients" id="nav-clients">
+              <i data-lucide="users"></i>
+              <span class="link-text">Clients</span>
+              <span class="badge badge-accent" id="clients-count">0</span>
+            </a>
+          </li>
+          <li>
+            <a href="#transactions" class="nav-link" data-view="transactions" id="nav-transactions">
+              <i data-lucide="receipt"></i>
+              <span class="link-text">Transactions</span>
+              <span class="badge badge-warning" id="pending-transactions-badge">0</span>
+            </a>
+          </li>
+          <li>
+            <a href="#documents" class="nav-link" data-view="documents" id="nav-documents">
+              <i data-lucide="folder-open"></i>
+              <span class="link-text">Documents</span>
+              <span class="badge badge-success" id="documents-count-badge">0</span>
+            </a>
+          </li>
+          <li>
+            <a href="#gst" class="nav-link" data-view="gst" id="nav-gst">
+              <i data-lucide="file-text"></i>
+              <span class="link-text">GST Center</span>
+            </a>
+          </li>
+          <li>
+            <a href="#insights" class="nav-link" data-view="insights" id="nav-insights">
+              <i data-lucide="sparkles"></i>
+              <span class="link-text">AI Insights</span>
+              <span class="badge badge-error" id="insights-count-badge">0</span>
+            </a>
+          </li>
+          <li>
+            <a href="#exports" class="nav-link" data-view="exports" id="nav-exports">
+              <i data-lucide="download"></i>
+              <span class="link-text">Exports</span>
+            </a>
+          </li>
+          <li>
+            <a href="#billing" class="nav-link" data-view="billing" id="nav-billing">
+              <i data-lucide="credit-card"></i>
+              <span class="link-text">Billing</span>
+            </a>
+          </li>
+          <li>
+            <a href="#settings" class="nav-link" data-view="settings" id="nav-settings">
+              <i data-lucide="settings"></i>
+              <span class="link-text">Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <!-- Firm Quick Profile -->
+      <div class="sidebar-footer">
+        <div class="firm-profile-mini">
+          <div class="firm-avatar">SS</div>
+          <div class="firm-info">
+            <span class="firm-name-text" id="ca-display-name">Sandeep Sharma</span>
+            <span class="firm-role-text" id="ca-display-email">ca@taxbot.in</span>
+          </div>
+          <button class="btn-logout" id="btn-logout" title="Log Out" style="margin-left:auto;color:var(--text-secondary);"><i data-lucide="log-out" style="width:16px;height:16px;"></i></button>
         </div>
+      </div>
     </aside>
 
     <!-- Main Workspace -->
-    <main class="main-content flex-grow p-lg overflow-y-auto">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-lg border-b border-surface-variant pb-md">
-            <button id="sidebar-toggle" class="md:hidden text-on-surface p-xs border border-surface-variant rounded mr-sm">
-                <span class="material-symbols-outlined">menu</span>
-            </button>
-            <div class="flex-grow">
-                <h2 id="tab-title" class="text-headline-md font-headline-md text-on-surface">Clients Bookkeeping Ledgers</h2>
-                <p id="tab-subtitle" class="text-body-md font-body-md text-on-surface-variant">View WhatsApp transaction files and export records in bulk.</p>
-            </div>
-            <div>
-                <button id="btn-add-client-modal" class="px-md py-xs bg-primary-container text-on-primary-container rounded hover:brightness-110 transition-colors text-label-sm font-label-sm font-medium flex items-center gap-xs">
-                    <span class="material-symbols-outlined text-[18px]">add</span> Add New Client
-                </button>
-            </div>
-        </div>
-
-        <!-- Tab Content: Clients Ledgers -->
-        <div id="clients-tab" class="tab-pane">
-            <!-- Metric Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-md mb-lg">
-                <!-- Card 1 -->
-                <div class="premium-card p-md flex items-center justify-between">
-                    <div>
-                        <h4 class="text-xs uppercase text-outline mb-xs">Active Clients</h4>
-                        <div class="text-display-lg-mobile font-display-lg-mobile text-on-surface" id="metric-clients-count">0</div>
-                    </div>
-                    <span class="material-symbols-outlined text-primary text-[32px]">groups</span>
-                </div>
-                <!-- Card 2 -->
-                <div class="premium-card p-md flex items-center justify-between">
-                    <div>
-                        <h4 class="text-xs uppercase text-outline mb-xs">Current Reseller Tier</h4>
-                        <div class="text-display-lg-mobile font-display-lg-mobile text-on-surface" id="metric-reseller-tier">₹149/mo</div>
-                    </div>
-                    <span class="material-symbols-outlined text-secondary text-[32px]">loyalty</span>
-                </div>
-                <!-- Card 3 -->
-                <div class="premium-card p-md flex items-center justify-between">
-                    <div>
-                        <h4 class="text-xs uppercase text-outline mb-xs">Digital Books Verified</h4>
-                        <div class="text-display-lg-mobile font-display-lg-mobile text-on-surface" id="metric-compliance-text">IT ACT Compliant</div>
-                    </div>
-                    <span class="material-symbols-outlined text-tertiary text-[32px]">verified_user</span>
-                </div>
-            </div>
-
-            <!-- Clients Table Container -->
-            <div class="premium-card p-md">
-                <h3 class="text-label-sm font-label-sm font-bold text-on-surface mb-sm">Registered Business Ledgers</h3>
-                <div class="overflow-x-auto border border-white/5 rounded-xl">
-                    <table class="premium-table text-sm">
-                        <thead>
-                            <tr class="bg-white/[0.01] border-b border-white/5 text-outline font-semibold">
-                                <th class="p-sm">Client / Business Name</th>
-                                <th class="p-sm">Phone Number</th>
-                                <th class="p-sm">GSTIN</th>
-                                <th class="p-sm">Active Plan</th>
-                                <th class="p-sm">Linked At</th>
-                                <th class="p-sm text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="clients-table-body" class="divide-y divide-white/[0.03]">
-                            <!-- Dynamically Rendered -->
-                            <tr>
-                                <td colspan="6" class="p-lg text-center text-outline">
-                                    No clients added yet. Click "Add New Client" to start managing business ledgers.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tab Content: Consolidated GST Report -->
-        <div id="gst-report-tab" class="tab-pane" style="display: none;">
-            <div class="premium-card p-md mb-lg">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-sm">
-                    <h3 class="text-label-sm font-label-sm font-bold text-on-surface">Select Filing Period</h3>
-                    <input type="month" id="report-period-picker" class="bg-black/30 border border-white/5 rounded px-sm py-xs text-on-surface text-sm w-44">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-md mb-lg">
-                <!-- Sales -->
-                <div class="premium-card p-md flex items-center justify-between">
-                    <div>
-                        <h4 class="text-xs uppercase text-outline mb-xs">Aggregated Sales (Excl. Tax)</h4>
-                        <div class="text-display-lg-mobile font-display-lg-mobile text-secondary" id="gst-metric-sales">₹0.00</div>
-                    </div>
-                    <span class="material-symbols-outlined text-secondary text-[32px]">arrow_downward</span>
-                </div>
-                <!-- ITC -->
-                <div class="premium-card p-md flex items-center justify-between">
-                    <div>
-                        <h4 class="text-xs uppercase text-outline mb-xs">Aggregated Input Tax Credit (ITC)</h4>
-                        <div class="text-display-lg-mobile font-display-lg-mobile text-primary" id="gst-metric-itc">₹0.00</div>
-                    </div>
-                    <span class="material-symbols-outlined text-primary text-[32px]">arrow_upward</span>
-                </div>
-                <!-- Liability -->
-                <div class="premium-card p-md flex items-center justify-between">
-                    <div>
-                        <h4 class="text-xs uppercase text-outline mb-xs">Consolidated GST Payable</h4>
-                        <div class="text-display-lg-mobile font-display-lg-mobile text-error" id="gst-metric-payable">₹0.00</div>
-                    </div>
-                    <span class="material-symbols-outlined text-error text-[32px]">payments</span>
-                </div>
-            </div>
-
-            <div class="premium-card p-md">
-                <div class="flex justify-between items-center mb-sm">
-                    <h3 class="text-label-sm font-label-sm font-bold text-on-surface">GSTR Consolidated Summary Table</h3>
-                    <button class="px-md py-1.5 border border-white/10 rounded-lg text-on-surface hover:bg-white/5 transition-all text-xs font-semibold" id="btn-export-consolidated-gst">Download GSTR Summary (CSV)</button>
-                </div>
-                <div class="overflow-x-auto border border-white/5 rounded-xl">
-                    <table class="premium-table text-sm">
-                        <thead>
-                            <tr class="bg-white/[0.01] border-b border-white/5 text-outline font-semibold">
-                                <th class="p-sm">Business / Name</th>
-                                <th class="p-sm">GSTIN</th>
-                                <th class="p-sm">Outward Taxable Value</th>
-                                <th class="p-sm">Outward Tax (CGST/SGST/IGST)</th>
-                                <th class="p-sm">Inward Taxable Value</th>
-                                <th class="p-sm">Inward ITC Available</th>
-                                <th class="p-sm text-right">Net GST Liability</th>
-                            </tr>
-                        </thead>
-                        <tbody id="gst-report-table-body" class="divide-y divide-white/[0.03]">
-                            <!-- Dynamically Rendered -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tab Content: Reseller Pricing Tier -->
-        <div id="reseller-pricing-tab" class="tab-pane" style="display: none;">
-            <div class="premium-card p-lg max-w-3xl">
-                <div class="mb-md">
-                    <h3 class="text-headline-md font-headline-md text-on-surface mb-xs">Reseller License Pricing Dashboard</h3>
-                    <p class="text-body-md font-body-md text-on-surface-variant text-sm">Manage bulk purchases and view active discount tiers dynamically.</p>
-                </div>
-                
-                <div class="my-lg">
-                    <div class="flex justify-between items-center font-semibold text-sm text-on-surface-variant mb-xs">
-                        <span>Clients License: <span id="reseller-slider-count-display" class="text-primary font-bold">1</span></span>
-                        <span id="reseller-tier-indicator" class="bg-secondary/10 border border-secondary/20 text-secondary px-3 py-1 rounded-full text-xs font-bold">Pro Tier</span>
-                    </div>
-                    <input type="range" min="1" max="150" value="1" class="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary" id="reseller-slider">
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-md bg-black/35 border border-white/5 rounded-2xl p-md text-center">
-                    <div class="price-box">
-                        <h4 class="text-xs uppercase text-outline mb-xs">Price Per Client License</h4>
-                        <div class="text-display-lg-mobile font-display-lg-mobile text-secondary" id="reseller-unit-price">₹149</div>
-                        <div class="text-xs text-outline">per client / month</div>
-                    </div>
-                    <div class="price-box border-t sm:border-t-0 sm:border-l border-white/5 pt-sm sm:pt-0 sm:pl-md">
-                        <h4 class="text-xs uppercase text-outline mb-xs">Reseller Monthly Bill</h4>
-                        <div class="text-display-lg-mobile font-display-lg-mobile text-secondary" id="reseller-total-bill">₹149</div>
-                        <div class="text-xs text-outline" id="reseller-discount-display">Link 10+ clients to save 20%</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-</div>
-
-<!-- Modal: Add New Client -->
-<div id="modal-add-client" class="modal-overlay">
-    <div class="premium-card p-lg max-w-xl w-[90%] relative shadow-2xl">
-        <div class="flex justify-between items-center border-b border-white/5 pb-sm mb-md">
-            <h3 class="text-headline-md font-headline-md text-on-surface">Link New Client Business</h3>
-            <button class="text-outline hover:text-on-surface text-[20px]" id="btn-close-client-modal">✖</button>
-        </div>
-        <form id="add-client-form" class="space-y-sm">
-            <div class="flex flex-col gap-xs">
-                <label for="client-name" class="text-xs font-semibold text-on-surface-variant">Owner/Client Full Name</label>
-                <input type="text" id="client-name" class="w-full bg-black/30 border border-white/5 rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="Rajesh Patel" required>
-            </div>
-            <div class="flex flex-col gap-xs">
-                <label for="client-phone" class="text-xs font-semibold text-on-surface-variant">WhatsApp Number (with Country Code)</label>
-                <input type="tel" id="client-phone" class="w-full bg-black/30 border border-white/5 rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="919876543210" required>
-            </div>
-            <div class="flex flex-col gap-xs">
-                <label for="client-business" class="text-xs font-semibold text-on-surface-variant">Business / Shop Name</label>
-                <input type="text" id="client-business" class="w-full bg-black/30 border border-white/5 rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="Patel Kirana Store" required>
-            </div>
-            <div class="flex flex-col gap-xs">
-                <label for="client-gstin" class="text-xs font-semibold text-on-surface-variant">GSTIN (15-digit)</label>
-                <input type="text" id="client-gstin" class="w-full bg-black/30 border border-white/5 rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm" placeholder="27AAAAA1111A1Z1">
-            </div>
-            <div class="grid grid-cols-2 gap-sm">
-                <div class="flex flex-col gap-xs">
-                    <label for="client-plan" class="text-xs font-semibold text-on-surface-variant">Pricing Plan</label>
-                    <select id="client-plan" class="w-full bg-black/30 border border-white/5 rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm">
-                        <option value="trial">Trial Plan (14d)</option>
-                        <option value="starter">Starter Plan</option>
-                        <option value="pro" selected>Pro Reseller Plan</option>
-                    </select>
-                </div>
-                <div class="flex flex-col gap-xs">
-                    <label for="client-gst-registered" class="text-xs font-semibold text-on-surface-variant">GST Registered?</label>
-                    <select id="client-gst-registered" class="w-full bg-black/30 border border-white/5 rounded px-sm py-xs text-on-surface focus:border-primary focus:ring-0 text-sm">
-                        <option value="true" selected>Yes</option>
-                        <option value="false">No</option>
-                    </select>
-                </div>
-            </div>
-            <button type="submit" class="w-full py-sm bg-primary-container text-on-primary-container rounded font-medium text-label-sm hover:brightness-110 transition-all flex items-center justify-center gap-xs mt-md">Link & Authorize Ledger</button>
-        </form>
-    </div>
-</div>
-
-<!-- Drawer: Client WhatsApp Ledger Drawer -->
-<div id="drawer-ledger" class="drawer-overlay">
-    <div class="drawer-content shadow-2xl flex flex-col gap-md">
-        <div class="flex justify-between items-center border-b border-white/5 pb-sm">
-            <div>
-                <h3 id="drawer-client-name" class="text-headline-md font-headline-md text-on-surface">Patel Kirana Store</h3>
-                <p id="drawer-client-phone" class="text-xs text-outline">Phone: 919876543210</p>
-            </div>
-            <button class="text-outline hover:text-on-surface text-[20px]" id="btn-close-ledger-drawer">✖</button>
+    <div class="app-main">
+      
+      <!-- Top Header Navigation -->
+      <header class="app-header">
+        <div class="header-left" style="display: flex; align-items: center; width: 100%; gap: var(--space-8);">
+          <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Menu">
+            <i data-lucide="menu"></i>
+          </button>
+          <button class="command-bar-trigger" id="global-command-trigger" style="flex-grow: 1;">
+            <i data-lucide="search" class="search-icon"></i>
+            <span class="trigger-placeholder">Ask TaxBot anything...</span>
+            <kbd class="kbd-shortcut">Ctrl K</kbd>
+          </button>
         </div>
         
-        <div class="flex flex-col gap-md flex-grow overflow-y-auto">
-            <!-- Client stats -->
-            <div class="grid grid-cols-3 gap-sm bg-black/30 border border-white/5 rounded-2xl p-md text-center">
-                <div class="border-r border-white/5">
-                    <h5 class="text-xs uppercase text-outline mb-xs">GSTIN</h5>
-                    <p id="drawer-client-gstin" class="text-sm font-semibold truncate px-xs text-on-surface">27AAAAA1111A1Z1</p>
-                </div>
-                <div class="border-r border-white/5">
-                    <h5 class="text-xs uppercase text-outline mb-xs">Active Plan</h5>
-                    <p id="drawer-client-plan" class="text-xs text-primary font-bold mt-1">PRO</p>
-                </div>
-                <div>
-                    <h5 class="text-xs uppercase text-outline mb-xs">Exports</h5>
-                    <p class="text-xs text-secondary font-bold mt-1">
-                        <a href="#" id="drawer-export-csv" class="hover:underline text-secondary">CSV</a> | 
-                        <a href="#" id="drawer-export-tally" class="hover:underline text-secondary">Tally XML</a>
-                    </p>
-                </div>
+        <div class="header-right">
+          <!-- Theme Toggle -->
+          <button class="header-btn" id="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme" style="margin-right: 8px;">
+            <i data-lucide="moon" id="theme-toggle-icon"></i>
+          </button>
+          
+          <!-- Notifications -->
+          <div class="notification-dropdown">
+            <button class="header-btn" id="notification-btn" aria-label="Notifications">
+              <i data-lucide="bell"></i>
+              <span class="indicator-dot"></span>
+            </button>
+            <div class="dropdown-menu hidden" id="notifications-dropdown-menu">
+              <div class="dropdown-header">
+                <span>Notifications</span>
+                <button class="btn-text" id="btn-mark-all-read">Mark all read</button>
+              </div>
+              <div class="dropdown-body" id="notifications-list">
+                <!-- Dynamic notification items -->
+              </div>
             </div>
-
-            <!-- Ledger table -->
-            <div>
-                <h4 class="text-label-sm font-label-sm font-bold text-on-surface mb-sm">WhatsApp Logged Transactions (This Month)</h4>
-                <div class="overflow-x-auto border border-white/5 rounded-xl">
-                    <table class="premium-table text-xs">
-                        <thead>
-                            <tr class="bg-white/[0.01] border-b border-white/5 text-outline font-semibold">
-                                <th class="p-xs">Date</th>
-                                <th class="p-xs">Type</th>
-                                <th class="p-xs">Party / Vendor</th>
-                                <th class="p-xs">Amount</th>
-                                <th class="p-xs">Tax</th>
-                                <th class="p-xs">Source</th>
-                            </tr>
-                        </thead>
-                        <tbody id="drawer-transactions-body" class="divide-y divide-surface-variant/20">
-                            <!-- Dynamically populated -->
-                            <tr>
-                                <td colspan="6" class="p-md text-center text-outline">
-                                    No transactions logged by this business yet.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+          </div>
+          
+          <!-- Quick WhatsApp Link -->
+          <a href="https://wa.me/taxbot" target="_blank" class="header-btn whatsapp-btn" title="View WhatsApp Service Status">
+            <i data-lucide="message-square"></i>
+            <span class="whatsapp-badge">Live</span>
+          </a>
+          
+          <!-- User Profile Dropdown -->
+          <div class="profile-dropdown">
+            <button class="profile-btn" id="profile-menu-btn">
+              <div class="profile-avatar" id="ca-avatar-letter">S</div>
+              <span class="profile-name" id="ca-display-header-name">Sandeep Sharma</span>
+            </button>
+          </div>
         </div>
+      </header>
+      
+      <!-- Viewport Wrapper (Scrollable) -->
+      <main class="app-content" id="app-viewport">
+
+        <!-- SCREEN 1: OVERVIEW DASHBOARD -->
+        <section id="view-overview" class="view-section active">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Overview Dashboard</h1>
+              <p class="view-subtitle">Monitor firm operations, urgent client filings, and system health.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-primary" id="overview-add-client-btn">
+                <i data-lucide="plus"></i> Add Client
+              </button>
+            </div>
+          </div>
+          
+          <!-- Top KPI Grid -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">Active Clients</span>
+                <i data-lucide="users" class="kpi-icon text-primary"></i>
+              </div>
+              <div class="kpi-value" id="kpi-active-clients">0</div>
+              <div class="kpi-change text-success">
+                <i data-lucide="trending-up"></i> +4 this month
+              </div>
+            </div>
+            
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">GST Ready</span>
+                <i data-lucide="check-circle" class="kpi-icon text-success"></i>
+              </div>
+              <div class="kpi-value" id="kpi-gst-ready">0</div>
+              <div class="kpi-change text-secondary" id="kpi-gst-ready-sub">0 / 0 reconciled</div>
+            </div>
+            
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">Pending Filings</span>
+                <i data-lucide="alert-circle" class="kpi-icon text-warning"></i>
+              </div>
+              <div class="kpi-value" id="kpi-pending-filings">0</div>
+              <div class="kpi-change text-error">Action required before GSTR-1</div>
+            </div>
+            
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">Documents Today</span>
+                <i data-lucide="file-text" class="kpi-icon text-primary"></i>
+              </div>
+              <div class="kpi-value" id="kpi-docs-today">0</div>
+              <div class="kpi-change text-success">
+                <i data-lucide="arrow-up-right"></i> +12% vs yesterday
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">Transactions Today</span>
+                <i data-lucide="receipt" class="kpi-icon text-secondary"></i>
+              </div>
+              <div class="kpi-value" id="kpi-trans-today">0</div>
+              <div class="kpi-change text-secondary">Auto-extracted via AI</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">Monthly Revenue</span>
+                <i data-lucide="credit-card" class="kpi-icon text-primary"></i>
+              </div>
+              <div class="kpi-value" id="kpi-monthly-rev">₹0</div>
+              <div class="kpi-change text-success">
+                <i data-lucide="trending-up"></i> +12.4% MoM
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial Analytics Grid -->
+          <div class="analytics-grid mt-24">
+            <div class="card chart-card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Sales & Expenses Trend</h3>
+                  <p class="card-subtitle">Monthly flow of client transactions across the firm.</p>
+                </div>
+              </div>
+              <div class="chart-container" style="position: relative; height: 280px; width: 100%;">
+                <canvas id="chart-sales-expenses"></canvas>
+              </div>
+            </div>
+
+            <div class="card chart-card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Expense Distribution</h3>
+                  <p class="card-subtitle">Breakdown of consolidated firm expenses by category.</p>
+                </div>
+              </div>
+              <div class="chart-container" style="position: relative; height: 280px; width: 100%;">
+                <canvas id="chart-expense-categories"></canvas>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Main Content Split -->
+          <div class="dashboard-split">
+            <!-- Left Area: Urgent Actions & Business Health -->
+            <div class="split-left">
+              
+              <!-- Urgent Actions -->
+              <div class="card card-alert">
+                <div class="card-header">
+                  <h3 class="card-title text-error"><i data-lucide="alert-triangle"></i> Urgent Actions Required</h3>
+                  <span class="badge badge-error" id="kpi-urgent-actions-count">3 Action Items</span>
+                </div>
+                <div class="action-list">
+                  <div class="action-item border-error">
+                    <div class="action-details">
+                      <span class="action-title">GST ITC Mismatch Detected</span>
+                      <span class="action-desc">Verify ITC offsets against GSTR-2B logs for mismatched items.</span>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger btn-view-gst-mismatch">Reconcile</button>
+                  </div>
+                  <div class="action-item border-warning">
+                    <div class="action-details">
+                      <span class="action-title">Missing Expense Vouchers</span>
+                      <span class="action-desc">High-value cash files received via WhatsApp lack mapping tags.</span>
+                    </div>
+                    <button class="btn btn-sm btn-secondary btn-view-missing-docs">Request Files</button>
+                  </div>
+                  <div class="action-item border-primary">
+                    <div class="action-details">
+                      <span class="action-title">GSTR-1 Filing Deadline</span>
+                      <span class="action-desc">Reconciliation checks ready. 14 filings incomplete.</span>
+                    </div>
+                    <button class="btn btn-sm btn-primary btn-view-gst-filing">Bulk File</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Business Health Overview -->
+              <div class="card mt-24">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">Business Health Directory</h3>
+                    <p class="card-subtitle">AI-generated operational risk profiling for client accounts.</p>
+                  </div>
+                </div>
+                <div class="health-overview-container">
+                  <div class="health-breakdown">
+                    <div class="health-metric">
+                      <span class="metric-value text-success" id="health-metric-healthy">0</span>
+                      <span class="metric-label">Healthy (Score &gt; 80)</span>
+                    </div>
+                    <div class="health-metric">
+                      <span class="metric-value text-warning" id="health-metric-review">0</span>
+                      <span class="metric-label">Needs Review (50 - 80)</span>
+                    </div>
+                    <div class="health-metric">
+                      <span class="metric-value text-danger" id="health-metric-critical">0</span>
+                      <span class="metric-label">Critical Risk (&lt; 50)</span>
+                    </div>
+                  </div>
+                  <div class="health-visual-bar" id="health-visual-bar-root">
+                    <!-- Dynamic segments filled in app.js -->
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            
+            <!-- Right Area: Recent Activity & Quick Actions -->
+            <div class="split-right">
+              
+              <!-- Quick Actions -->
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Quick Actions</h3>
+                </div>
+                <div class="quick-actions-panel">
+                  <button class="quick-action-btn" id="qa-add-client">
+                    <div class="qa-icon-wrap bg-primary-light"><i data-lucide="user-plus" class="text-primary"></i></div>
+                    <span>Add New Client</span>
+                  </button>
+                  <button class="quick-action-btn" id="qa-upload-docs">
+                    <div class="qa-icon-wrap bg-success-light"><i data-lucide="upload-cloud" class="text-success"></i></div>
+                    <span>Upload Documents</span>
+                  </button>
+                  <button class="quick-action-btn" id="qa-gen-report">
+                    <div class="qa-icon-wrap bg-warning-light"><i data-lucide="bar-chart-2" class="text-warning"></i></div>
+                    <span>Generate Financials</span>
+                  </button>
+                  <button class="quick-action-btn" id="qa-export-tally">
+                    <div class="qa-icon-wrap bg-secondary-light"><i data-lucide="file-output" class="text-secondary"></i></div>
+                    <span>Export Tally XML</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Recent Activity Feed -->
+              <div class="card mt-24">
+                <div class="card-header">
+                  <h3 class="card-title">Recent Activity</h3>
+                </div>
+                <div class="activity-feed" id="overview-activity-feed">
+                  <!-- JS inserts feed entries -->
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN 2: CLIENT MANAGEMENT -->
+        <section id="view-clients" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Clients Directory</h1>
+              <p class="view-subtitle">Manage business subscriptions, system integrations, and tax profiles.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-primary" id="btn-add-client-modal-trigger">
+                <i data-lucide="plus"></i> Add Client
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter / Toolbar Row -->
+          <div class="toolbar-card card">
+            <div class="toolbar-search">
+              <i data-lucide="search"></i>
+              <input type="text" id="client-search" placeholder="Search clients by name, GSTIN, owner...">
+            </div>
+            <div class="toolbar-actions">
+              <div class="filter-group">
+                <button class="btn btn-secondary filter-tab active" data-filter="all">All</button>
+                <button class="btn btn-secondary filter-tab" data-filter="needs-review">Needs Action</button>
+                <button class="btn btn-secondary filter-tab" data-filter="filed">Filed</button>
+              </div>
+              <button class="btn btn-secondary" id="client-sort-btn">
+                <i data-lucide="arrow-up-down"></i> Sort
+              </button>
+              <div class="layout-toggle">
+                <button class="btn btn-secondary active" id="layout-toggle-table" aria-label="Table View"><i data-lucide="list"></i></button>
+                <button class="btn btn-secondary" id="layout-toggle-grid" aria-label="Grid View"><i data-lucide="grid"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Clients Table/Grid Container -->
+          <div id="clients-list-container" class="mt-24">
+            <div class="card overflow-x">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Business Name</th>
+                    <th>GSTIN</th>
+                    <th>Owner / WhatsApp</th>
+                    <th>Active Plan</th>
+                    <th>Last Activity</th>
+                    <th class="text-right">Health</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><div class="skeleton-line w-75 h-24"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-75"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                  </tr>
+                  <tr>
+                    <td><div class="skeleton-line w-50 h-24"></div></td>
+                    <td><div class="skeleton-line w-75"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                  </tr>
+                  <tr>
+                    <td><div class="skeleton-line w-75 h-24"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-75"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN 3: CLIENT WORKSPACE (360 VIEW) -->
+        <section id="view-client-workspace" class="view-section hidden">
+          <div class="workspace-header card">
+            <div class="workspace-title-area">
+              <button class="btn btn-secondary btn-sm" id="btn-back-to-clients">
+                <i data-lucide="arrow-left"></i> Back to Clients
+              </button>
+              <div class="workspace-client-meta ml-16">
+                <h2 class="workspace-client-name" id="workspace-client-name">Acme Corp</h2>
+                <div class="workspace-client-tags mt-8">
+                  <span class="badge badge-info" id="workspace-client-gstin">GSTIN: 27AAAAA0000A1Z1</span>
+                  <span class="badge badge-secondary" id="workspace-client-plan">Plan: Partner Pro</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="workspace-actions">
+              <button class="btn btn-outline-success" id="btn-whatsapp-owner-direct">
+                <i data-lucide="message-square"></i> WhatsApp Owner
+              </button>
+              <button class="btn btn-primary" id="btn-workspace-export-tally">
+                <i data-lucide="file-output"></i> Export Tally XML
+              </button>
+            </div>
+          </div>
+
+          <!-- Workspace KPIs -->
+          <div class="kpi-grid mt-24">
+            <div class="kpi-card">
+              <div class="kpi-label">Sales Revenue (Monthly)</div>
+              <div class="kpi-value text-primary" id="ws-kpi-sales">₹0</div>
+              <span class="kpi-change text-success" id="ws-kpi-sales-change"><i data-lucide="trending-up"></i> +18% vs last month</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Total Expenses (Monthly)</div>
+              <div class="kpi-value text-secondary" id="ws-kpi-expenses">₹0</div>
+              <span class="kpi-change text-secondary">Auto-reconciled via OCR</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">GST Payable (Net)</div>
+              <div class="kpi-value text-warning" id="ws-kpi-gst-payable">₹0</div>
+              <span class="kpi-change text-secondary">Based on sales transactions</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Input Tax Credit (ITC)</div>
+              <div class="kpi-value text-success" id="ws-kpi-itc">₹0</div>
+              <span class="kpi-change text-success" id="ws-kpi-itc-sub">Verified from GSTR-2B</span>
+            </div>
+          </div>
+
+          <!-- Workspace Nav Tabs -->
+          <div class="workspace-tabs-container mt-24">
+            <div class="workspace-tabs">
+              <button class="tab-link active" data-ws-tab="overview">Client Overview</button>
+              <button class="tab-link" data-ws-tab="transactions">Transactions</button>
+              <button class="tab-link" data-ws-tab="documents">Documents</button>
+              <button class="tab-link" data-ws-tab="gst">GST Reconciliation</button>
+              <button class="tab-link" data-ws-tab="reports">Reports</button>
+              <button class="tab-link" data-ws-tab="exports">Exports</button>
+              <button class="tab-link" data-ws-tab="audit">AI Auditor</button>
+            </div>
+          </div>
+
+          <!-- Workspace Tab Contents -->
+          <div class="workspace-tab-contents mt-24" id="ws-tab-viewport">
+            
+            <!-- WS Sub-Tab 1: Overview -->
+            <div class="ws-tab-panel active" id="ws-panel-overview">
+              <!-- GST Liability Trend Chart -->
+              <div class="card mb-24">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">GST Liability Trend</h3>
+                    <p class="card-subtitle">Monthly breakdown of sales tax payable versus eligible Input Tax Credit (ITC).</p>
+                  </div>
+                </div>
+                <div class="chart-container" style="position: relative; height: 240px; width: 100%;">
+                  <canvas id="chart-ws-gst-trend"></canvas>
+                </div>
+              </div>
+
+              <div class="dashboard-split">
+                <div class="split-left">
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">Recent Transactions Requiring Review</h3>
+                    </div>
+                    <div class="action-list mt-16" id="ws-overview-pending-transactions">
+                      <!-- Render transactions waiting for CA sign-off -->
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="split-right">
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">WhatsApp Source Feed</h3>
+                    </div>
+                    <div class="activity-feed mt-16" id="ws-overview-whatsapp-feed">
+                      <!-- Stream of raw files sent by client -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- WS Sub-Tab 2: Transactions -->
+            <div class="ws-tab-panel" id="ws-panel-transactions">
+              <div class="card overflow-x">
+                <table class="data-table" id="ws-transactions-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Type</th>
+                      <th>Category</th>
+                      <th>GST Rate</th>
+                      <th>Amount</th>
+                      <th>Channel</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Injected by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- WS Sub-Tab 3: Documents -->
+            <div class="ws-tab-panel" id="ws-panel-documents">
+              <div class="document-workspace-grid">
+                <div class="doc-folders-sidebar">
+                  <button class="doc-sidebar-item active" data-folder="all">All Documents</button>
+                  <button class="doc-sidebar-item" data-folder="invoices">Invoices</button>
+                  <button class="doc-sidebar-item" data-folder="receipts">Receipts</button>
+                  <button class="doc-sidebar-item" data-folder="statements">Bank Statements</button>
+                  <button class="doc-sidebar-item" data-folder="voice-notes">Voice Notes</button>
+                </div>
+                <div class="doc-files-list">
+                  <div class="card overflow-x">
+                    <table class="data-table" id="ws-docs-table">
+                      <thead>
+                        <tr>
+                          <th>Filename</th>
+                          <th>Received</th>
+                          <th>Category</th>
+                          <th>Size</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <!-- Dynamic -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- WS Sub-Tab 4: GST Reconciliation -->
+            <div class="ws-tab-panel" id="ws-panel-gst">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">GSTR-2B vs Purchase Register Mismatch Analysis</h3>
+                </div>
+                <div class="gst-recon-results mt-16">
+                  <!-- Match status -->
+                </div>
+              </div>
+            </div>
+
+            <!-- WS Sub-Tab 5: Reports -->
+            <div class="ws-tab-panel" id="ws-panel-reports">
+              <div class="report-cards-grid">
+                <div class="card report-card">
+                  <h4>Profit & Loss Statement</h4>
+                  <p>Auto-generated income and expense statement.</p>
+                  <button class="btn btn-secondary mt-16 btn-ws-dl-pl">Download PDF</button>
+                </div>
+                <div class="card report-card">
+                  <h4>GST Return Summary</h4>
+                  <p>Consolidated inward and outward GST tax summary report.</p>
+                  <button class="btn btn-secondary mt-16 btn-ws-dl-bs">Download PDF</button>
+                </div>
+                <div class="card report-card">
+                  <h4>Ledger Detail Report</h4>
+                  <p>Individual account logs with transaction entries.</p>
+                  <button class="btn btn-secondary mt-16 btn-ws-dl-xlsx">Download XLSX</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- WS Sub-Tab 6: Exports -->
+            <div class="ws-tab-panel" id="ws-panel-exports">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Tally ERP / Prime Export Configuration</h3>
+                </div>
+                <div class="exports-container mt-16">
+                  <p class="card-subtitle">Generate Tally XML with configured ledger mappings.</p>
+                  <button class="btn btn-primary mt-16 btn-ws-export-tally-xml">Generate & Download Tally XML</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- WS Sub-Tab 7: AI Auditor Chat -->
+            <div class="ws-tab-panel" id="ws-panel-audit">
+              <div class="card" style="height: 500px; display: flex; flex-direction: column; padding: 0; overflow: hidden; margin-bottom: 24px;">
+                <div class="card-header" style="padding: var(--space-16) var(--space-24); border-bottom: 1px solid var(--border); background-color: var(--bg-card);">
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <div>
+                      <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="sparkles" class="text-primary" style="width: 18px; height: 18px;"></i>
+                        TaxBot AI Auditor Chat
+                      </h3>
+                      <p class="card-subtitle">Chat with an auditor trained on this client's specific transaction ledgers.</p>
+                    </div>
+                    <span class="badge badge-accent" id="ws-audit-simulated-indicator" style="display: none;">Sandbox Mode</span>
+                  </div>
+                </div>
+                
+                <!-- Chat Message Feed -->
+                <div class="chat-feed" id="ws-audit-chat-feed" style="flex-grow: 1; padding: var(--space-20); overflow-y: auto; background-color: var(--bg-app); display: flex; flex-direction: column; gap: var(--space-16);">
+                  <!-- Welcome message -->
+                  <div class="chat-msg system-msg" style="align-self: flex-start; max-width: 80%; background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-12) var(--radius-12) var(--radius-12) 0; padding: var(--space-12) var(--space-16); box-shadow: var(--shadow-sm);">
+                    <div style="font-weight: 600; color: var(--primary); font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+                      <i data-lucide="bot" style="width: 14px; height: 14px;"></i> AI Auditor
+                    </div>
+                    <p style="margin: 0; font-size: 14px; color: var(--text-primary);">
+                      Hello! I have loaded this client's current ledger transactions. Ask me any auditing questions, such as:
+                    </p>
+                    <ul style="margin: var(--space-8) 0 0 var(--space-16); padding: 0; font-size: 13px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px; list-style-type: disc;">
+                      <li><em>"Check for anomalies or unverified items"</em></li>
+                      <li><em>"What is their GST liability and compliance status?"</em></li>
+                      <li><em>"Identify any duplicate entries"</em></li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Chat Input area -->
+                <form id="ws-audit-chat-form" style="padding: var(--space-16) var(--space-24); border-top: 1px solid var(--border); display: flex; gap: var(--space-12); background-color: var(--bg-card);">
+                  <input type="text" id="ws-audit-chat-input" class="form-input" placeholder="Type audit question about this client's transactions..." required style="flex-grow: 1; border: 1px solid var(--border); padding: 0 var(--space-16); border-radius: var(--radius-8); height: 42px; font-size: 14px; background-color: var(--bg-app); color: var(--text-primary);">
+                  <button type="submit" class="btn btn-primary" style="height: 42px; padding: 0 var(--space-20); display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="send" style="width: 16px; height: 16px;"></i>
+                    Ask AI
+                  </button>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- SCREEN 4: TRANSACTIONS CENTER -->
+        <section id="view-transactions" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Transactions Center</h1>
+              <p class="view-subtitle">Review, adjust, and approve AI-extracted accounting entries globally.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-secondary" id="btn-bulk-approve-transactions">Bulk Approve</button>
+              <button class="btn btn-primary" id="btn-export-transactions">Export CSV</button>
+            </div>
+          </div>
+
+          <!-- Filters Row -->
+          <div class="toolbar-card card">
+            <div class="toolbar-search">
+              <i data-lucide="search"></i>
+              <input type="text" id="transactions-global-search" placeholder="Search transactions...">
+            </div>
+            <div class="toolbar-actions">
+              <select class="btn btn-secondary dropdown-select" id="tx-filter-client">
+                <!-- Filled dynamically inside console.js -->
+              </select>
+              <select class="btn btn-secondary dropdown-select" id="tx-filter-channel">
+                <option value="all">All Channels</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="voice">Voice Note</option>
+                <option value="pdf">PDF Upload</option>
+                <option value="manual">Manual Entry</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Main Table Card -->
+          <div class="card mt-24 overflow-x">
+            <table class="data-table" id="global-transactions-table">
+              <thead>
+                <tr>
+                  <th style="width: 40px;"><input type="checkbox" id="select-all-transactions"></th>
+                  <th>Date</th>
+                  <th>Client</th>
+                  <th>Type</th>
+                  <th>Channel</th>
+                  <th>Category</th>
+                  <th>GST Rate</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="global-transactions-table-body">
+                <!-- Populated dynamically inside console.js -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- SCREEN 5: DOCUMENT CENTER -->
+        <section id="view-documents" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Document Command Center</h1>
+              <p class="view-subtitle">Centralized repository for WhatsApp invoices, bank feeds, and statements.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-primary" id="btn-upload-new-document">
+                <i data-lucide="upload"></i> Upload Files
+              </button>
+            </div>
+          </div>
+
+          <div class="document-split-layout">
+            <!-- Left: Document List & Tabs -->
+            <div class="document-list-side">
+              <div class="toolbar-card card mb-24">
+                <div class="toolbar-search">
+                  <i data-lucide="search"></i>
+                  <input type="text" id="doc-global-search" placeholder="Search files...">
+                </div>
+              </div>
+
+              <!-- Folder Select -->
+              <div class="document-folders mb-24">
+                <button class="doc-folder-chip active" data-doc-folder="all">All</button>
+                <button class="doc-folder-chip" data-doc-folder="invoices">Invoices</button>
+                <button class="doc-folder-chip" data-doc-folder="receipts">Receipts</button>
+                <button class="doc-folder-chip" data-doc-folder="statements">Statements</button>
+                <button class="doc-folder-chip" data-doc-folder="voice">Voice Notes</button>
+              </div>
+
+              <div class="card overflow-x">
+                <table class="data-table" id="global-documents-table">
+                  <thead>
+                    <tr>
+                      <th>Filename</th>
+                      <th>Client</th>
+                      <th>Folder</th>
+                      <th>Received</th>
+                    </tr>
+                  </thead>
+                  <tbody id="global-documents-table-body">
+                    <!-- Dynamic -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right: Document Detail & Preview Panel -->
+            <div class="document-preview-side">
+              <div class="card sticky-preview-card" id="doc-preview-panel">
+                <div class="preview-empty-state">
+                  <i data-lucide="file-text" class="preview-large-icon"></i>
+                  <h3>Select a document to preview</h3>
+                  <p>Preview invoice data, listen to voice notes, or verify OCR extractions.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN 6: GST CENTER -->
+        <section id="view-gst" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">GST Filing Command Center</h1>
+              <p class="view-subtitle">Monitor and verify Indian GST filings across all client accounts.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-primary" id="btn-gst-bulk-file">Bulk Sign & File</button>
+            </div>
+          </div>
+
+          <!-- Top GST KPIs -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">GST Liability (Total)</div>
+              <div class="kpi-value text-warning" id="gst-total-liability-metric">₹0</div>
+              <span class="kpi-change text-secondary">Accrued across active clients</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Input Tax Credit (Total)</div>
+              <div class="kpi-value text-success" id="gst-total-itc-metric">₹0</div>
+              <span class="kpi-change text-secondary">Matched from GSTR-2B logs</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Ready to File</div>
+              <div class="kpi-value text-primary" id="gst-ready-to-file-metric">0</div>
+              <span class="kpi-change text-success">100% reconciled</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Needs Review / Missing Data</div>
+              <div class="kpi-value text-danger" id="gst-needs-review-metric">0</div>
+              <span class="kpi-change text-error">Unresolved mismatches</span>
+            </div>
+          </div>
+
+          <!-- Client GST Filing Table -->
+          <div class="card mt-24 overflow-x">
+            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+              <h3 class="card-title">Filing Status Ledger</h3>
+              <input type="month" id="gst-period-picker" class="btn btn-secondary" style="height:34px; padding:0 8px;">
+            </div>
+            <table class="data-table" id="gst-center-table">
+              <thead>
+                <tr>
+                  <th>Client Name</th>
+                  <th>Sales (GSTR-1)</th>
+                  <th>Purchases (GSTR-2B)</th>
+                  <th>Net GST Due</th>
+                  <th>Filing Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="gst-center-table-body">
+                <!-- Dynamic rows -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- SCREEN 7: AI INSIGHTS -->
+        <section id="view-insights" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">AI Advisory Insights</h1>
+              <p class="view-subtitle">Machine learning flags for potential anomalies, tax credits, and accounting risks.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-secondary" id="btn-insights-run-scanner">Run Diagnostic Scan</button>
+            </div>
+          </div>
+
+          <!-- Severity Filter Chips -->
+          <div class="toolbar-card card mb-24">
+            <div class="filter-group">
+              <button class="btn btn-secondary filter-tab active" data-severity="all">All Anomalies</button>
+              <button class="btn btn-secondary filter-tab" data-severity="high">High Severity</button>
+              <button class="btn btn-secondary filter-tab" data-severity="medium">Medium</button>
+              <button class="btn btn-secondary filter-tab" data-severity="low">Info</button>
+            </div>
+          </div>
+
+          <!-- Insights Cards Stack -->
+          <div class="insights-grid" id="ai-insights-cards-container">
+            <!-- Dynamic Injection -->
+          </div>
+        </section>
+
+        <!-- SCREEN 8: EXPORT CENTER -->
+        <section id="view-exports" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Export Command Center</h1>
+              <p class="view-subtitle">Generate accounting packages for traditional ERP systems in one-click.</p>
+            </div>
+          </div>
+
+          <div class="export-cards-grid mt-24">
+            
+            <div class="card export-card">
+              <div class="export-card-icon-wrap bg-primary-light">
+                <i data-lucide="file-output" class="text-primary"></i>
+              </div>
+              <h3 class="export-card-title mt-16">Tally Prime XML Package</h3>
+              <p class="export-card-desc mt-8">Generates complete double-entry journals, sales receipts, purchase entries, and customer profiles mapped directly to Tally Prime standard configurations.</p>
+              <div class="export-form-group mt-16">
+                <label for="export-tally-client">Select Client</label>
+                <select class="form-select" id="export-tally-client">
+                  <!-- Filled dynamically inside console.js -->
+                </select>
+              </div>
+              <button class="btn btn-primary btn-block mt-24" id="btn-action-export-tally">Generate & Download XML</button>
+            </div>
+
+            <div class="card export-card">
+              <div class="export-card-icon-wrap bg-success-light">
+                <i data-lucide="table" class="text-success"></i>
+              </div>
+              <h3 class="export-card-title mt-16">GST Reconciliation Reports</h3>
+              <p class="export-card-desc mt-8">Produces detailed government-ready Excel worksheets summarizing Sales (GSTR-1 data), Purchase invoices matching GSTR-2B, and tax offset calculations.</p>
+              <div class="export-form-group mt-16">
+                <label for="export-gst-period">Select Period</label>
+                <select class="form-select" id="export-gst-period">
+                  <option value="june-2026">June 2026</option>
+                  <option value="may-2026">May 2026</option>
+                </select>
+              </div>
+              <button class="btn btn-success btn-block mt-24" id="btn-action-export-gst">Generate Excel Ledger</button>
+            </div>
+
+            <div class="card export-card">
+              <div class="export-card-icon-wrap bg-warning-light">
+                <i data-lucide="file-spreadsheet" class="text-warning"></i>
+              </div>
+              <h3 class="export-card-title mt-16">General Ledger CSV dump</h3>
+              <p class="export-card-desc mt-8">Produces structured raw CSV feeds containing complete ledger records and invoice links. Designed for direct loading into ZoHo, Marg, or custom databases.</p>
+              <div class="export-form-group mt-16">
+                <label for="export-csv-client">Select Client</label>
+                <select class="form-select" id="export-csv-client">
+                  <!-- Filled dynamically inside console.js -->
+                </select>
+              </div>
+              <button class="btn btn-warning btn-block mt-24" id="btn-action-export-csv">Download CSV</button>
+            </div>
+
+            <div class="card export-card">
+              <div class="export-card-icon-wrap bg-secondary-light">
+                <i data-lucide="book-open" class="text-secondary"></i>
+              </div>
+              <h3 class="export-card-title mt-16">Financial Statement Package</h3>
+              <p class="export-card-desc mt-8">Generates print-ready PDFs of Profit & Loss Statements, Balance Sheets, and Cash Flow ledgers styled with custom firm letterheads.</p>
+              <div class="export-form-group mt-16">
+                <label for="export-report-template">Templates</label>
+                <select class="form-select" id="export-report-template">
+                  <option value="standard">Standard Audit Report</option>
+                  <option value="detailed">Detailed Ledger Audit</option>
+                  <option value="summarized">One-Page Summary</option>
+                </select>
+              </div>
+              <button class="btn btn-secondary btn-block mt-24" id="btn-action-export-pdf">Generate PDF Package</button>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- SCREEN 9: BILLING -->
+        <section id="view-billing" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Billing & Subscriptions</h1>
+              <p class="view-subtitle">Manage client subscription limits, marginal cost structures, and firm billing tiers.</p>
+            </div>
+          </div>
+
+          <div class="billing-container mt-24">
+            <div class="dashboard-split">
+              <!-- Left: Plan Details -->
+              <div class="split-left">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Firm Subscription</h3>
+                  </div>
+                  
+                  <div class="billing-plan-info mt-16">
+                    <div class="plan-hero-badge">Partner Premium Tiers</div>
+                    <h2 class="mt-16" id="billing-marginal-rate-display">₹14,200 <span class="price-period">/ month</span></h2>
+                    <p class="card-subtitle mt-8" id="billing-subtitle-count">Currently managing 142 clients on TaxBot Partner API.</p>
+                    
+                    <div class="billing-usage-progress mt-24">
+                      <div class="progress-labels">
+                        <span id="billing-limit-label">Client Limit (142 / 200)</span>
+                        <strong id="billing-limit-pct">71% Used</strong>
+                      </div>
+                      <div class="progress-bar-wrap">
+                        <div class="progress-bar-fill" id="billing-progress-fill" style="width: 71%;"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Reseller pricing visualization -->
+                  <div class="reseller-pricing mt-32">
+                    <h4 class="section-sub-title">TaxBot CA Reseller Margin Model</h4>
+                    <p class="card-subtitle mt-8">TaxBot offers progressive pricing based on firm client volume. Earn commissions by billing clients directly.</p>
+                    
+                    <div class="reseller-tiers mt-16">
+                      <div class="reseller-tier-card" id="tier-1-card">
+                        <span class="tier-volume">1 - 9 Clients</span>
+                        <strong class="tier-rate">₹149 /mo per client</strong>
+                      </div>
+                      <div class="reseller-tier-card" id="tier-2-card">
+                        <span class="tier-volume">10 - 49 Clients</span>
+                        <strong class="tier-rate">₹119 /mo per client</strong>
+                      </div>
+                      <div class="reseller-tier-card" id="tier-3-card">
+                        <span class="tier-volume">50+ Clients</span>
+                        <strong class="tier-rate">₹99 /mo per client</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Upgrade & Savings Card -->
+              <div class="split-right">
+                <div class="card bg-primary-gradient text-light">
+                  <h3>Enterprise Partner Upgrade</h3>
+                  <p class="mt-16 text-light-muted">Unlock unlimited client licenses, white-label WhatsApp interfaces (e.g., WhatsApp from your firm's brand number), and dedicated API hooks for ERP systems.</p>
+                  
+                  <div class="upgrade-perks mt-24">
+                    <div class="perk-item"><i data-lucide="check"></i> Unlimited Client Workspace licences</div>
+                    <div class="perk-item mt-8"><i data-lucide="check"></i> Custom Brand WhatsApp Number</div>
+                    <div class="perk-item mt-8"><i data-lucide="check"></i> 24-hour SLA Support desk</div>
+                  </div>
+
+                  <button class="btn btn-light-brand btn-block mt-32" id="btn-upgrade-firm-plan">Upgrade to Enterprise (₹25,000/mo)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN 10: SETTINGS -->
+        <section id="view-settings" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Console Settings</h1>
+              <p class="view-subtitle">Manage workspace credentials, webhook receivers, notifications, and firm profiles.</p>
+            </div>
+          </div>
+
+          <div class="settings-layout mt-24 card">
+            <div class="settings-tabs-side">
+              <button class="settings-tab-link active" data-settings-tab="firm">Firm Profile</button>
+              <button class="settings-tab-link" data-settings-tab="users">Users & Permissions</button>
+              <button class="settings-tab-link" data-settings-tab="notifications">Notifications</button>
+              <button class="settings-tab-link" data-settings-tab="integrations">Integrations</button>
+              <button class="settings-tab-link" data-settings-tab="gst-settings">GST Settings</button>
+              <button class="settings-tab-link" data-settings-tab="api">API Access</button>
+              <button class="settings-tab-link" data-settings-tab="audit-trail">Audit Trail</button>
+            </div>
+
+            <div class="settings-content-side">
+              
+              <!-- Tab Panel: Firm -->
+              <div class="settings-panel active" id="settings-panel-firm">
+                <h3>Firm Profile Settings</h3>
+                <p class="card-subtitle mt-8">Configure public billing details and certification numbers.</p>
+                
+                <form class="settings-form mt-24" id="form-settings-firm">
+                  <div class="form-group">
+                    <label for="settings-firm-name">Registered Firm Name</label>
+                    <input type="text" id="settings-firm-name" value="Sharma & Associates, Chartered Accountants" class="form-input">
+                  </div>
+                  <div class="form-group mt-16">
+                    <label for="settings-principal-name">Principal Partner / Representative</label>
+                    <input type="text" id="settings-principal-name" value="Sandeep Sharma, FCA" class="form-input">
+                  </div>
+                  <div class="form-grid-2 mt-16">
+                    <div class="form-group">
+                      <label for="settings-membership-id">ICAI Membership Registration Number</label>
+                      <input type="text" id="settings-membership-id" value="074321" class="form-input">
+                    </div>
+                    <div class="form-group">
+                      <label for="settings-frn-id">Firm Registration Number (FRN)</label>
+                      <input type="text" id="settings-frn-id" value="123456W" class="form-input">
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary mt-24">Save Profile Changes</button>
+                </form>
+              </div>
+
+              <div class="settings-panel" id="settings-panel-users">
+                <h3>Users & Permissions</h3>
+                <p class="card-subtitle mt-8">Invite your assistants, auditors, and staff members.</p>
+                <div class="user-list mt-24">
+                  <!-- JS will dynamically populate user list -->
+                </div>
+              </div>
+
+              <div class="settings-panel" id="settings-panel-notifications">
+                <h3>Notifications Settings</h3>
+                <p class="card-subtitle mt-8">Manage WhatsApp trigger alerts and document review notifications.</p>
+              </div>
+
+              <div class="settings-panel" id="settings-panel-integrations">
+                <h3>System Integrations</h3>
+                <p class="card-subtitle mt-8">Manage API integrations with bank feeds, Zoho Books, and GST Portal API.</p>
+              </div>
+
+              <div class="settings-panel" id="settings-panel-gst-settings">
+                <h3>GST Portal Credentials</h3>
+                <p class="card-subtitle mt-8">Configure your ASP/GSP client IDs to query GSTR-2B data directly.</p>
+              </div>
+
+              <div class="settings-panel" id="settings-panel-api">
+                <h3>Developer API Keys</h3>
+                <p class="card-subtitle mt-8">Create webhooks to consume auto-categorized bookkeeping transactions into your internal platforms.</p>
+              </div>
+
+              <!-- Tab Panel: Audit Trail -->
+              <div class="settings-panel" id="settings-panel-audit-trail">
+                <h3>Console Audit Trail</h3>
+                <p class="card-subtitle mt-8">Review all administrative activities performed by your CA partner account.</p>
+                <div class="card overflow-x mt-24" style="padding: 0; border: 1px solid var(--border);">
+                  <table class="data-table" id="settings-audit-table">
+                    <thead>
+                      <tr>
+                        <th>Timestamp</th>
+                        <th>Action</th>
+                        <th>User Description</th>
+                      </tr>
+                    </thead>
+                    <tbody id="settings-audit-tbody">
+                      <tr><td colspan="3" class="text-secondary" style="text-align:center; padding: 24px;">Loading audit trail...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+      </main>
     </div>
-</div>
+  </div>
 
-<!-- Global Toast Notification element -->
-<div id="toast" class="toast">
-    <span class="toast-message">Notification message here</span>
-</div>
+  <!-- GLOBAL AI COMMAND BAR (RAYCAST / SPOTLIGHT STYLE MODAL) -->
+  <div class="command-bar-backdrop hidden" id="global-command-modal">
+    <div class="command-bar-dialog">
+      <div class="command-bar-input-wrap">
+        <i data-lucide="sparkles" class="ai-sparkles-icon"></i>
+        <input type="text" id="command-bar-search-input" placeholder="Ask TaxBot anything... (e.g. 'Show clients with GST due')" autocomplete="off">
+        <kbd class="kbd-esc">ESC</kbd>
+      </div>
+      <div class="command-bar-results" id="command-bar-suggestions-list">
+        <!-- JS inserts suggestions -->
+      </div>
+      <div class="command-bar-footer">
+        <span>Use <kbd>↑</kbd> <kbd>↓</kbd> to navigate, <kbd>Enter</kbd> to execute, <kbd>Esc</kbd> to close.</span>
+        <span>Powered by TaxBot AI</span>
+      </div>
+    </div>
+  </div>
 
-<script src="js/app.js"></script>
-<script>
-  // Simple modal toggle for CA landing page authentication forms
-  const authModal = document.getElementById('auth-modal');
-  const openLoginBtns = document.querySelectorAll('.btn-open-login');
-  const openRegisterBtns = document.querySelectorAll('.btn-open-register');
-  const closeAuthBtn = document.getElementById('btn-close-auth-modal');
-  
-  const showLogin = () => {
-    if (window.switchToLogin) window.switchToLogin();
-    authModal.classList.remove('hidden');
-    authModal.classList.add('flex');
-  };
-  
-  const showRegister = () => {
-    if (window.switchToRegister) window.switchToRegister();
-    authModal.classList.remove('hidden');
-    authModal.classList.add('flex');
-  };
-  
-  openLoginBtns.forEach(btn => btn.addEventListener('click', (e) => { e.preventDefault(); showLogin(); }));
-  openRegisterBtns.forEach(btn => btn.addEventListener('click', (e) => { e.preventDefault(); showRegister(); }));
-  
-  if (closeAuthBtn) {
-    closeAuthBtn.addEventListener('click', () => {
-      authModal.classList.add('hidden');
-      authModal.classList.remove('flex');
-    });
-  }
-  
-  // Also close on click outside modal content
-  authModal.addEventListener('click', (e) => {
-    if (e.target === authModal) {
-      authModal.classList.add('hidden');
-      authModal.classList.remove('flex');
-    }
-  });
-</script>
+  <!-- ADD CLIENT MODAL -->
+  <div class="command-bar-backdrop hidden" id="add-client-modal">
+    <div class="modal-dialog-standard">
+      <div class="modal-dialog-header">
+        <h3>Link New Client Business</h3>
+        <button class="modal-close-btn" id="btn-close-add-client"><i data-lucide="x"></i></button>
+      </div>
+      <form id="form-add-client" class="modal-dialog-body mt-16">
+        <div class="form-group">
+          <label for="new-client-owner">Owner/Client Full Name</label>
+          <input type="text" id="new-client-owner" placeholder="Rajesh Patel" required class="form-input">
+        </div>
+        <div class="form-group mt-16">
+          <label for="new-client-phone">WhatsApp Number (with Country Code)</label>
+          <input type="tel" id="new-client-phone" placeholder="919876543210" required class="form-input">
+        </div>
+        <div class="form-group mt-16">
+          <label for="new-client-name">Business / Shop Name</label>
+          <input type="text" id="new-client-name" placeholder="Patel Kirana Store" required class="form-input">
+        </div>
+        <div class="form-group mt-16">
+          <label for="new-client-gstin">GSTIN (15-digit)</label>
+          <input type="text" id="new-client-gstin" placeholder="27AAAAA1111A1Z1" class="form-input">
+        </div>
+        <div class="form-grid-2 mt-16">
+          <div class="form-group">
+            <label for="new-client-plan">Pricing Plan</label>
+            <select id="new-client-plan" class="form-select">
+              <option value="trial">Trial Plan (14d)</option>
+              <option value="starter">Starter Plan</option>
+              <option value="pro" selected>Pro Reseller Plan (₹100/mo)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="new-client-gst-registered">GST Registered?</label>
+            <select id="new-client-gst-registered" class="form-select">
+              <option value="true" selected>Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions mt-32">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-add-client">Cancel</button>
+          <button type="submit" class="btn btn-primary">Link & Authorize Ledger</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toast-root"></div>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Dynamic Logic & Live API bindings -->
+  <script src="js/console.js"></script>
 </body>
 </html>

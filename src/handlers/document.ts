@@ -143,23 +143,27 @@ export async function handleDocumentBuffer(
       msg += `\n🔗 *Customer Pay Link:* ${renderHost}/pay/${tx.id}\n`;
     }
     
-    await sendInteractiveList(
-      client.phone,
-      msg,
-      'Change Category',
-      [
-        {
-          title: 'Correct Category',
-          rows: [
-            { id: `cat_${tx.id}_sales`, title: 'Sales', description: 'Inward business revenue' },
-            { id: `cat_${tx.id}_purchase`, title: 'Purchase', description: 'Cost of goods/stock' },
-            { id: `cat_${tx.id}_expense`, title: 'Expense', description: 'General business expense' },
-            { id: `cat_${tx.id}_salary`, title: 'Salary', description: 'Staff payroll/wages' },
-            { id: `cat_${tx.id}_other`, title: 'Other', description: 'Miscellaneous' }
-          ]
-        }
-      ]
-    );
+    try {
+      await sendInteractiveList(
+        client.phone,
+        msg,
+        'Change Category',
+        [
+          {
+            title: 'Correct Category',
+            rows: [
+              { id: `cat_${tx.id}_sales`, title: 'Sales', description: 'Inward business revenue' },
+              { id: `cat_${tx.id}_purchase`, title: 'Purchase', description: 'Cost of goods/stock' },
+              { id: `cat_${tx.id}_expense`, title: 'Expense', description: 'General business expense' },
+              { id: `cat_${tx.id}_salary`, title: 'Salary', description: 'Staff payroll/wages' },
+              { id: `cat_${tx.id}_other`, title: 'Other', description: 'Miscellaneous' }
+            ]
+          }
+        ]
+      );
+    } catch (sendErr: any) {
+      console.warn(`[Webhook] Could not dispatch WhatsApp invoice confirmation list (check WA_TOKEN):`, sendErr.message || sendErr);
+    }
   } else {
     // bank_statement
     let totalSales = 0;
@@ -187,6 +191,10 @@ export async function handleDocumentBuffer(
     msg += `• *Total Outward (Expenses):* ${formatINR(totalExpenses + totalOther)}\n\n`;
     msg += `All statement items have been added to your business logs. Type *report* to review your P&L sheet.`;
 
-    await sendMessage(client.phone, msg);
+    try {
+      await sendMessage(client.phone, msg);
+    } catch (sendErr: any) {
+      console.warn(`[Webhook] Could not dispatch WhatsApp statement confirmation message (check WA_TOKEN):`, sendErr.message || sendErr);
+    }
   }
 }

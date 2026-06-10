@@ -58,10 +58,14 @@ async function processIncomingMessage(phone: string, contactName: string, messag
       client = await createClient(phone, contactName);
       
       // Send a welcome message
-      await sendMessage(
-        phone,
-        `Welcome to TaxBot, ${contactName}! 🇮🇳\n\nI am your AI accounting assistant. Send me your receipt photos, bank statement PDFs, or simply ask me tax questions in English or Hindi.\n\nType *help* to see what I can do.`
-      );
+      try {
+        await sendMessage(
+          phone,
+          `Welcome to TaxBot, ${contactName}! 🇮🇳\n\nI am your AI accounting assistant. Send me your receipt photos, bank statement PDFs, or simply ask me tax questions in English or Hindi.\n\nType *help* to see what I can do.`
+        );
+      } catch (err: any) {
+        console.warn(`[Webhook] Could not dispatch WhatsApp welcome message (check WA_TOKEN):`, err.message || err);
+      }
     }
 
     // 2. Route based on message type

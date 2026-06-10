@@ -134,12 +134,20 @@ async function handleManualAdd(
 
 Your reports and summaries have been updated automatically.`;
 
-    await sendMessage(client.phone, successMessage);
+    try {
+      await sendMessage(client.phone, successMessage);
+    } catch (sendErr: any) {
+      console.warn(`[Webhook] Could not dispatch WhatsApp success confirmation (check WA_TOKEN):`, sendErr.message || sendErr);
+    }
   } catch (err: any) {
     console.error('Error logging manual transaction:', err.message);
-    await sendMessage(
-      client.phone,
-      `⚠️ Could not record transaction. Please check the amount formatting and try again.`
-    );
+    try {
+      await sendMessage(
+        client.phone,
+        `⚠️ Could not record transaction. Please check the amount formatting and try again.`
+      );
+    } catch (sendErr: any) {
+      console.warn(`[Webhook] Could not dispatch WhatsApp error confirmation (check WA_TOKEN):`, sendErr.message || sendErr);
+    }
   }
 }

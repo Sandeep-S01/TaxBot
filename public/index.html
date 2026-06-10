@@ -1,15 +1,27 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>TaxBot - WhatsApp-First AI Bookkeeper for Indian SMBs</title>
     <meta name="description" content="Manage accounting, log voice notes, scan receipts, auto-generate Tally XML and CSV ledgers directly on WhatsApp. Securely built for Indian small businesses.">
     
+    <!-- Theme sync to prevent flash -->
+    <script>
+      (function() {
+        const savedTheme = localStorage.getItem('taxbot_theme');
+        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Outfit:wght@500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
     
     <!-- Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -24,59 +36,59 @@
         theme: {
           extend: {
             "colors": {
-                    "outline-variant": "#464555",
-                    "surface-container-high": "#1b2b3f",
-                    "tertiary-fixed-dim": "#ffb95f",
-                    "on-background": "#d3e4fe",
-                    "on-tertiary-container": "#ffd4a4",
-                    "secondary-fixed-dim": "#4edea3",
-                    "surface": "#031427",
-                    "secondary-fixed": "#6ffbbe",
-                    "tertiary-fixed": "#ffddb8",
-                    "on-tertiary-fixed-variant": "#653e00",
-                    "secondary-container": "#00a572",
-                    "surface-bright": "#2a3a4f",
+                    "outline-variant": "var(--border)",
+                    "surface-container-high": "var(--border)",
+                    "tertiary-fixed-dim": "var(--warning)",
+                    "on-background": "var(--text-primary)",
+                    "on-tertiary-container": "var(--warning-light)",
+                    "secondary-fixed-dim": "var(--success)",
+                    "surface": "var(--bg-card)",
+                    "secondary-fixed": "var(--success)",
+                    "tertiary-fixed": "var(--warning-light)",
+                    "on-tertiary-fixed-variant": "var(--text-secondary)",
+                    "secondary-container": "var(--success-light)",
+                    "surface-bright": "var(--bg-app)",
                     "on-secondary-fixed": "#002113",
                     "on-tertiary": "#472a00",
-                    "secondary": "#4edea3",
-                    "on-secondary": "#003824",
-                    "tertiary-container": "#885500",
-                    "tertiary": "#ffb95f",
-                    "on-primary": "#1d00a5",
+                    "secondary": "var(--success)",
+                    "on-secondary": "#FFFFFF",
+                    "tertiary-container": "var(--warning-light)",
+                    "tertiary": "var(--warning)",
+                    "on-primary": "#FFFFFF",
                     "on-secondary-fixed-variant": "#005236",
-                    "on-surface-variant": "#c7c4d8",
-                    "surface-variant": "#26364a",
-                    "inverse-primary": "#4d44e3",
-                    "surface-container-low": "#0b1c30",
-                    "outline": "#918fa1",
-                    "primary": "#c3c0ff",
+                    "on-surface-variant": "var(--text-secondary)",
+                    "surface-variant": "var(--border)",
+                    "inverse-primary": "var(--primary)",
+                    "surface-container-low": "var(--bg-app)",
+                    "outline": "var(--text-muted)",
+                    "primary": "var(--primary)",
                     "on-secondary-container": "#00311f",
-                    "primary-container": "#4f46e5",
-                    "background": "#031427",
-                    "surface-container-lowest": "#000f21",
-                    "surface-tint": "#c3c0ff",
-                    "surface-container": "#102034",
-                    "error": "#ffb4ab",
-                    "surface-dim": "#031427",
-                    "on-error": "#690005",
-                    "on-error-container": "#ffdad6",
-                    "on-surface": "#d3e4fe",
-                    "inverse-surface": "#d3e4fe",
-                    "primary-fixed": "#e2dfff",
-                    "inverse-on-surface": "#213145",
-                    "surface-container-highest": "#26364a",
+                    "primary-container": "var(--primary)",
+                    "background": "var(--bg-app)",
+                    "surface-container-lowest": "var(--bg-app)",
+                    "surface-tint": "var(--primary)",
+                    "surface-container": "var(--bg-card)",
+                    "error": "var(--error)",
+                    "surface-dim": "var(--bg-app)",
+                    "on-error": "#FFFFFF",
+                    "on-error-container": "var(--error-light)",
+                    "on-surface": "var(--text-primary)",
+                    "inverse-surface": "var(--text-primary)",
+                    "primary-fixed": "var(--primary-light)",
+                    "inverse-on-surface": "var(--text-primary)",
+                    "surface-container-highest": "var(--border)",
                     "on-primary-fixed": "#0f0069",
-                    "error-container": "#93000a",
-                    "primary-fixed-dim": "#c3c0ff",
-                    "on-primary-container": "#dad7ff",
-                    "on-primary-fixed-variant": "#3323cc",
-                    "on-tertiary-fixed": "#2a1700"
+                    "error-container": "var(--error-light)",
+                    "primary-fixed-dim": "var(--primary)",
+                    "on-primary-container": "#FFFFFF",
+                    "on-primary-fixed-variant": "var(--primary)",
+                    "on-tertiary-fixed": "var(--text-secondary)"
             },
             "borderRadius": {
-                    "DEFAULT": "0.125rem",
-                    "lg": "0.25rem",
-                    "xl": "0.5rem",
-                    "full": "0.75rem"
+                    "DEFAULT": "8px",
+                    "lg": "8px",
+                    "xl": "12px",
+                    "full": "9999px"
             },
             "spacing": {
                     "gutter": "24px",
@@ -91,37 +103,75 @@
             "fontFamily": {
                     "body-md": ["Inter"],
                     "mono-data": ["JetBrains Mono"],
-                    "headline-md": ["Inter"],
+                    "headline-md": ["Outfit", "Inter"],
                     "label-sm": ["Inter"],
-                    "display-lg": ["Inter"],
-                    "display-lg-mobile": ["Inter"],
+                    "display-lg": ["Outfit", "Inter"],
+                    "display-lg-mobile": ["Outfit", "Inter"],
                     "body-lg": ["Inter"]
             },
             "fontSize": {
-                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
-                    "mono-data": ["14px", {"lineHeight": "1.4", "fontWeight": "400"}],
-                    "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                    "label-sm": ["13px", {"lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "500"}],
-                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                    "display-lg-mobile": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    "body-md": ["15px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "mono-data": ["13px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["13px", {"lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "display-lg": ["44px", {"lineHeight": "1.1", "letterSpacing": "-0.03em", "fontWeight": "800"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
             }
           }
         }
       }
     </script>
     <style>
+        /* Visual tokens aligned with the console */
+        :root {
+          --bg-app: #F8FAFC;
+          --bg-card: #FFFFFF;
+          --border: #E2E8F0;
+          --primary: #2563EB;
+          --primary-light: #EFF6FF;
+          --success: #16A34A;
+          --success-light: #F0FDF4;
+          --warning: #F59E0B;
+          --warning-light: #FFFBEB;
+          --error: #DC2626;
+          --error-light: #FEF2F2;
+          --text-primary: #0F172A;
+          --text-secondary: #64748B;
+          --text-muted: #94A3B8;
+        }
+        
+        .dark {
+          --bg-app: #090D16;
+          --bg-card: #121824;
+          --border: #1E293B;
+          --primary: #3B82F6;
+          --primary-light: rgba(59, 130, 246, 0.15);
+          --success: #10B981;
+          --success-light: rgba(16, 185, 129, 0.15);
+          --warning: #F59E0B;
+          --warning-light: rgba(245, 158, 11, 0.15);
+          --error: #EF4444;
+          --error-light: rgba(239, 68, 68, 0.15);
+          --text-primary: #F8FAFC;
+          --text-secondary: #94A3B8;
+          --text-muted: #64748B;
+        }
+
         /* Custom Utilities for precise styling */
         .glass-panel {
-            background: rgba(16, 32, 52, 0.6);
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--tw-colors-surface-variant);
+            border: 1px solid var(--border);
+        }
+        .dark .glass-panel {
+            background: rgba(18, 24, 36, 0.7);
         }
         .data-grid-bg {
             background-image: 
-                linear-gradient(to right, #26364a 1px, transparent 1px),
-                linear-gradient(to bottom, #26364a 1px, transparent 1px);
+                linear-gradient(to right, var(--border) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--border) 1px, transparent 1px);
             background-size: 24px 24px;
             background-position: center top;
         }
@@ -168,6 +218,9 @@
         </div>
         <!-- Actions -->
         <div class="hidden md:flex items-center gap-sm">
+            <button id="theme-toggle-btn" class="w-9 h-9 rounded border border-surface-variant hover:bg-surface-variant text-on-surface flex items-center justify-center transition-colors" aria-label="Toggle Theme">
+                <span class="material-symbols-outlined text-[20px]" id="theme-toggle-icon">dark_mode</span>
+            </button>
             <a href="console.html" class="px-md py-xs rounded text-on-surface border border-surface-variant hover:bg-surface-variant transition-colors text-label-sm font-label-sm inline-flex items-center">Book a Demo</a>
             <a href="https://wa.me/919876543210" target="_blank" class="px-md py-xs rounded bg-primary-container text-on-primary-container hover:brightness-110 transition-all text-label-sm font-label-sm font-medium inline-flex items-center">Start Free Trial</a>
         </div>
@@ -184,7 +237,11 @@
             <a class="text-on-surface-variant hover:text-primary text-label-sm py-xs" href="#pricing">Pricing</a>
             <a class="text-on-surface-variant hover:text-primary text-label-sm py-xs" href="#how-it-works">Integrations</a>
             <div class="flex flex-col gap-xs mt-xs pt-xs border-t border-surface-variant">
-                <a href="console.html" class="px-md py-xs rounded text-on-surface border border-surface-variant hover:bg-surface-variant text-center text-label-sm">Book a Demo</a>
+                <button id="theme-toggle-btn-mobile" class="w-full py-xs rounded text-on-surface border border-surface-variant hover:bg-surface-variant text-center text-label-sm flex items-center justify-center gap-xs">
+                    <span class="material-symbols-outlined text-[20px]" id="theme-toggle-icon-mobile">dark_mode</span>
+                    Toggle Dark Mode
+                </button>
+                <a href="console.html" class="px-md py-xs rounded text-on-surface border border-surface-variant hover:bg-surface-variant text-center text-label-sm mt-1">Book a Demo</a>
                 <a href="https://wa.me/919876543210" target="_blank" class="px-md py-xs rounded bg-primary-container text-on-primary-container text-center font-medium text-label-sm">Start Free Trial</a>
             </div>
         </div>
@@ -631,5 +688,32 @@
 </div>
 
 <script src="js/app.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const themeBtn = document.getElementById('theme-toggle-btn');
+        const themeBtnMobile = document.getElementById('theme-toggle-btn-mobile');
+        const themeIcon = document.getElementById('theme-toggle-icon');
+        const themeIconMobile = document.getElementById('theme-toggle-icon-mobile');
+
+        function updateToggleIcons(isDark) {
+            const iconText = isDark ? 'light_mode' : 'dark_mode';
+            if (themeIcon) themeIcon.textContent = iconText;
+            if (themeIconMobile) themeIconMobile.textContent = iconText;
+        }
+
+        // Set initial icon state based on class present in documentElement
+        const isDark = document.documentElement.classList.contains('dark');
+        updateToggleIcons(isDark);
+
+        function toggleTheme() {
+            const currentlyDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('taxbot_theme', currentlyDark ? 'dark' : 'light');
+            updateToggleIcons(currentlyDark);
+        }
+
+        if (themeBtn) themeBtn.onclick = toggleTheme;
+        if (themeBtnMobile) themeBtnMobile.onclick = toggleTheme;
+    });
+</script>
 </body>
 </html>

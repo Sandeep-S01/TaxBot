@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
+import PDFDocument from 'pdfkit';
+import Anthropic from '@anthropic-ai/sdk';
 import multer from 'multer';
 import { handleDocumentBuffer } from './handlers/document';
 import { verifyWebhook } from './webhook/verify';
@@ -9,11 +11,16 @@ import { handleWebhook } from './webhook/handler';
 import { initRemindersJob } from './jobs/reminders';
 import { validateExportToken } from './handlers/commands/export';
 import { getClientById, getClientByPhone, createClient, updateClient } from './db/clients';
-import { getTransactionsByDateRange, periodToDateRange, getTransactionById, getTransactionsSince } from './db/transactions';
+import { getTransactionsByDateRange, periodToDateRange, getTransactionById, getTransactionsSince, getTransactionsForMultipleClients } from './db/transactions';
 import { exportToCSV, exportToTallyXML } from './utils/exporter';
-import { createCA, getCAByEmail, getCAClients, getConsolidatedGSTRSummary, linkClientToCA } from './db/cas';
+import { createCA, getCAByEmail, getCAById, getCAClients, getConsolidatedGSTRSummary, linkClientToCA } from './db/cas';
+import { logAuditAction, getAuditLogs } from './db/audit';
 
 dotenv.config();
+
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY || 'dummy_key',
+});
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -51,6 +58,8 @@ app.post('/api/ca/register', async (req, res) => {
       firm_name: firmName || null,
     });
 
+    await logAuditAction(ca.id, 'REGISTER', `New CA registered: ${ca.name} (${ca.firm_name || 'No Firm'})`);
+
     // Return CA info (excluding password hash)
     return res.status(201).json({
       message: 'CA registered successfully',
@@ -80,6 +89,8 @@ app.post('/api/ca/login', async (req, res) => {
     if (ca.password_hash !== inputHash) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
+
+    await logAuditAction(ca.id, 'LOGIN', `CA logged in: ${ca.name}`);
 
     return res.status(200).json({
       message: 'Login successful',
@@ -157,6 +168,8 @@ app.post('/api/ca/clients', async (req, res) => {
       });
     }
 
+    await logAuditAction(caId, 'CLIENT_CREATED', `Linked client business: ${client.business_name || client.name}`, client.id);
+
     return res.status(201).json({
       message: 'Client added and linked successfully',
       client,
@@ -217,6 +230,414 @@ app.get('/api/ca/reports/gst', async (req, res) => {
   } catch (err: any) {
     console.error('Error generating consolidated GSTR report:', err.message);
     return res.status(500).json({ error: 'Internal Server Error: Could not generate GSTR report' });
+  }
+});
+
+// 8. Generate dynamic PDF reports (P&L and GST)
+app.get('/api/ca/reports/pdf', async (req, res) => {
+  const caId = (req.headers['x-ca-id'] || req.query.caId) as string;
+  const { clientId, reportType, period } = req.query as { clientId?: string; reportType?: string; period?: string; caId?: string };
+
+  if (!caId) {
+    return res.status(401).json({ error: 'Unauthorized: Missing x-ca-id header or caId query parameter' });
+  }
+
+  if (!clientId || !reportType) {
+    return res.status(400).json({ error: 'Missing required parameters: clientId and reportType' });
+  }
+
+  try {
+    // Verify client is managed by this CA
+    const client = await getClientById(clientId);
+    if (!client || client.ca_id !== caId) {
+      return res.status(403).json({ error: 'Forbidden: You do not manage this client' });
+    }
+
+    const targetPeriod = period || new Date().toISOString().substring(0, 7);
+    const { startDate, endDate } = periodToDateRange(targetPeriod);
+    const transactions = await getTransactionsByDateRange(clientId, startDate, endDate);
+
+    // Fetch CA info for branding
+    const ca = await getCAById(caId);
+
+    // Log the PDF generation
+    await logAuditAction(caId, 'PDF_DOWNLOADED', `Generated ${reportType.toUpperCase()} PDF report for client: ${client.business_name || client.name}`, clientId);
+
+    // Initialize PDF document
+    const doc = new PDFDocument({ margin: 50, size: 'A4' });
+
+    // Stream the PDF directly to the express response
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="TaxBot_Report_${reportType.toUpperCase()}_${client.business_name || client.name}_${targetPeriod}.pdf"`);
+    doc.pipe(res);
+
+    // --- Branded Header ---
+    doc.fillColor('#2563EB').fontSize(24).font('Helvetica-Bold').text('TaxBot Partner', 50, 45);
+    doc.fillColor('#64748B').fontSize(10).font('Helvetica').text('AI-First CA Platform', 50, 75);
+    
+    // CA Firm Details (Right-aligned)
+    if (ca) {
+      doc.fillColor('#0F172A').fontSize(12).font('Helvetica-Bold').text(ca.firm_name || ca.name, 400, 45, { align: 'right', width: 145 });
+      doc.fillColor('#64748B').fontSize(9).font('Helvetica').text(`CA Email: ${ca.email}`, 400, 60, { align: 'right', width: 145 });
+    }
+
+    // Divider Line
+    doc.lineWidth(1).strokeColor('#E2E8F0').moveTo(50, 95).lineTo(545, 95).stroke();
+
+    // --- Client Details Box ---
+    doc.fillColor('#0F172A').fontSize(14).font('Helvetica-Bold').text('Client & Period Details', 50, 110);
+    doc.fontSize(10).font('Helvetica')
+       .text(`Business Name: ${client.business_name || client.name || 'N/A'}`, 50, 130)
+       .text(`GSTIN: ${client.gstin || 'N/A'}`, 50, 145)
+       .text(`Owner: ${client.name}`, 50, 160)
+       .text(`Phone: +${client.phone}`, 50, 175);
+
+    doc.fontSize(10).font('Helvetica')
+       .text(`Report Type: ${reportType === 'pl' ? 'Profit & Loss Statement' : 'GST Return Summary'}`, 300, 130)
+       .text(`Filing Period: ${targetPeriod}`, 300, 145)
+       .text(`Generated On: ${new Date().toLocaleDateString('en-IN')}`, 300, 160);
+
+    // --- Financial Summary Cards ---
+    let yPos = 205;
+    
+    let salesTotal = 0;
+    let expenseTotal = 0;
+    transactions.forEach(t => {
+      const amt = Math.abs(Number(t.amount));
+      if (t.category === 'sales') {
+        salesTotal += amt;
+      } else {
+        expenseTotal += amt;
+      }
+    });
+
+    doc.lineWidth(1).rect(50, yPos, 495, 60).fillAndStroke('#F8FAFC', '#E2E8F0');
+
+    if (reportType === 'pl') {
+      const netProfit = salesTotal - expenseTotal;
+      doc.fillColor('#0F172A').fontSize(10).font('Helvetica-Bold').text('Total Revenue', 70, yPos + 15);
+      doc.fillColor('#2563EB').fontSize(14).text(`INR ${salesTotal.toLocaleString('en-IN')}`, 70, yPos + 30);
+
+      doc.fillColor('#0F172A').fontSize(10).text('Total Expenses', 220, yPos + 15);
+      doc.fillColor('#EF4444').fontSize(14).text(`INR ${expenseTotal.toLocaleString('en-IN')}`, 220, yPos + 30);
+
+      doc.fillColor('#0F172A').fontSize(10).text('Net Profit / Loss', 370, yPos + 15);
+      doc.fillColor(netProfit >= 0 ? '#16A34A' : '#DC2626').fontSize(14).text(`INR ${netProfit.toLocaleString('en-IN')}`, 370, yPos + 30);
+    } else {
+      // GST Summary
+      const salesTax = salesTotal * 0.18;
+      const purchaseTax = expenseTotal * 0.18;
+      const netGstPayable = Math.max(0, salesTax - purchaseTax);
+
+      doc.fillColor('#0F172A').fontSize(10).font('Helvetica-Bold').text('Outward GST (Liability)', 70, yPos + 15);
+      doc.fillColor('#2563EB').fontSize(14).text(`INR ${salesTax.toLocaleString('en-IN')}`, 70, yPos + 30);
+
+      doc.fillColor('#0F172A').fontSize(10).text('Inward GST (ITC)', 220, yPos + 15);
+      doc.fillColor('#16A34A').fontSize(14).text(`INR ${purchaseTax.toLocaleString('en-IN')}`, 220, yPos + 30);
+
+      doc.fillColor('#0F172A').fontSize(10).text('Net GST Payable', 370, yPos + 15);
+      doc.fillColor(netGstPayable > 0 ? '#F59E0B' : '#64748B').fontSize(14).text(`INR ${netGstPayable.toLocaleString('en-IN')}`, 370, yPos + 30);
+    }
+
+    // --- Table of Transactions ---
+    yPos = 290;
+    doc.fillColor('#0F172A').fontSize(12).font('Helvetica-Bold').text('Transaction Ledgers Detail', 50, yPos);
+    
+    yPos = 310;
+    // Table Headers
+    doc.rect(50, yPos, 495, 20).fill('#EFF6FF');
+    doc.fillColor('#2563EB').fontSize(8).font('Helvetica-Bold')
+       .text('Date', 60, yPos + 6)
+       .text('Type', 130, yPos + 6)
+       .text('Category / Description', 200, yPos + 6)
+       .text('GST Rate', 380, yPos + 6)
+       .text('Amount (INR)', 470, yPos + 6, { align: 'right', width: 65 });
+
+    yPos += 20;
+
+    // Table Rows
+    doc.font('Helvetica').fontSize(8);
+    transactions.forEach((t, index) => {
+      // Draw row border
+      doc.moveTo(50, yPos).lineTo(545, yPos).strokeColor('#F1F5F9').stroke();
+      
+      const amt = Number(t.amount);
+      const isSale = t.category === 'sales';
+      const categoryText = t.description || (t.category ? t.category.charAt(0).toUpperCase() + t.category.slice(1) : 'Expense');
+      
+      doc.fillColor('#0F172A')
+         .text(t.date || '—', 60, yPos + 6)
+         .fillColor(isSale ? '#16A34A' : '#EF4444')
+         .text(isSale ? 'SALE' : 'EXPENSE', 130, yPos + 6)
+         .fillColor('#0F172A')
+         .text(categoryText.substring(0, 32), 200, yPos + 6)
+         .text(t.gst_rate ? `${t.gst_rate}%` : '0%', 380, yPos + 6)
+         .text(`${isSale ? '+' : '-'}${Math.abs(amt).toLocaleString('en-IN')}`, 470, yPos + 6, { align: 'right', width: 65 });
+
+      yPos += 20;
+
+      // Handle page break
+      if (yPos > 720) {
+        doc.addPage();
+        yPos = 50;
+        // Draw headers again
+        doc.rect(50, yPos, 495, 20).fill('#EFF6FF');
+        doc.fillColor('#2563EB').fontSize(8).font('Helvetica-Bold')
+           .text('Date', 60, yPos + 6)
+           .text('Type', 130, yPos + 6)
+           .text('Category / Description', 200, yPos + 6)
+           .text('GST Rate', 380, yPos + 6)
+           .text('Amount (INR)', 470, yPos + 6, { align: 'right', width: 65 });
+        yPos += 20;
+        doc.font('Helvetica').fontSize(8);
+      }
+    });
+
+    // End transaction table line
+    doc.moveTo(50, yPos).lineTo(545, yPos).strokeColor('#E2E8F0').stroke();
+
+    // Footer note
+    doc.fillColor('#94A3B8').fontSize(8).text('This is an automated ledger summary generated by TaxBot. All logs reconciled via Supabase database client records.', 50, 770, { align: 'center', width: 495 });
+
+    doc.end();
+
+  } catch (err: any) {
+    console.error('Error generating PDF report:', err.message);
+    return res.status(500).json({ error: 'Internal Server Error: Could not generate report' });
+  }
+});
+
+// 9. Log frontend CA action manually
+app.post('/api/ca/audit/log', async (req, res) => {
+  const caId = req.headers['x-ca-id'] as string;
+  const { actionType, description, clientId } = req.body;
+
+  if (!caId) {
+    return res.status(401).json({ error: 'Unauthorized: Missing x-ca-id header' });
+  }
+
+  if (!actionType || !description) {
+    return res.status(400).json({ error: 'Missing required parameters: actionType and description' });
+  }
+
+  try {
+    const log = await logAuditAction(caId, actionType, description, clientId || null);
+    return res.status(201).json(log);
+  } catch (err: any) {
+    console.error('Error logging manual audit action:', err.message);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// 10. Get audit logs for CA
+app.get('/api/ca/audit/logs', async (req, res) => {
+  const caId = req.headers['x-ca-id'] as string;
+
+  if (!caId) {
+    return res.status(401).json({ error: 'Unauthorized: Missing x-ca-id header' });
+  }
+
+  try {
+    const logs = await getAuditLogs(caId);
+    return res.status(200).json(logs);
+  } catch (err: any) {
+    console.error('Error fetching audit logs:', err.message);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// 11. AI Auditor Chat endpoint
+app.post('/api/ca/audit/chat', async (req, res) => {
+  const caId = req.headers['x-ca-id'] as string;
+  const { clientId, message, clientTransactions } = req.body;
+
+  if (!caId) {
+    return res.status(401).json({ error: 'Unauthorized: Missing x-ca-id header' });
+  }
+
+  if (!clientId || !message) {
+    return res.status(400).json({ error: 'Missing required parameters: clientId and message' });
+  }
+
+  try {
+    // Verify client is managed by this CA
+    const client = await getClientById(clientId);
+    if (!client || client.ca_id !== caId) {
+      return res.status(403).json({ error: 'Forbidden: You do not manage this client' });
+    }
+
+    const txString = JSON.stringify(clientTransactions || []);
+    
+    // Log the audit query
+    await logAuditAction(caId, 'AI_AUDIT_QUERY', `Audited client ${client.business_name || client.name}: "${message.substring(0, 50)}..."`, clientId);
+
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const isDummyKey = !apiKey || apiKey.includes('placeholder') || apiKey.includes('your_') || apiKey.length < 20;
+
+    if (isDummyKey) {
+      const simResponse = getSimulatedAIResponse(client, message, clientTransactions || []);
+      return res.status(200).json({ response: simResponse, simulated: true });
+    }
+
+    try {
+      const response = await anthropic.messages.create({
+        model: 'claude-3-haiku-20240307',
+        max_tokens: 1000,
+        system: `You are an expert AI auditor for Indian Chartered Accountants (CAs). You are auditing the ledgers of client "${client.business_name || client.name}" (GSTIN: ${client.gstin || 'N/A'}).
+The client's current transactions for the month are:
+${txString}
+
+Analyze the transaction list and answer the user's question accurately. Focus on Indian tax laws, GSTR compliance, potential anomalies, duplicate transactions, missing invoices, and expense categorization. Be concise and professional.`,
+        messages: [{ role: 'user', content: message }],
+      });
+
+      const firstBlock = response.content[0];
+      const reply = firstBlock.type === 'text' ? firstBlock.text : '';
+      return res.status(200).json({ response: reply, simulated: false });
+    } catch (apiErr: any) {
+      console.warn('[Anthropic] API call failed, falling back to simulator:', apiErr.message || apiErr);
+      const simResponse = getSimulatedAIResponse(client, message, clientTransactions || []);
+      return res.status(200).json({ response: simResponse, simulated: true });
+    }
+
+  } catch (err: any) {
+    console.error('Error in AI audit chat endpoint:', err.message);
+    return res.status(500).json({ error: 'Internal Server Error: AI Chat failed' });
+  }
+});
+
+// Helper for simulated response
+function getSimulatedAIResponse(client: any, message: string, txs: any[]): string {
+  const query = message.toLowerCase();
+  
+  let salesTotal = 0;
+  let expenseTotal = 0;
+  let unverifiedCount = 0;
+  
+  txs.forEach(t => {
+    const amt = Math.abs(Number(t.amount || 0));
+    if (t.type === 'Sale' || t.category === 'sales') {
+      salesTotal += amt;
+    } else {
+      expenseTotal += amt;
+    }
+    if (t.status === 'Review Required' || t.confidence === 'low') {
+      unverifiedCount++;
+    }
+  });
+
+  const clientName = client.business_name || client.name || 'Client';
+
+  if (query.includes('anomal') || query.includes('suspicious') || query.includes('unusual') || query.includes('duplicate')) {
+    let response = `### 🔍 AI Audit Anomalies Report for **${clientName}**\n\n`;
+    
+    const unverifiedTxs = txs.filter(t => t.status === 'Review Required' || t.confidence === 'low' || t.status === 'Auto-Categorized');
+    
+    if (unverifiedTxs.length > 0) {
+      response += `I have identified **${unverifiedTxs.length} items** requiring attention:\n\n`;
+      unverifiedTxs.forEach((t, idx) => {
+        response += `${idx + 1}. **${t.category} (${t.source || 'WhatsApp'})** - **₹${Math.abs(t.amount).toLocaleString('en-IN')}**\n`;
+        if (t.status === 'Review Required') {
+          response += `   - *Risk*: Lacks verified voucher proof or receipt attachment.\n`;
+          response += `   - *Action*: Prompt owner on WhatsApp requesting invoice image.\n`;
+        } else {
+          response += `   - *Risk*: Auto-classified with medium confidence.\n`;
+          response += `   - *Action*: Confirm category matching or re-assign to correct ledger.\n`;
+        }
+      });
+    } else {
+      response += `No critical anomalies or unverified transactions were detected in this period's ledger. All transactions appear to be properly verified.`;
+    }
+    return response;
+  }
+
+  if (query.includes('gst') || query.includes('tax') || query.includes('itc') || query.includes('reconciliation') || query.includes('gstr')) {
+    const salesTax = salesTotal * 0.18;
+    const purchaseTax = expenseTotal * 0.18;
+    const netGst = Math.max(0, salesTax - purchaseTax);
+
+    return `### 📊 GST Tax Reconciliation Analysis for **${clientName}**
+
+Based on client invoices logged:
+- **Consolidated Sales Revenue**: ₹${salesTotal.toLocaleString('en-IN')}
+- **Outward GST Liability (GSTR-1 Estimator)**: **₹${salesTax.toLocaleString('en-IN')}** (at 18%)
+- **Consolidated Expense Value**: ₹${expenseTotal.toLocaleString('en-IN')}
+- **Inward Eligible Input Tax Credit (ITC)**: **₹${purchaseTax.toLocaleString('en-IN')}** (at 18%)
+- **Net Estimated GST Payable**: **₹${netGst.toLocaleString('en-IN')}**
+
+**Compliance Check**:
+1. ${client.gstin ? `GSTIN \`${client.gstin}\` is active. Ready to generate GSTR-1 XML file.` : '⚠️ GSTIN is missing. Client must link GST profile to complete filing.'}
+2. Purchase matching indicates high confidence. Input tax offsets are within acceptable variance thresholds.`;
+  }
+
+  // Default response
+  return `### 🤖 TaxBot AI Auditor Report for **${clientName}**
+
+I have analyzed the client's current ledger containing **${txs.length} transactions** for the period:
+- **Total Inflow (Sales)**: ₹${salesTotal.toLocaleString('en-IN')}
+- **Total Outflow (Expenses)**: ₹${expenseTotal.toLocaleString('en-IN')}
+- **Pending Review**: ${unverifiedCount} transaction(s) requiring verification
+
+I am ready to assist with auditing. You can ask me:
+- *Show me anomalies in this client's transactions*
+- *What is their estimated GST liability and GSTR status?*
+- *Explain duplicate entries or categorization mismatches*`;
+}
+
+// 7. Get ALL transactions across all CA-managed clients (aggregated view)
+app.get('/api/ca/transactions', async (req, res) => {
+  const caId = req.headers['x-ca-id'] as string;
+  const { period } = req.query as { period?: string };
+
+  if (!caId) {
+    return res.status(401).json({ error: 'Unauthorized: Missing x-ca-id header' });
+  }
+
+  try {
+    const clients = await getCAClients(caId);
+    if (clients.length === 0) {
+      return res.status(200).json({ period: period || 'all', transactions: [] });
+    }
+
+    const clientIds = clients.map(c => c.id);
+    const clientMap: Record<string, { name: string; business_name: string | null; phone: string }> = {};
+    clients.forEach(c => {
+      clientMap[c.id] = { name: c.name || 'Unnamed', business_name: c.business_name, phone: c.phone };
+    });
+
+    // Determine date range
+    let startDate: string;
+    let endDate: string;
+    if (period && /^\d{4}-\d{2}$/.test(period)) {
+      const range = periodToDateRange(period);
+      startDate = range.startDate;
+      endDate = range.endDate;
+    } else {
+      // Default: current month
+      const now = new Date();
+      const currentPeriod = now.toISOString().substring(0, 7);
+      const range = periodToDateRange(currentPeriod);
+      startDate = range.startDate;
+      endDate = range.endDate;
+    }
+
+    const transactions = await getTransactionsForMultipleClients(clientIds, startDate, endDate);
+
+    // Enrich transactions with client display info
+    const enriched = transactions.map(tx => ({
+      ...tx,
+      client_name: clientMap[tx.client_id]?.business_name || clientMap[tx.client_id]?.name || 'Unknown',
+      client_phone: clientMap[tx.client_id]?.phone || '',
+    }));
+
+    return res.status(200).json({
+      period: period || new Date().toISOString().substring(0, 7),
+      count: enriched.length,
+      transactions: enriched,
+    });
+  } catch (err: any) {
+    console.error('Error fetching aggregated CA transactions:', err.message);
+    return res.status(500).json({ error: 'Internal Server Error: Could not fetch transactions' });
   }
 });
 

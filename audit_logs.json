@@ -1,0 +1,50 @@
+[
+  {
+    "ca_id": "d7acdc25-03f2-4fc7-ad72-1b2625310684",
+    "action_type": "TRANSACTION_APPROVED",
+    "description": "Approved transaction Grocery items sold worth ₹25,000 for client Grocery Mart",
+    "client_id": "24511b29-13fc-432e-8d4a-125f584c6470",
+    "created_at": "2026-06-10T17:46:22.603Z",
+    "id": "dcor98wmk"
+  },
+  {
+    "ca_id": "d7acdc25-03f2-4fc7-ad72-1b2625310684",
+    "action_type": "LOGIN",
+    "description": "CA logged in: Test CA Partner",
+    "client_id": null,
+    "created_at": "2026-06-10T17:45:01.311Z",
+    "id": "6j61g0kcr"
+  },
+  {
+    "ca_id": "d7acdc25-03f2-4fc7-ad72-1b2625310684",
+    "action_type": "AI_AUDIT_QUERY",
+    "description": "Audited client The Ananta Store: \"What is their GST liability and compliance status?...\"",
+    "client_id": "c4333145-f513-4d3e-828b-38255e30eb02",
+    "created_at": "2026-06-10T16:51:59.993Z",
+    "id": "ou80x9tqy"
+  },
+  {
+    "ca_id": "d7acdc25-03f2-4fc7-ad72-1b2625310684",
+    "action_type": "AI_AUDIT_QUERY",
+    "description": "Audited client The Ananta Store: \"Show me anomalies in this client's transactions...\"",
+    "client_id": "c4333145-f513-4d3e-828b-38255e30eb02",
+    "created_at": "2026-06-10T16:51:07.053Z",
+    "id": "mp1cesm8b"
+  },
+  {
+    "ca_id": "d7acdc25-03f2-4fc7-ad72-1b2625310684",
+    "action_type": "AI_AUDIT_QUERY",
+    "description": "Audited client The Ananta Store: \"Show me anomalies in this client's transactions...\"",
+    "client_id": "c4333145-f513-4d3e-828b-38255e30eb02",
+    "created_at": "2026-06-10T16:50:46.924Z",
+    "id": "zgda1icqs"
+  },
+  {
+    "ca_id": "d7acdc25-03f2-4fc7-ad72-1b2625310684",
+    "action_type": "LOGIN",
+    "description": "CA sandeep logged in from console test",
+    "client_id": null,
+    "created_at": "2026-06-10T16:50:34.427Z",
+    "id": "6i6qyia8r"
+  }
+]

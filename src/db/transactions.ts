@@ -252,4 +252,28 @@ export async function getTransactionsSince(
   return data || [];
 }
 
+// Batch-fetch transactions across multiple clients within a date range
+export async function getTransactionsForMultipleClients(
+  clientIds: string[],
+  startDate: string,
+  endDate: string
+): Promise<Transaction[]> {
+  if (clientIds.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('*')
+    .in('client_id', clientIds)
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .order('date', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching transactions for multiple clients:', error);
+    throw error;
+  }
+
+  return data || [];
+}
+
 
