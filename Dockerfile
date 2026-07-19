@@ -1,30 +1,29 @@
-FROM node:20-alpine
+FROM node:20-alpine AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy dependency configs
 COPY package*.json ./
-
-# Install dependencies
 RUN npm ci
 
-# Copy tsconfig and source files
 COPY tsconfig.json ./
 COPY src/ ./src/
 COPY public/ ./public/
-COPY scripts/ ./scripts/
-COPY supabase/ ./supabase/
 
-# Compile TypeScript
 RUN npm run build
 
-# Set environment
+FROM node:20-alpine AS runtime
+
+WORKDIR /app
+
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Expose port
+COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/public ./public
+
 EXPOSE 3000
 
-# Start server
 CMD ["npm", "start"]

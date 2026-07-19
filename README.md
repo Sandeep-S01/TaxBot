@@ -133,6 +133,25 @@ Execute the Vitest suite:
 npm run test
 ```
 
+### Production Quality Gate
+Run these checks before pushing or redeploying:
+```bash
+npm run lint
+npm run build
+npm test
+npm run check:mojibake
+npm audit --audit-level=moderate
+```
+
+The GitHub Actions workflow runs the same checks and validates that the Docker image builds.
+
+### Render Deployment Checklist
+1. Apply pending SQL files from `supabase/migrations/` in order.
+2. Confirm production env vars with `npm run check:env` in the deployed environment where possible.
+3. Redeploy Render from the latest `main` branch.
+4. Verify `GET /health` and `GET /ready`.
+5. Run `npm run smoke:prod` with `SMOKE_BASE_URL`, `SMOKE_CA_EMAIL`, and `SMOKE_CA_PASSWORD`.
+
 ---
 
 ## Meta Webhook Integration
