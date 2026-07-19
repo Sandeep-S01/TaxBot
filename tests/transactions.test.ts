@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { isDuplicateTransactionCandidate, periodToDateRange } from '../src/db/transactions';
+import {
+  getTransactionReviewReasons,
+  isDuplicateTransactionCandidate,
+  periodToDateRange,
+} from '../src/db/transactions';
 
 describe('Period to Date Range Conversion', () => {
   it('should correctly calculate the start and end of months for standard months', () => {
@@ -78,5 +82,23 @@ describe('Duplicate transaction candidate matching', () => {
       ...incoming,
       amount: 1200,
     })).toBe(false);
+  });
+});
+
+describe('Transaction review reasons', () => {
+  it('requires review when duplicate detection fails', () => {
+    expect(getTransactionReviewReasons(
+      { confidence: 'high' },
+      null,
+      true
+    )).toEqual(['duplicate_check_failed']);
+  });
+
+  it('combines low-confidence and duplicate provenance reasons', () => {
+    expect(getTransactionReviewReasons(
+      { confidence: 'low' },
+      { id: 'tx-duplicate' },
+      false
+    )).toEqual(['low_confidence_ai_extraction', 'possible_duplicate:tx-duplicate']);
   });
 });

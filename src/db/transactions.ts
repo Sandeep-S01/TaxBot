@@ -2,9 +2,15 @@ import { supabase } from './client';
 import { Transaction, TransactionCategory, TransactionStatus } from '../types';
 import { getClientById } from './clients';
 import { splitTransactionGst } from '../gst/taxSplit';
+import { summarizeHttpError } from '../utils/privacy';
 
 type TransactionInsert = Omit<Transaction, 'id' | 'created_at' | 'status' | 'review_reason' | 'confirmed_at'> &
   Partial<Pick<Transaction, 'status' | 'review_reason' | 'confirmed_at'>>;
+
+interface DuplicateCheckOutcome {
+  candidate: Transaction | null;
+  failed: boolean;
+}
 
 export async function createTransaction(
   transaction: TransactionInsert
@@ -26,16 +32,12 @@ export async function createTransaction(
 }
 
 async function applyReviewStatus(transaction: TransactionInsert): Promise<TransactionInsert> {
-  const reasons: string[] = [];
-
-  if (transaction.confidence === 'low') {
-    reasons.push('low_confidence_ai_extraction');
-  }
-
-  const duplicate = await findDuplicateCandidate(transaction);
-  if (duplicate) {
-    reasons.push(`possible_duplicate:${duplicate.id}`);
-  }
+  const duplicateOutcome = await findDuplicateCandidateWithStatus(transaction);
+  const reasons = getTransactionReviewReasons(
+    transaction,
+    duplicateOutcome.candidate,
+    duplicateOutcome.failed
+  );
 
   if (reasons.length === 0) {
     return {
@@ -57,8 +59,14 @@ async function applyReviewStatus(transaction: TransactionInsert): Promise<Transa
 export async function findDuplicateCandidate(
   transaction: Pick<TransactionInsert, 'client_id' | 'date' | 'amount' | 'tax_amount' | 'invoice_number' | 'vendor_gstin' | 'vendor_name'>
 ): Promise<Transaction | null> {
+  return (await findDuplicateCandidateWithStatus(transaction)).candidate;
+}
+
+async function findDuplicateCandidateWithStatus(
+  transaction: Pick<TransactionInsert, 'client_id' | 'date' | 'amount' | 'tax_amount' | 'invoice_number' | 'vendor_gstin' | 'vendor_name'>
+): Promise<DuplicateCheckOutcome> {
   if (!transaction.invoice_number && !transaction.vendor_gstin && !transaction.vendor_name) {
-    return null;
+    return { candidate: null, failed: false };
   }
 
   const { startDate, endDate } = duplicateDateWindow(transaction.date);
@@ -71,11 +79,36 @@ export async function findDuplicateCandidate(
     .limit(50);
 
   if (error) {
-    console.warn('Duplicate transaction check failed:', error.message);
-    return null;
+    console.warn('Duplicate transaction check failed:', summarizeHttpError(error));
+    return { candidate: null, failed: true };
   }
 
-  return (data || []).find((candidate) => isDuplicateTransactionCandidate(transaction, candidate)) || null;
+  return {
+    candidate: (data || []).find((candidate) => isDuplicateTransactionCandidate(transaction, candidate)) || null,
+    failed: false,
+  };
+}
+
+export function getTransactionReviewReasons(
+  transaction: Pick<TransactionInsert, 'confidence'>,
+  duplicateCandidate: Pick<Transaction, 'id'> | null,
+  duplicateCheckFailed = false
+): string[] {
+  const reasons: string[] = [];
+
+  if (transaction.confidence === 'low') {
+    reasons.push('low_confidence_ai_extraction');
+  }
+
+  if (duplicateCheckFailed) {
+    reasons.push('duplicate_check_failed');
+  }
+
+  if (duplicateCandidate) {
+    reasons.push(`possible_duplicate:${duplicateCandidate.id}`);
+  }
+
+  return reasons;
 }
 
 export function isDuplicateTransactionCandidate(
