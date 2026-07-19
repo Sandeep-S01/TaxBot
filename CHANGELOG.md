@@ -60,3 +60,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Split Express app construction from server startup and added E2E-style smoke coverage for public shell, CA login, protected APIs, paginated ledger reads, signed exports, and unsigned payment denial.
 - Added provider/category error summaries for Gemini, Anthropic, Meta WhatsApp, Sandbox GSTIN, and Supabase operations without logging response bodies or secrets.
 - Redacted development diagnostic script output by default, fixed signed-export smoke-test expectations, and added a CI script-safety gate.
+- Added a public non-secret `/version` endpoint and production smoke coverage for deployed commit/build metadata.

@@ -48,6 +48,13 @@ async function run() {
   }
 
   try {
+    const version = await requestJson('/version');
+    record('version', version.res.ok && version.body?.service === 'TaxBot API', `status ${version.res.status}, commit ${version.body?.commit || 'unknown'}`);
+  } catch (err: any) {
+    record('version', false, err.message);
+  }
+
+  try {
     const ready = await request('/ready');
     record('readiness', ready.ok, `status ${ready.status}`);
   } catch (err: any) {

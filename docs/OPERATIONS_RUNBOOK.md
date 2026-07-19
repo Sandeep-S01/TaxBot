@@ -73,9 +73,11 @@ select count(*) from inbound_messages;
 4. Check:
    ```text
    GET https://<app-origin>/health
+   GET https://<app-origin>/version
    GET https://<app-origin>/ready
    ```
 5. `/ready` must return `status: "ready"` and `database: "ok"`.
+6. `/version` must report the expected commit for the deployed revision.
 
 ## Production Smoke Test
 
