@@ -21,6 +21,7 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Disabled simulated CA AI Auditor answers in production when Anthropic is missing or unavailable.
 - Validated and client-scoped manual CA audit log writes.
 - Added database-level integrity checks for CA audit log action format, description length, and client ownership.
+- Validated WhatsApp interactive category/export replies and removed hardcoded production hosts from WhatsApp link generation.
 
 ### Production Readiness
 - Added `META_APP_SECRET`, `APP_ORIGIN`, and `ALLOWED_ORIGINS` to the environment contract.
@@ -42,3 +43,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Documented the CA AI Auditor's Anthropic dependency and added tests for production fallback behavior.
 - Added tests for manual audit-log payload validation.
 - Refreshed the consolidated Supabase schema snapshot and added migration consistency tests.
+- Added tests for WhatsApp interactive reply validation and public origin selection.

@@ -6,6 +6,7 @@ import { categoriseDocumentText } from '../ai/categorise';
 import { createTransaction } from '../db/transactions';
 import { formatINR } from './commands/gst';
 import { createPaymentLink } from '../utils/publicTokens';
+import { getPublicAppOrigin } from '../utils/origin';
 
 /**
  * Handles PDF uploads from WhatsApp.
@@ -140,7 +141,7 @@ export async function handleDocumentBuffer(
     msg += `• *Category:* ${tx.category.toUpperCase()}\n`;
 
     if (tx.category === 'sales') {
-      const renderHost = process.env.RENDER_EXTERNAL_URL || 'https://taxbot-u2vh.onrender.com';
+      const renderHost = getPublicAppOrigin();
       msg += `\n🔗 *Customer Pay Link:* ${createPaymentLink(renderHost, tx.id)}\n`;
     }
 
