@@ -109,10 +109,10 @@ cp .env.example .env
 Ensure you set the variables:
 - `ANTHROPIC_API_KEY`: Optional Anthropic key for the CA AI Auditor. In production, the audit chat returns `503` instead of simulated answers when this is missing.
 - `GEMINI_API_KEY`: Required Gemini key used for Gemini 2.5 Flash document, receipt, and audio flows.
-- `SUPABASE_URL`, `SUPABASE_ANON_KEY` & `SUPABASE_SERVICE_ROLE_KEY`: Supabase project values. The backend should use the service-role key on the server.
-- `JWT_SECRET`: Long random secret used to sign CA console sessions.
-- `EXPORT_TOKEN_SECRET`: Long random secret used to sign temporary export links.
-- `EMAIL_WEBHOOK_SECRET`: Long random secret required by `/api/webhooks/email`; send it as `Authorization: Bearer <secret>` or `x-taxbot-email-secret`.
+- `SUPABASE_URL`, `SUPABASE_ANON_KEY` & `SUPABASE_SERVICE_ROLE_KEY`: Supabase project values. `SUPABASE_URL` must be the real HTTPS project URL; the backend should use the service-role key on the server.
+- `JWT_SECRET`: Long random secret used to sign CA console sessions, at least 32 characters.
+- `EXPORT_TOKEN_SECRET`: Long random secret used to sign temporary export links, at least 32 characters.
+- `EMAIL_WEBHOOK_SECRET`: Long random secret required by `/api/webhooks/email`, at least 32 characters; send it as `Authorization: Bearer <secret>` or `x-taxbot-email-secret`.
 - `WA_TOKEN`: Meta WhatsApp Cloud permanent authorization bearer token.
 - `WA_PHONE_ID`: Phone number ID from Meta developer panel.
 - `WA_VERIFY_TOKEN`: A custom string of your choice used to verify your webhook subscription.

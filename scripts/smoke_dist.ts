@@ -70,7 +70,7 @@ async function run() {
 
   const port = await getFreePort();
   const baseUrl = `http://127.0.0.1:${port}`;
-  const configuredOrigin = `http://taxbot-dist-smoke.localhost:${port}`;
+  const configuredOrigin = 'https://taxbot-dist-smoke.example.com';
   const child = spawn(process.execPath, [DIST_ENTRY], {
     cwd: process.cwd(),
     env: {

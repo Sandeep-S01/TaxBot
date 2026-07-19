@@ -1,11 +1,14 @@
-const REQUIRED_PRODUCTION_SECRETS = [
+const REQUIRED_PRODUCTION_URLS = [
   'SUPABASE_URL',
+  'APP_ORIGIN',
+];
+
+const REQUIRED_PRODUCTION_SECRETS = [
   'SUPABASE_SERVICE_ROLE_KEY',
   'JWT_SECRET',
   'EXPORT_TOKEN_SECRET',
   'META_APP_SECRET',
   'EMAIL_WEBHOOK_SECRET',
-  'APP_ORIGIN',
 ];
 
 function isUnsafeSecret(value: string | undefined): boolean {
@@ -18,14 +21,36 @@ function isUnsafeSecret(value: string | undefined): boolean {
   );
 }
 
+function isUnsafeProductionUrl(value: string | undefined): boolean {
+  if (
+    !value ||
+    value.includes('placeholder') ||
+    value.includes('your_') ||
+    value.includes('xxx')
+  ) {
+    return true;
+  }
+
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol !== 'https:' || !parsed.hostname.includes('.');
+  } catch {
+    return true;
+  }
+}
+
 export function validateEnvironment() {
   if (process.env.NODE_ENV !== 'production') {
     return;
   }
 
-  const missing = REQUIRED_PRODUCTION_SECRETS.filter((name) =>
+  const unsafeSecrets = REQUIRED_PRODUCTION_SECRETS.filter((name) =>
     isUnsafeSecret(process.env[name])
   );
+  const unsafeUrls = REQUIRED_PRODUCTION_URLS.filter((name) =>
+    isUnsafeProductionUrl(process.env[name])
+  );
+  const missing = [...unsafeSecrets, ...unsafeUrls];
 
   if (missing.length > 0) {
     throw new Error(
