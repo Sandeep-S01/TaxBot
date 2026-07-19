@@ -15,8 +15,8 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 | GST Correctness | 8/10 | In progress | Regular-GST v1 scope, tax split, provenance, duplicate review, and partial-report visibility are implemented. |
 | AI Reliability | 8/10 | In progress | Extraction normalization, production audit fallback behavior, and provider-category logging are implemented. |
 | Performance | 8/10 | In progress | Basic limits/retries, paginated ledger APIs, row ceilings, and targeted ledger/audit indexes exist. |
-| Reliability | 8/10 | In progress | Readiness checks, idempotency, retry, graceful shutdown, Render config checks, and health/version deploy fingerprints are complete; production smoke still needs live verification. |
-| Testing | 8/10 | In progress | Unit, integration-style, Express source smoke, compiled dist smoke, and public asset integrity checks cover critical paths; deployed smoke evidence remains open. |
+| Reliability | 8/10 | In progress | Readiness checks, idempotency, retry, graceful shutdown, Render config checks, and health/version deploy fingerprints are live; credentialed production smoke still needs a CA test account. |
+| Testing | 8/10 | In progress | Unit, integration-style, Express source smoke, compiled dist smoke, public asset integrity checks, and unauthenticated deployed smoke cover critical paths; credentialed deployed smoke remains open. |
 | Documentation | 8/10 | In progress | README, migrations, env contract, changelog, tracker, and operations runbook are updated. |
 
 ## Completed Remediation
@@ -52,7 +52,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 
 ## Remaining Queue
 
-1. High: verify deployed production smoke after Render redeploy and Supabase migrations, then capture the evidence in this tracker.
+1. High: run credentialed production smoke with a CA test account, then capture the evidence in this tracker.
 2. Medium: continue splitting remaining large CA route areas and dashboard scripts into smaller modules after behavior is stable.
 3. Low: keep the operations runbook updated after live production smoke tests and incidents.
 
@@ -66,6 +66,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - 2026-07-19: Rechecked after pushing commit `2576c65`; `/health` still returned the legacy body without deployment metadata, while `/ready` and `/version` returned `404`. Production smoke remains blocked on Render serving stale code.
 - 2026-07-19: Rechecked after pushing commit `17fd7b0`; `/health` still returned the legacy body without deployment metadata, while `/ready` and `/version` returned `404`. Live production remains blocked on Render deploying the current `main` build.
 - 2026-07-19: Rechecked after pushing commit `20c2ac3`; `/health` still returned the legacy body without deployment metadata, while `/ready` and `/version` returned `404`. Live production remains blocked on Render deploying the current `main` build.
+- 2026-07-19: Rechecked after Render redeploy of commit `2768692`; `/health`, `/ready`, and `/version` returned `200`, with `environment:"production"` and database readiness `ok`. Public `/console.html` returned `200`, protected CA APIs returned `401` without a session, and invalid `/pay/test` returned `400`. Stale deployment and missing environment variable blockers are resolved; credentialed `npm run smoke:prod` still needs CA test credentials.
 
 ## Verification Command
 
