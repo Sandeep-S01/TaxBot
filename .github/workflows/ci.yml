@@ -40,6 +40,9 @@ jobs:
       - name: Check frontend safety
         run: npm run check:frontend-safety
 
+      - name: Check diagnostic script safety
+        run: npm run check:script-safety
+
       - name: Audit dependencies
         run: npm audit --audit-level=moderate
 

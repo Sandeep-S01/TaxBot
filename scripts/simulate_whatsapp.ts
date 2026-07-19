@@ -2,6 +2,7 @@ import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import FormData from 'form-data';
+import { logData, logProviderError, printDevOnlyWarning, safeIdentifier } from './dev_logging';
 
 // Determine backend URL
 const PORT = process.env.PORT || 3000;
@@ -33,7 +34,10 @@ Commands:
 
 // WhatsApp Text Webhook simulator
 async function simulateText(phone: string, body: string) {
-  console.log(`\n[Simulator] Simulating WhatsApp text message from +${phone}: "${body}"`);
+  console.log(`\n[Simulator] Simulating WhatsApp text message`, {
+    phone: safeIdentifier(phone, 'phone'),
+    messageLength: body.length,
+  });
 
   const payload = {
     object: 'whatsapp_business_account',
@@ -78,13 +82,13 @@ async function simulateText(phone: string, body: string) {
   try {
     const res = await axios.post(`${BACKEND_URL}/webhook`, payload);
     console.log(`[Simulator] Webhook response code: ${res.status}`);
-    console.log(`[Simulator] Response body: ${res.data}`);
+    logData('[Simulator] Response body summary', res.data);
     console.log(`[Simulator] Success! Check console.html to verify the transaction was written.`);
   } catch (err: any) {
-    console.error(`[Simulator] Error sending webhook POST request:`, err.message);
+    logProviderError(`[Simulator] Error sending webhook POST request:`, 'unknown', 'simulate_whatsapp_text', err);
     if (err.response) {
       console.error(`Status: ${err.response.status}`);
-      console.error(`Body:`, err.response.data);
+      logData('Body summary', err.response.data);
     }
   }
 }
@@ -92,7 +96,10 @@ async function simulateText(phone: string, body: string) {
 // Inbound Email PDF upload simulator
 async function simulatePdfUpload(clientId: string, pdfPath: string) {
   const absolutePath = path.resolve(pdfPath);
-  console.log(`\n[Simulator] Uploading PDF: "${absolutePath}" to client ledger: "${clientId}"`);
+  console.log(`\n[Simulator] Uploading PDF`, {
+    file: path.basename(absolutePath),
+    client: safeIdentifier(clientId, 'client'),
+  });
 
   if (!fs.existsSync(absolutePath)) {
     console.error(`[Simulator] Error: Local PDF file does not exist at "${absolutePath}"`);
@@ -116,18 +123,19 @@ async function simulatePdfUpload(clientId: string, pdfPath: string) {
       }
     });
     console.log(`[Simulator] Webhook response code: ${res.status}`);
-    console.log(`[Simulator] Response body:`, res.data);
+    logData('[Simulator] Response body summary', res.data);
     console.log(`[Simulator] Success! Backend processing started in background. Check database logs.`);
   } catch (err: any) {
-    console.error(`[Simulator] Error uploading PDF:`, err.message);
+    logProviderError(`[Simulator] Error uploading PDF:`, 'unknown', 'simulate_pdf_upload', err);
     if (err.response) {
       console.error(`Status: ${err.response.status}`);
-      console.error(`Body:`, err.response.data);
+      logData('Body summary', err.response.data);
     }
   }
 }
 
 async function run() {
+  printDevOnlyWarning('simulate_whatsapp');
   const args = process.argv.slice(2);
   if (args.length === 0) {
     showHelp();

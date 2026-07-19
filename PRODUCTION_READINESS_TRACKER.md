@@ -33,15 +33,14 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - Operations: deployment, migration, smoke-test, rollback, and incident triage runbook.
 - Testability: app factory separated from server startup, with E2E-style Express smoke tests for login, protected APIs, exports, and payment denial.
 - Observability: categorized provider error summaries for Gemini, Anthropic, Meta WhatsApp, Sandbox GSTIN, and Supabase operations.
-- CI readiness: lint, build, tests, mojibake check, frontend safety check, npm audit, Docker build workflow.
+- CI readiness: lint, build, tests, mojibake check, frontend safety check, diagnostic script safety check, npm audit, Docker build workflow.
 
 ## Remaining Queue
 
 1. High: verify deployed production smoke after Render redeploy and Supabase migrations, then capture the evidence in this tracker.
 2. Medium: split large CA route and dashboard scripts into smaller modules after behavior is stable.
 3. Medium: profile Supabase indexes and query plans against larger production-like ledger volumes.
-4. Low: label development-only diagnostic scripts and reduce raw data printing in local helper scripts.
-5. Low: keep the operations runbook updated after live production smoke tests and incidents.
+4. Low: keep the operations runbook updated after live production smoke tests and incidents.
 
 ## Verification Command
 
@@ -51,5 +50,6 @@ npm run build
 npm test
 npm run check:mojibake
 npm run check:frontend-safety
+npm run check:script-safety
 npm audit --audit-level=moderate
 ```

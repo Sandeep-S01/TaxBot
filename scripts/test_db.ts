@@ -4,8 +4,10 @@ dotenv.config();
 
 import { supabase } from '../src/db/client';
 import { getClientByPhone } from '../src/db/clients';
+import { logData, logProviderError, printDevOnlyWarning, safeIdentifier } from './dev_logging';
 
 async function testSupabase() {
+  printDevOnlyWarning('test_db');
   console.log('--- Testing Supabase Connection ---');
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
@@ -22,15 +24,14 @@ async function testSupabase() {
       }
     });
     console.log('Raw API Success! Status:', res.status);
-    console.log('Data:', res.data);
+    logData('Data summary', res.data);
   } catch (err: any) {
     console.error('Raw API Request Failed!');
     if (err.response) {
       console.error('Status:', err.response.status);
-      console.error('Headers:', err.response.headers);
-      console.error('Body:', err.response.data);
+      logProviderError('Supabase REST error:', 'supabase', 'test_db_rest', err);
     } else {
-      console.error('Error:', err.message);
+      logProviderError('Supabase REST error:', 'supabase', 'test_db_rest', err);
     }
   }
 }
@@ -39,9 +40,14 @@ async function testGetClient() {
   try {
     console.log('\n--- Testing getClientByPhone ---');
     const client = await getClientByPhone('15556700514');
-    console.log('Client result:', client);
+    console.log('Client result:', client ? {
+      id: safeIdentifier(client.id, 'client'),
+      phone: safeIdentifier(client.phone, 'phone'),
+      gst_registered: client.gst_registered,
+      plan: client.plan,
+    } : null);
   } catch (err: any) {
-    console.error('getClientByPhone failed:', err.message || err);
+    logProviderError('getClientByPhone failed:', 'supabase', 'test_get_client_by_phone', err);
   }
 }
 

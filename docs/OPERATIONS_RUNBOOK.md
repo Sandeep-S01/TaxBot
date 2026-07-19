@@ -16,6 +16,7 @@ This runbook is for production operators deploying TaxBot to Render with Supabas
    npm test
    npm run check:mojibake
    npm run check:frontend-safety
+   npm run check:script-safety
    npm audit --audit-level=moderate
    ```
 3. Confirm GitHub Actions is green for the commit being deployed.

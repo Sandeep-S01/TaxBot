@@ -3,6 +3,7 @@ import path from 'path';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import { exportToTallyXML } from '../src/utils/exporter';
+import { allowRawDebugOutput, logProviderError, safeIdentifier } from './dev_logging';
 
 dotenv.config();
 
@@ -77,7 +78,7 @@ async function syncWithTally() {
     process.exit(1);
   }
 
-  console.log(`[Sync] Starting synchronization for client: ${config.clientId}`);
+  console.log(`[Sync] Starting synchronization for client: ${safeIdentifier(config.clientId, 'client')}`);
   console.log(`[Sync] Querying transactions since: ${config.lastSyncTime}`);
 
   try {
@@ -101,7 +102,7 @@ async function syncWithTally() {
       return;
     }
 
-    console.log(`[Sync] Generating compliant Tally XML split-vouchers for ${businessName}...`);
+    console.log(`[Sync] Generating compliant Tally XML split-vouchers for configured client...`);
     const xmlData = exportToTallyXML(transactions, businessName, gstin);
 
     const tallyUrl = `http://localhost:${config.tallyPort}`;
@@ -115,8 +116,10 @@ async function syncWithTally() {
     });
 
     const responseText = tallyResponse.data as string;
-    console.log(`[Sync] Tally response received:`);
-    console.log(responseText);
+    console.log(`[Sync] Tally response received.`);
+    if (allowRawDebugOutput()) {
+      console.log(responseText);
+    }
 
     const createdMatch = responseText.match(/<CREATED>(\d+)<\/CREATED>/);
     const alteredMatch = responseText.match(/<ALTERED>(\d+)<\/ALTERED>/);
@@ -135,11 +138,13 @@ async function syncWithTally() {
       console.warn(`[Sync Warning] Tally reported ${errors} errors during import. Check Tally's Tally.imp log file for details.`);
 
       const lineErrorMatch = responseText.match(/<LINEERROR>(.*?)<\/LINEERROR>/g);
-      if (lineErrorMatch) {
+      if (lineErrorMatch && allowRawDebugOutput()) {
         console.warn(`Error Details:`);
         lineErrorMatch.forEach((errLine) => {
           console.warn(`  - ${errLine.replace(/<\/?LINEERROR>/g, '')}`);
         });
+      } else if (lineErrorMatch) {
+        console.warn(`Line-level Tally errors are hidden. Set ALLOW_RAW_DEBUG_OUTPUT=true to show local Tally details.`);
       }
     } else {
       console.log(`[Sync Success] All ${count} transactions imported successfully into Tally.`);
@@ -153,7 +158,7 @@ async function syncWithTally() {
       console.error(`Ensure Tally is running locally and HTTP Server is enabled:`);
       console.error(`  Gateway of Tally > Press F12 > Advanced Configuration > Enable ODBC/HTTP Server -> Yes, Port -> ${config.tallyPort}\n`);
     } else {
-      console.error(`\n[Sync Error] ${err.response?.data?.error || err.message}`);
+      logProviderError(`\n[Sync Error]`, 'unknown', 'tally_sync', err);
     }
     process.exit(1);
   }

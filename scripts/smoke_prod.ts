@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { generateExportToken } from '../src/handlers/commands/export';
 
 dotenv.config();
 
@@ -99,8 +100,18 @@ async function run() {
   const pdfType = pdfResp.headers.get('content-type') || '';
   record('authenticated pdf report', pdfResp.ok && pdfType.includes('application/pdf'), `status ${pdfResp.status}, content-type ${pdfType || 'missing'}`);
 
-  const exportResp = await request(`/export/${encodeURIComponent(firstClient.id)}?format=csv`);
-  record('public csv export route', exportResp.ok, `status ${exportResp.status}`);
+  const unsignedExportResp = await request(`/export/${encodeURIComponent(firstClient.id)}?format=csv&period=${new Date().toISOString().substring(0, 7)}`);
+  record('unsigned public export blocked', unsignedExportResp.status === 400 || unsignedExportResp.status === 403, `status ${unsignedExportResp.status}`);
+
+  if (process.env.EXPORT_TOKEN_SECRET) {
+    const period = new Date().toISOString().substring(0, 7);
+    const token = generateExportToken(firstClient.id, period);
+    const signedExportResp = await request(`/export/${encodeURIComponent(firstClient.id)}?format=csv&period=${period}&token=${token}`);
+    const exportType = signedExportResp.headers.get('content-type') || '';
+    record('signed public csv export route', signedExportResp.ok && exportType.includes('text/csv'), `status ${signedExportResp.status}, content-type ${exportType || 'missing'}`);
+  } else {
+    record('signed public csv export route', true, 'skipped because local EXPORT_TOKEN_SECRET is not set');
+  }
 
   const firstTx = txs[0];
   if (firstTx?.id) {
