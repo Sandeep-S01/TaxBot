@@ -43,6 +43,9 @@ jobs:
       - name: Check diagnostic script safety
         run: npm run check:script-safety
 
+      - name: Check Render deployment config
+        run: npm run check:render-config
+
       - name: Audit dependencies
         run: npm audit --audit-level=moderate
 

@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: taxbot
+    runtime: node
+    plan: starter
+    region: singapore
+    branch: main
+    rootDir: .
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NPM_CONFIG_PRODUCTION
+        value: "false"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: EXPORT_TOKEN_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: META_APP_SECRET
+        sync: false
+      - key: EMAIL_WEBHOOK_SECRET
+        sync: false
+      - key: APP_ORIGIN
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
