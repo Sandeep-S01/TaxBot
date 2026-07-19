@@ -8,8 +8,8 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 
 | Area | Target | Status | Notes |
 | --- | --- | --- | --- |
-| Architecture | 8/10 | In progress | App construction is separated from server startup; CA client/audit/report routes plus console utilities/API/charts/notifications are extracted; remaining work is dashboard feature decomposition. |
-| Code Quality | 8/10 | In progress | TypeScript gate is clean; CA route responsibilities and shared browser utilities/API/charts/notifications are split out; remaining work is dashboard feature cleanup. |
+| Architecture | 8/10 | In progress | App construction is separated from server startup; CA client/audit/report routes plus console utilities/API/auth/charts/notifications are extracted; remaining work is dashboard feature decomposition. |
+| Code Quality | 8/10 | In progress | TypeScript gate is clean; CA route responsibilities and shared browser utilities/API/auth/charts/notifications are split out; remaining work is dashboard feature cleanup. |
 | Security | 8/10 | In progress | JWT/Argon2, CSRF, webhook signatures, export tokens, runtime/script env validation, log redaction, XML/CSV escaping are complete. |
 | Database | 8/10 | In progress | Ordered migrations, audit integrity, and production query indexes are complete; production migration execution must be verified per environment. |
 | GST Correctness | 8/10 | In progress | Regular-GST v1 scope, tax split, provenance, duplicate review, and partial-report visibility are implemented. |
@@ -41,6 +41,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - Maintainability: CA audit log and AI audit chat endpoints are split into `src/routes/caAudit.ts` with existing `/api/ca/audit/*` paths preserved.
 - Maintainability: shared CA console browser utilities are split into `public/js/console-utils.js` and loaded before `public/js/console.js`.
 - Maintainability: CA console authenticated session and protected-PDF helpers are split into `public/js/console-api.js` and covered by public asset load-order checks.
+- Maintainability: CA console login, registration, and logout handlers are split into `public/js/console-auth.js` and covered by public asset load-order checks.
 - Maintainability: CA reconciliation, consolidated GST, and PDF report endpoints are split into `src/routes/caReports.ts` with existing `/api/ca/*` paths preserved.
 - Maintainability: CA client management and ledger listing endpoints are split into `src/routes/caClients.ts` with existing `/api/ca/clients*` and `/api/ca/transactions` paths preserved.
 - Maintainability: CA console chart state, data shaping, and rendering are split into `public/js/console-charts.js` and loaded before `public/js/console.js`.

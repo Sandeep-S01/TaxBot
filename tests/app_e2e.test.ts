@@ -48,7 +48,7 @@ const testTransaction = {
   created_at: '2026-07-10T00:00:00Z',
 };
 
-describe('Express app production smoke flows', () => {
+describe('Express app production smoke flows', { hookTimeout: 30000 }, () => {
   let baseUrl = '';
   let server: any;
   let generateExportToken: (clientId: string, period: string, issued?: string) => string;

@@ -66,6 +66,7 @@ if (fs.existsSync(consoleHtmlPath)) {
   const requiredConsoleScripts = [
     'js/console-utils.js',
     'js/console-api.js',
+    'js/console-auth.js',
     'js/console-charts.js',
     'js/console-notifications.js',
     'js/console.js',

@@ -76,3 +76,5 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Aligned `npm run check:env` with production URL and secret validation rules, including tests for HTTPS production origins.
 - Split CA console authenticated session/PDF helpers into `public/js/console-api.js` and added it to the public asset load-order check.
 - Replaced encoding-sensitive password placeholder glyphs in the CA console with plain text placeholders.
+- Split CA console login, registration, and logout handlers into `public/js/console-auth.js`.
+- Added explicit hook timeout headroom to the Express smoke E2E suite to reduce CI flakiness during dynamic app setup.
