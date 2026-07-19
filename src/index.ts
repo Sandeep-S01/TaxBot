@@ -11,6 +11,7 @@ import { createEmailRoutes } from './routes/email';
 import { createSyncRoutes } from './routes/sync';
 import { createWebhookRoutes } from './routes/webhook';
 import { initRemindersJob } from './jobs/reminders';
+import { captureRawBody } from './webhook/signature';
 
 dotenv.config();
 validateEnvironment();
@@ -26,7 +27,7 @@ app.use(helmet({
   contentSecurityPolicy: false,
 }));
 app.use(cors());
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '1mb', verify: captureRawBody }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // Serve static landing page & dashboard files from the public folder

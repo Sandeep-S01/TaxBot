@@ -7,6 +7,7 @@ import { handleAudio } from '../handlers/audio';
 import { handleInteractive } from '../handlers/interactive';
 import { sendMessage } from '../whatsapp/send';
 import { WhatsAppIncomingNotification, WhatsAppMessage } from '../types';
+import crypto from 'crypto';
 
 /**
  * Handle incoming POST requests from WhatsApp webhook
@@ -15,7 +16,7 @@ import { WhatsAppIncomingNotification, WhatsAppMessage } from '../types';
 export async function handleWebhook(req: Request, res: Response) {
   const body = req.body as WhatsAppIncomingNotification;
 
-  console.log('Incoming webhook payload:', JSON.stringify(body, null, 2));
+  logWebhookSummary(body);
 
   // Let Meta know we received the event immediately to prevent retries
   res.status(200).send('EVENT_RECEIVED');
@@ -44,6 +45,26 @@ export async function handleWebhook(req: Request, res: Response) {
       });
     }
   }
+}
+
+function logWebhookSummary(body: WhatsAppIncomingNotification) {
+  const summaries = (body.entry || [])
+    .flatMap((entry) => entry.changes || [])
+    .flatMap((change) => change.value?.messages || [])
+    .map((message) => ({
+      messageId: message.id,
+      type: message.type,
+      phoneHash: hashPhone(message.from),
+    }));
+
+  console.log('[Webhook] Incoming event summary:', {
+    object: body.object,
+    messages: summaries,
+  });
+}
+
+function hashPhone(phone: string): string {
+  return crypto.createHash('sha256').update(phone).digest('hex').slice(0, 12);
 }
 
 /**

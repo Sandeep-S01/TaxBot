@@ -3,6 +3,7 @@ const REQUIRED_PRODUCTION_SECRETS = [
   'SUPABASE_SERVICE_ROLE_KEY',
   'JWT_SECRET',
   'EXPORT_TOKEN_SECRET',
+  'META_APP_SECRET',
 ];
 
 function isUnsafeSecret(value: string | undefined): boolean {
