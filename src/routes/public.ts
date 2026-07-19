@@ -10,6 +10,7 @@ import {
 import { exportToCSV, exportToTallyXML } from '../utils/exporter';
 import { escapeHtml } from '../utils/sanitize';
 import { validatePaymentToken } from '../utils/publicTokens';
+import { supabase } from '../db/client';
 
 export function createPublicRoutes(downloadLimiter: RateLimitRequestHandler): Router {
   const router = Router();
@@ -21,6 +22,43 @@ export function createPublicRoutes(downloadLimiter: RateLimitRequestHandler): Ro
       service: 'TaxBot API',
       uptime: process.uptime(),
     });
+  });
+
+  router.get('/ready', async (req, res) => {
+    const requiredEnv = [
+      'SUPABASE_URL',
+      'SUPABASE_SERVICE_ROLE_KEY',
+      'JWT_SECRET',
+      'EXPORT_TOKEN_SECRET',
+      'META_APP_SECRET',
+      'APP_ORIGIN',
+    ];
+    const missingEnv = requiredEnv.filter((name) => !process.env[name]);
+
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .select('id', { count: 'exact', head: true });
+
+      if (missingEnv.length > 0 || error) {
+        return res.status(503).json({
+          status: 'not_ready',
+          missingEnv,
+          database: error ? 'unavailable' : 'ok',
+        });
+      }
+
+      return res.status(200).json({
+        status: 'ready',
+        database: 'ok',
+      });
+    } catch (err: any) {
+      return res.status(503).json({
+        status: 'not_ready',
+        missingEnv,
+        database: 'unavailable',
+      });
+    }
   });
 
   router.get('/export/:clientId', downloadLimiter, async (req, res) => {

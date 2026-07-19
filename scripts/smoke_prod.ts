@@ -46,6 +46,13 @@ async function run() {
     record('health', false, err.message);
   }
 
+  try {
+    const ready = await request('/ready');
+    record('readiness', ready.ok, `status ${ready.status}`);
+  } catch (err: any) {
+    record('readiness', false, err.message);
+  }
+
   if (!email || !password) {
     record('ca login', false, 'SMOKE_CA_EMAIL and SMOKE_CA_PASSWORD are required');
     finish();
