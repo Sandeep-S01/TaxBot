@@ -78,8 +78,20 @@ Run inside the project root:
 npm install
 ```
 
-### 3. Database Initialization
-Copy the SQL contents of [schema.sql](supabase/schema.sql) and execute them in your Supabase SQL Editor. This will generate the required tables (`clients`, `transactions`, `gst_returns`), configurations, indexes, and automated updated_at triggers.
+### 3. Database Initialization and Migrations
+Use the ordered SQL files in `supabase/migrations/` as the source of truth for database changes.
+
+For a new Supabase project, run:
+```text
+supabase/migrations/001_initial_schema.sql
+```
+
+For an existing prototype database, run:
+```text
+supabase/migrations/002_production_readiness_upgrade.sql
+```
+
+Do not repeatedly paste the full `supabase/schema.sql` snapshot into production. It is kept as a reference snapshot only; production changes should be applied through versioned migration files.
 
 ### 4. Configure Environment Variables
 Copy `.env.example` to `.env` and fill in your API credentials:

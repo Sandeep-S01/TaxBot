@@ -17,3 +17,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added `META_APP_SECRET`, `APP_ORIGIN`, and `ALLOWED_ORIGINS` to the environment contract.
 - Added focused tests for webhook signature verification, cookie session auth, CSRF, and security config.
 - Added this changelog to track product and production-readiness changes.
+- Added ordered Supabase migration files and documented migration workflow to avoid rerunning the schema snapshot.
