@@ -48,7 +48,8 @@ export function streamCAReportPdf({
   doc.fontSize(10).font('Helvetica')
     .text(`Report Type: ${reportType === 'pl' ? 'Profit & Loss Statement' : 'GST Return Summary'}`, 300, 130)
     .text(`Filing Period: ${targetPeriod}`, 300, 145)
-    .text(`Generated On: ${new Date().toLocaleDateString('en-IN')}`, 300, 160);
+    .text(`Generated On: ${new Date().toLocaleDateString('en-IN')}`, 300, 160)
+    .text(`Review Needed: ${transactions.filter((tx) => tx.status === 'needs_review').length} | Rejected: ${transactions.filter((tx) => tx.status === 'rejected').length}`, 300, 175);
 
   let yPos = 205;
   let salesTotal = 0;
@@ -108,10 +109,11 @@ export function streamCAReportPdf({
     doc.fillColor('#0F172A')
       .text(tx.date || '-', 60, yPos + 6)
       .fillColor(isSale ? '#16A34A' : '#EF4444')
-      .text(isSale ? 'SALE' : 'EXPENSE', 130, yPos + 6)
+      .text(isSale ? 'SALE' : 'EXP', 120, yPos + 6)
       .fillColor('#0F172A')
-      .text(categoryText.substring(0, 32), 200, yPos + 6)
-      .text(tx.gst_rate ? `${tx.gst_rate}%` : '0%', 380, yPos + 6)
+      .text(categoryText.substring(0, 28), 165, yPos + 6)
+      .text(formatStatus(tx), 320, yPos + 6)
+      .text(formatSource(tx), 390, yPos + 6)
       .text(`${isSale ? '+' : '-'}${Math.abs(amount).toLocaleString('en-IN')}`, 470, yPos + 6, { align: 'right', width: 65 });
 
     yPos += 20;
@@ -134,8 +136,24 @@ function drawTableHeader(doc: PDFKit.PDFDocument, yPos: number): void {
   doc.rect(50, yPos, 495, 20).fill('#EFF6FF');
   doc.fillColor('#2563EB').fontSize(8).font('Helvetica-Bold')
     .text('Date', 60, yPos + 6)
-    .text('Type', 130, yPos + 6)
-    .text('Category / Description', 200, yPos + 6)
-    .text('GST Rate', 380, yPos + 6)
+    .text('Type', 120, yPos + 6)
+    .text('Category / Description', 165, yPos + 6)
+    .text('Status', 320, yPos + 6)
+    .text('Source', 390, yPos + 6)
     .text('Amount (INR)', 470, yPos + 6, { align: 'right', width: 65 });
+}
+
+function formatStatus(tx: Transaction): string {
+  if (tx.status === 'needs_review') return 'Review';
+  if (tx.status === 'rejected') return 'Rejected';
+  if (tx.status === 'draft') return 'Draft';
+  return tx.confidence === 'low' ? 'Low Conf' : 'Confirmed';
+}
+
+function formatSource(tx: Transaction): string {
+  if (tx.source === 'manual') return 'Manual';
+  if (tx.source === 'whatsapp_image') return 'WA Img';
+  if (tx.source === 'whatsapp_pdf') return 'WA PDF';
+  if (tx.source === 'whatsapp_text') return 'WA Text';
+  return tx.source;
 }

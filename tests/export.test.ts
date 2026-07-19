@@ -74,9 +74,10 @@ describe('CA Export Generators (CSV and Tally XML)', () => {
     
     // Check if headers exist
     expect(csvContent).toContain('Date,Vendor/Party,Category,GST Category,GST Rate (%)');
+    expect(csvContent).toContain('Source,Status,Confidence,Review Reason');
     
     // Check if lines are formatted and quotes are escaped correctly
-    expect(csvContent).toContain('2026-05-10,Regular Customer,SALES,B2C,18,10000,1800,11800,INV-001,Consulting Services Provided,whatsapp_image');
+    expect(csvContent).toContain('2026-05-10,Regular Customer,SALES,B2C,18,10000,1800,11800,INV-001,Consulting Services Provided,whatsapp_image,confirmed,high,');
     
     // Verify escaping of comma and double quotes in row 3
     expect(csvContent).toContain('2026-05-15,Local Tea Vendor,EXPENSE,exempt,0,300,0,300,,"Office tea, coffee & snacks, with a comma and ""quotes"" in description",manual');

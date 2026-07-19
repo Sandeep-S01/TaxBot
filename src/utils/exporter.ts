@@ -18,7 +18,10 @@ export function exportToCSV(transactions: Transaction[]): string {
     'Total Amount',
     'Invoice Number',
     'Description',
-    'Source'
+    'Source',
+    'Status',
+    'Confidence',
+    'Review Reason'
   ];
 
   const escapeCSV = (val: any): string => {
@@ -43,7 +46,10 @@ export function exportToCSV(transactions: Transaction[]): string {
       totalAmount,
       escapeCSV(tx.invoice_number),
       escapeCSV(tx.description),
-      tx.source
+      tx.source,
+      tx.status || 'confirmed',
+      tx.confidence,
+      escapeCSV(tx.review_reason)
     ].join(',');
   });
 
