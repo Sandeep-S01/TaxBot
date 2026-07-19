@@ -86,6 +86,25 @@ if (fs.existsSync(commandJsPath)) {
   }
 }
 
+const auditJsPath = path.join(PUBLIC_JS_DIR, 'console-audit.js');
+if (fs.existsSync(auditJsPath)) {
+  const auditJs = fs.readFileSync(auditJsPath, 'utf8');
+  const unsafeAuditInterpolations = [
+    /\$\{\s*message\s*\}/,
+    /\$\{\s*err\.message\s*\}/,
+    /\$\{\s*log\.(action_type|description)\s*\}/,
+  ];
+
+  for (const pattern of unsafeAuditInterpolations) {
+    if (pattern.test(auditJs)) {
+      findings.push({
+        file: path.join('public', 'js', 'console-audit.js'),
+        message: 'Audit UI HTML interpolations must escape user, error, and audit-log text.',
+      });
+    }
+  }
+}
+
 if (findings.length > 0) {
   console.error('Frontend safety check failed:');
   findings.forEach((finding) => {

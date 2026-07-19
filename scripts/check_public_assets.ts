@@ -69,6 +69,7 @@ if (fs.existsSync(consoleHtmlPath)) {
     'js/console-auth.js',
     'js/console-command.js',
     'js/console-exports.js',
+    'js/console-audit.js',
     'js/console-charts.js',
     'js/console-notifications.js',
     'js/console.js',
