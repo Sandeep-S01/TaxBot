@@ -1,7 +1,7 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
 import { isRetriableHttpError, withRetry } from '../utils/retry';
-import { summarizeHttpError } from '../utils/privacy';
+import { summarizeProviderError } from '../utils/privacy';
 
 dotenv.config();
 
@@ -38,7 +38,7 @@ export async function downloadMedia(mediaId: string): Promise<DownloadedMedia> {
         attempts: 3,
         shouldRetry: isRetriableHttpError,
         onRetry: (error, attempt) => {
-          console.warn(`[WhatsApp] media metadata retry ${attempt}:`, summarizeHttpError(error));
+          console.warn(`[WhatsApp] media metadata retry ${attempt}:`, summarizeProviderError('meta_whatsapp', 'media_metadata_retry', error));
         },
       }
     );
@@ -62,7 +62,7 @@ export async function downloadMedia(mediaId: string): Promise<DownloadedMedia> {
         attempts: 3,
         shouldRetry: isRetriableHttpError,
         onRetry: (error, attempt) => {
-          console.warn(`[WhatsApp] media download retry ${attempt}:`, summarizeHttpError(error));
+          console.warn(`[WhatsApp] media download retry ${attempt}:`, summarizeProviderError('meta_whatsapp', 'media_download_retry', error));
         },
       }
     );
@@ -74,7 +74,7 @@ export async function downloadMedia(mediaId: string): Promise<DownloadedMedia> {
       mimeType,
     };
   } catch (error: any) {
-    console.error('Error downloading media from WhatsApp:', summarizeHttpError(error));
+    console.error('Error downloading media from WhatsApp:', summarizeProviderError('meta_whatsapp', 'download_media', error));
     throw error;
   }
 }

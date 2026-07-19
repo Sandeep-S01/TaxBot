@@ -24,6 +24,7 @@ import { createCA, getCAByEmail, getCAById, getCAClients, getConsolidatedGSTRSum
 import { logAuditAction, getAuditLogs } from '../db/audit';
 import { streamCAReportPdf } from '../reports/caPdfReport';
 import { reconcileTransactions } from '../accounting/reconciliation';
+import { summarizeProviderError } from '../utils/privacy';
 import {
   isStrongPassword,
   isValidEmail,
@@ -520,10 +521,10 @@ Analyze the transaction list and answer the user's question accurately. If trunc
       return res.status(200).json({ response: reply, simulated: false });
     } catch (apiErr: any) {
       if (process.env.NODE_ENV === 'production') {
-        console.error('[Anthropic] Production audit chat failed:', apiErr.message || apiErr);
+        console.error('[Anthropic] Production audit chat failed:', summarizeProviderError('anthropic', 'ca_audit_chat', apiErr));
         return res.status(502).json({ error: 'AI audit provider unavailable. Please retry later.' });
       }
-      console.warn('[Anthropic] API call failed, falling back to development simulator:', apiErr.message || apiErr);
+      console.warn('[Anthropic] API call failed, falling back to development simulator:', summarizeProviderError('anthropic', 'ca_audit_chat', apiErr));
       const simResponse = getSimulatedAIResponse(client, message, clientTransactions);
       return res.status(200).json({ response: simResponse, simulated: true });
     }

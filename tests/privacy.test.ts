@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hashIdentifier, summarizeHttpError } from '../src/utils/privacy';
+import { hashIdentifier, summarizeHttpError, summarizeProviderError } from '../src/utils/privacy';
 
 describe('Privacy-safe logging helpers', () => {
   it('hashes identifiers into stable short correlation ids', () => {
@@ -31,5 +31,27 @@ describe('Privacy-safe logging helpers', () => {
     });
     expect(JSON.stringify(summary)).not.toContain('secret');
     expect(JSON.stringify(summary)).not.toContain('+919999999999');
+  });
+
+  it('adds provider and category metadata to operational errors', () => {
+    expect(summarizeProviderError('gemini', 'generate_text', {
+      code: 'ECONNABORTED',
+      message: 'timeout of 30000ms exceeded',
+    })).toMatchObject({
+      provider: 'gemini',
+      operation: 'generate_text',
+      category: 'timeout',
+      code: 'ECONNABORTED',
+    });
+
+    expect(summarizeProviderError('meta_whatsapp', 'send_text', {
+      message: 'Request failed with status code 429',
+      response: { status: 429, data: { access_token: 'secret' } },
+    })).toMatchObject({
+      provider: 'meta_whatsapp',
+      operation: 'send_text',
+      category: 'rate_limited',
+      status: 429,
+    });
   });
 });

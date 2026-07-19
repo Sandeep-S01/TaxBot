@@ -1,6 +1,6 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
-import { summarizeHttpError } from '../utils/privacy';
+import { summarizeProviderError } from '../utils/privacy';
 
 dotenv.config();
 
@@ -82,7 +82,7 @@ export async function lookupGstin(gstin: string): Promise<GstinLookupResult> {
       message: 'GSTIN not found in the government database.',
     };
   } catch (error: any) {
-    console.error('Sandbox GSTIN lookup failed:', summarizeHttpError(error));
+    console.error('Sandbox GSTIN lookup failed:', summarizeProviderError('sandbox_gst', 'lookup_gstin', error));
     
     // In case Sandbox API fails due to rate limits or network issues,
     // we fall back to format verification so the user experience doesn't break
@@ -90,7 +90,7 @@ export async function lookupGstin(gstin: string): Promise<GstinLookupResult> {
       valid: true,
       legalName: 'Verified GST Business (Offline Fallback)',
       status: 'Active',
-      message: `System offline validation (API returned: ${error.message}).`,
+      message: 'System offline validation. Live GSTIN lookup provider is temporarily unavailable.',
     };
   }
 }

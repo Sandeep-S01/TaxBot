@@ -1,6 +1,7 @@
 import { supabase } from './client';
 import fs from 'fs';
 import path from 'path';
+import { summarizeProviderError } from '../utils/privacy';
 
 export interface AuditLog {
   id?: string;
@@ -13,7 +14,7 @@ export interface AuditLog {
 
 const LOCAL_AUDIT_FILE = path.join(process.cwd(), 'audit_logs.json');
 
-// Helper to log actions with Supabase and JSON fallback
+// Helper to log actions with Supabase. Local JSON fallback is development-only.
 export async function logAuditAction(
   caId: string,
   actionType: string,
@@ -42,11 +43,11 @@ export async function logAuditAction(
     return data;
   } catch (err: any) {
     if (process.env.NODE_ENV === 'production') {
-      console.error('[Audit] Supabase logging failed in production:', err.message || err);
+      console.error('[Audit] Supabase logging failed in production:', summarizeProviderError('supabase', 'log_audit_action', err));
       throw err;
     }
 
-    console.warn(`[Audit] Supabase logging failed (falling back to local storage):`, err.message || err);
+    console.warn(`[Audit] Supabase logging failed (development local fallback):`, summarizeProviderError('supabase', 'log_audit_action', err));
     
     // Save to local file
     try {
@@ -85,11 +86,11 @@ export async function getAuditLogs(caId: string): Promise<AuditLog[]> {
     return data || [];
   } catch (err: any) {
     if (process.env.NODE_ENV === 'production') {
-      console.error('[Audit] Supabase query failed in production:', err.message || err);
+      console.error('[Audit] Supabase query failed in production:', summarizeProviderError('supabase', 'get_audit_logs', err));
       throw err;
     }
 
-    console.warn(`[Audit] Supabase query failed (falling back to local storage):`, err.message || err);
+    console.warn(`[Audit] Supabase query failed (development local fallback):`, summarizeProviderError('supabase', 'get_audit_logs', err));
     
     // Read from local file
     try {

@@ -13,7 +13,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 | Security | 8/10 | In progress | JWT/Argon2, CSRF, webhook signatures, export tokens, log redaction, XML/CSV escaping are complete. |
 | Database | 8/10 | In progress | Ordered migrations and audit integrity are complete; production migration execution must be verified per environment. |
 | GST Correctness | 8/10 | In progress | Regular-GST v1 scope, tax split, provenance, duplicate review, and partial-report visibility are implemented. |
-| AI Reliability | 8/10 | In progress | Extraction normalization and production audit fallback behavior are implemented; provider observability can improve. |
+| AI Reliability | 8/10 | In progress | Extraction normalization, production audit fallback behavior, and provider-category logging are implemented. |
 | Performance | 8/10 | In progress | Basic limits/retries, paginated ledger APIs, and row ceilings exist; remaining risk is deeper query/index profiling. |
 | Reliability | 8/10 | In progress | Readiness checks, idempotency, retry, and graceful shutdown are complete; production smoke still needs live verification. |
 | Testing | 8/10 | In progress | Unit, integration-style, and Express smoke tests cover critical paths; deployed smoke evidence remains open. |
@@ -32,6 +32,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - Performance bounds: paginated CA ledger APIs plus row ceilings for reconciliation, PDFs, AI audit context, and signed exports.
 - Operations: deployment, migration, smoke-test, rollback, and incident triage runbook.
 - Testability: app factory separated from server startup, with E2E-style Express smoke tests for login, protected APIs, exports, and payment denial.
+- Observability: categorized provider error summaries for Gemini, Anthropic, Meta WhatsApp, Sandbox GSTIN, and Supabase operations.
 - CI readiness: lint, build, tests, mojibake check, frontend safety check, npm audit, Docker build workflow.
 
 ## Remaining Queue
@@ -39,9 +40,8 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 1. High: verify deployed production smoke after Render redeploy and Supabase migrations, then capture the evidence in this tracker.
 2. Medium: split large CA route and dashboard scripts into smaller modules after behavior is stable.
 3. Medium: profile Supabase indexes and query plans against larger production-like ledger volumes.
-4. Medium: improve provider observability with structured error categories for Gemini, Anthropic, Meta, and Supabase.
-5. Low: label development-only diagnostic scripts and reduce raw data printing in local helper scripts.
-6. Low: keep the operations runbook updated after live production smoke tests and incidents.
+4. Low: label development-only diagnostic scripts and reduce raw data printing in local helper scripts.
+5. Low: keep the operations runbook updated after live production smoke tests and incidents.
 
 ## Verification Command
 

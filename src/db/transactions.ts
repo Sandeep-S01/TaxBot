@@ -2,7 +2,7 @@ import { supabase } from './client';
 import { Transaction, TransactionCategory, TransactionStatus } from '../types';
 import { getClientById } from './clients';
 import { splitTransactionGst } from '../gst/taxSplit';
-import { summarizeHttpError } from '../utils/privacy';
+import { summarizeProviderError } from '../utils/privacy';
 
 type TransactionInsert = Omit<Transaction, 'id' | 'created_at' | 'status' | 'review_reason' | 'confirmed_at'> &
   Partial<Pick<Transaction, 'status' | 'review_reason' | 'confirmed_at'>>;
@@ -32,7 +32,7 @@ export async function createTransaction(
     .single();
 
   if (error) {
-    console.error('Error creating transaction:', error);
+    console.error('Error creating transaction:', summarizeProviderError('supabase', 'create_transaction', error));
     throw error;
   }
 
@@ -87,7 +87,7 @@ async function findDuplicateCandidateWithStatus(
     .limit(50);
 
   if (error) {
-    console.warn('Duplicate transaction check failed:', summarizeHttpError(error));
+    console.warn('Duplicate transaction check failed:', summarizeProviderError('supabase', 'find_duplicate_transaction_candidate', error));
     return { candidate: null, failed: true };
   }
 
@@ -186,7 +186,7 @@ export async function getTransactionById(id: string): Promise<Transaction | null
     .maybeSingle();
 
   if (error) {
-    console.error('Error fetching transaction by ID:', error);
+    console.error('Error fetching transaction by ID:', summarizeProviderError('supabase', 'get_transaction_by_id', error));
     throw error;
   }
 
@@ -207,7 +207,7 @@ export async function getTransactionsByDateRange(
     .order('date', { ascending: true });
 
   if (error) {
-    console.error('Error fetching transactions by date range:', error);
+    console.error('Error fetching transactions by date range:', summarizeProviderError('supabase', 'get_transactions_by_date_range', error));
     throw error;
   }
 
@@ -232,7 +232,7 @@ export async function getTransactionsByDateRangePage(
     .range(offset, offset + limit - 1);
 
   if (error) {
-    console.error('Error fetching paginated transactions by date range:', error);
+    console.error('Error fetching paginated transactions by date range:', summarizeProviderError('supabase', 'get_transactions_by_date_range_page', error));
     throw error;
   }
 
@@ -430,7 +430,7 @@ export async function updateTransactionCategory(
     .single();
 
   if (error) {
-    console.error('Error updating transaction category:', error);
+    console.error('Error updating transaction category:', summarizeProviderError('supabase', 'update_transaction_category', error));
     throw error;
   }
 
@@ -456,7 +456,7 @@ export async function updateTransactionStatus(
     .single();
 
   if (error) {
-    console.error('Error updating transaction status:', error);
+    console.error('Error updating transaction status:', summarizeProviderError('supabase', 'update_transaction_status', error));
     throw error;
   }
 
@@ -475,7 +475,7 @@ export async function getTransactionsSince(
     .order('created_at', { ascending: true });
 
   if (error) {
-    console.error('Error fetching transactions since timestamp:', error);
+    console.error('Error fetching transactions since timestamp:', summarizeProviderError('supabase', 'get_transactions_since', error));
     throw error;
   }
 
@@ -499,7 +499,7 @@ export async function getTransactionsForMultipleClients(
     .order('date', { ascending: false });
 
   if (error) {
-    console.error('Error fetching transactions for multiple clients:', error);
+    console.error('Error fetching transactions for multiple clients:', summarizeProviderError('supabase', 'get_transactions_for_multiple_clients', error));
     throw error;
   }
 
@@ -528,7 +528,7 @@ export async function getTransactionsForMultipleClientsPage(
     .range(offset, offset + limit - 1);
 
   if (error) {
-    console.error('Error fetching paginated transactions for multiple clients:', error);
+    console.error('Error fetching paginated transactions for multiple clients:', summarizeProviderError('supabase', 'get_transactions_for_multiple_clients_page', error));
     throw error;
   }
 

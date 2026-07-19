@@ -1,6 +1,7 @@
 import { supabase } from './client';
 import { CA, Client } from '../types';
 import { getGSTR3BSummary, GSTR3BData } from './transactions';
+import { summarizeProviderError } from '../utils/privacy';
 
 export async function createCA(
   ca: Omit<CA, 'id' | 'created_at' | 'updated_at'>
@@ -12,7 +13,7 @@ export async function createCA(
     .single();
 
   if (error) {
-    console.error('Error creating CA account:', error);
+    console.error('Error creating CA account:', summarizeProviderError('supabase', 'create_ca', error));
     throw error;
   }
 
@@ -27,7 +28,7 @@ export async function getCAByEmail(email: string): Promise<CA | null> {
     .maybeSingle();
 
   if (error) {
-    console.error('Error fetching CA by email:', error);
+    console.error('Error fetching CA by email:', summarizeProviderError('supabase', 'get_ca_by_email', error));
     throw error;
   }
 
@@ -42,7 +43,7 @@ export async function getCAById(id: string): Promise<CA | null> {
     .maybeSingle();
 
   if (error) {
-    console.error('Error fetching CA by ID:', error);
+    console.error('Error fetching CA by ID:', summarizeProviderError('supabase', 'get_ca_by_id', error));
     throw error;
   }
 
@@ -61,7 +62,7 @@ export async function updateCA(
     .single();
 
   if (error) {
-    console.error('Error updating CA account:', error);
+    console.error('Error updating CA account:', summarizeProviderError('supabase', 'update_ca', error));
     throw error;
   }
 
@@ -76,7 +77,7 @@ export async function getCAClients(caId: string): Promise<Client[]> {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching CA clients:', error);
+    console.error('Error fetching CA clients:', summarizeProviderError('supabase', 'get_ca_clients', error));
     throw error;
   }
 
@@ -92,7 +93,7 @@ export async function linkClientToCA(clientId: string, caId: string): Promise<Cl
     .single();
 
   if (error) {
-    console.error('Error linking client to CA:', error);
+    console.error('Error linking client to CA:', summarizeProviderError('supabase', 'link_client_to_ca', error));
     throw error;
   }
 

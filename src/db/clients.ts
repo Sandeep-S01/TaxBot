@@ -1,5 +1,6 @@
 import { supabase } from './client';
 import { Client } from '../types';
+import { summarizeProviderError } from '../utils/privacy';
 
 export async function getClientByPhone(phone: string): Promise<Client | null> {
   const { data, error } = await supabase
@@ -9,7 +10,7 @@ export async function getClientByPhone(phone: string): Promise<Client | null> {
     .maybeSingle();
 
   if (error) {
-    console.error('Error fetching client by phone:', error);
+    console.error('Error fetching client by phone:', summarizeProviderError('supabase', 'get_client_by_phone', error));
     throw error;
   }
 
@@ -24,7 +25,7 @@ export async function getClientById(id: string): Promise<Client | null> {
     .maybeSingle();
 
   if (error) {
-    console.error('Error fetching client by ID:', error);
+    console.error('Error fetching client by ID:', summarizeProviderError('supabase', 'get_client_by_id', error));
     throw error;
   }
 
@@ -39,7 +40,7 @@ export async function createClient(phone: string, name?: string): Promise<Client
     .single();
 
   if (error) {
-    console.error('Error creating client:', error);
+    console.error('Error creating client:', summarizeProviderError('supabase', 'create_client', error));
     throw error;
   }
 
@@ -55,7 +56,7 @@ export async function updateClient(id: string, updates: Partial<Omit<Client, 'id
     .single();
 
   if (error) {
-    console.error('Error updating client:', error);
+    console.error('Error updating client:', summarizeProviderError('supabase', 'update_client', error));
     throw error;
   }
 
@@ -69,7 +70,7 @@ export async function getGstRegisteredClients(): Promise<Client[]> {
     .eq('gst_registered', true);
 
   if (error) {
-    console.error('Error fetching GST registered clients:', error);
+    console.error('Error fetching GST registered clients:', summarizeProviderError('supabase', 'get_gst_registered_clients', error));
     throw error;
   }
 

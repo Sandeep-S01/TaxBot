@@ -58,3 +58,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added bounded pagination metadata to CA transaction list APIs and row ceilings for reconciliation, PDF, AI audit context, and signed exports.
 - Added an operations runbook for deployment, migrations, smoke testing, rollback, and incident triage.
 - Split Express app construction from server startup and added E2E-style smoke coverage for public shell, CA login, protected APIs, paginated ledger reads, signed exports, and unsigned payment denial.
+- Added provider/category error summaries for Gemini, Anthropic, Meta WhatsApp, Sandbox GSTIN, and Supabase operations without logging response bodies or secrets.

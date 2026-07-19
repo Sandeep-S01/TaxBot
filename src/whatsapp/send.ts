@@ -1,7 +1,7 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
 import { isRetriableHttpError, withRetry } from '../utils/retry';
-import { summarizeHttpError } from '../utils/privacy';
+import { summarizeProviderError } from '../utils/privacy';
 
 dotenv.config();
 
@@ -35,7 +35,7 @@ export async function sendMessage(to: string, text: string): Promise<any> {
     });
     return response.data;
   } catch (error: any) {
-    console.error('Error sending WhatsApp message:', summarizeHttpError(error));
+    console.error('Error sending WhatsApp message:', summarizeProviderError('meta_whatsapp', 'send_text', error));
     throw error;
   }
 }
@@ -68,7 +68,7 @@ export async function sendTemplate(
     });
     return response.data;
   } catch (error: any) {
-    console.error('Error sending WhatsApp template:', summarizeHttpError(error));
+    console.error('Error sending WhatsApp template:', summarizeProviderError('meta_whatsapp', 'send_template', error));
     throw error;
   }
 }
@@ -109,7 +109,7 @@ export async function sendInteractiveButtons(
     });
     return response.data;
   } catch (error: any) {
-    console.error('Error sending WhatsApp interactive buttons:', summarizeHttpError(error));
+    console.error('Error sending WhatsApp interactive buttons:', summarizeProviderError('meta_whatsapp', 'send_interactive_buttons', error));
     throw error;
   }
 }
@@ -145,7 +145,7 @@ export async function sendInteractiveList(
     });
     return response.data;
   } catch (error: any) {
-    console.error('Error sending WhatsApp interactive list:', summarizeHttpError(error));
+    console.error('Error sending WhatsApp interactive list:', summarizeProviderError('meta_whatsapp', 'send_interactive_list', error));
     throw error;
   }
 }
@@ -167,7 +167,7 @@ function postWhatsAppMessage(payload: Record<string, unknown>) {
       attempts: 3,
       shouldRetry: isRetriableHttpError,
       onRetry: (error, attempt) => {
-        console.warn(`[WhatsApp] send retry ${attempt}:`, summarizeHttpError(error));
+        console.warn(`[WhatsApp] send retry ${attempt}:`, summarizeProviderError('meta_whatsapp', 'send_message_retry', error));
       },
     }
   );
