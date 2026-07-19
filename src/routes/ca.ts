@@ -349,7 +349,7 @@ router.get('/api/ca/audit/logs', async (req, res) => {
 // 11. AI Auditor Chat endpoint
 router.post('/api/ca/audit/chat', async (req, res) => {
   const caId = getAuthenticatedCAId(req);
-  const { clientId, message, clientTransactions } = req.body;
+  const { clientId, message, period } = req.body;
 
   if (!clientId || !message) {
     return res.status(400).json({ error: 'Missing required parameters: clientId and message' });
@@ -362,7 +362,12 @@ router.post('/api/ca/audit/chat', async (req, res) => {
       return res.status(403).json({ error: 'Forbidden: You do not manage this client' });
     }
 
-    const txString = JSON.stringify(clientTransactions || []);
+    const targetPeriod = typeof period === 'string' && /^\d{4}-\d{2}$/.test(period)
+      ? period
+      : new Date().toISOString().substring(0, 7);
+    const { startDate, endDate } = periodToDateRange(targetPeriod);
+    const clientTransactions = await getTransactionsByDateRange(clientId, startDate, endDate);
+    const txString = JSON.stringify(clientTransactions);
     
     // Log the audit query
     await logAuditAction(caId, 'AI_AUDIT_QUERY', `Audited client ${client.business_name || client.name}: "${message.substring(0, 50)}..."`, clientId);
@@ -371,7 +376,7 @@ router.post('/api/ca/audit/chat', async (req, res) => {
     const isDummyKey = !apiKey || apiKey.includes('placeholder') || apiKey.includes('your_') || apiKey.length < 20;
 
     if (isDummyKey) {
-      const simResponse = getSimulatedAIResponse(client, message, clientTransactions || []);
+      const simResponse = getSimulatedAIResponse(client, message, clientTransactions);
       return res.status(200).json({ response: simResponse, simulated: true });
     }
 
@@ -392,7 +397,7 @@ Analyze the transaction list and answer the user's question accurately. Focus on
       return res.status(200).json({ response: reply, simulated: false });
     } catch (apiErr: any) {
       console.warn('[Anthropic] API call failed, falling back to simulator:', apiErr.message || apiErr);
-      const simResponse = getSimulatedAIResponse(client, message, clientTransactions || []);
+      const simResponse = getSimulatedAIResponse(client, message, clientTransactions);
       return res.status(200).json({ response: simResponse, simulated: true });
     }
 

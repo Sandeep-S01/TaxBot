@@ -2634,10 +2634,10 @@ function initAuditChatTab(clientId, cTx) {
         headers: {
           ...getAuthHeaders({ 'Content-Type': 'application/json' })
         },
+        credentials: 'same-origin',
         body: JSON.stringify({
           clientId,
-          message,
-          clientTransactions: cTx
+          message
         })
       });
 

@@ -12,6 +12,7 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Re-enabled Helmet Content Security Policy with required frontend/CDN allowlists.
 - Escaped high-risk CA dashboard render paths for API-derived client and transaction fields.
 - Required signed tokens for public customer payment pages instead of exposing details by raw transaction id.
+- Changed CA audit chat so the server fetches authorized ledger context instead of trusting browser-supplied transactions.
 
 ### Production Readiness
 - Added `META_APP_SECRET`, `APP_ORIGIN`, and `ALLOWED_ORIGINS` to the environment contract.
