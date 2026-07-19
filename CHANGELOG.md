@@ -71,3 +71,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added a version-controlled Render Blueprint plus CI deployment-config validation for production build/start settings.
 - Added a CI-ready public asset integrity check for local HTML asset references and CA console browser script ordering.
 - Added a compiled `dist/index.js` smoke test that verifies production artifact `/health`, `/version`, and `/ready` endpoints before deployment.
+- Added non-secret deployment fingerprint metadata to `/health` as well as `/version` for stale-deploy diagnosis.

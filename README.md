@@ -175,7 +175,7 @@ The optional `scripts/tally_sync_connector.ts` helper authenticates against TaxB
 4. Confirm production env vars with `npm run check:env` in the deployed environment where possible.
 5. Redeploy Render from the latest `main` branch.
 6. Set `APP_ORIGIN` to the public HTTPS origin; WhatsApp export/payment links use this value.
-7. Verify `GET /health`, `GET /ready`, and `GET /version`.
+7. Verify `GET /health`, `GET /ready`, and `GET /version`; `/health` and `/version` should expose the expected non-secret commit/build metadata.
 8. Run `npm run smoke:prod` with `SMOKE_BASE_URL`, `SMOKE_CA_EMAIL`, and `SMOKE_CA_PASSWORD`.
 
 ---

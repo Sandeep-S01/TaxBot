@@ -12,7 +12,7 @@ import { escapeHtml } from '../utils/sanitize';
 import { validatePaymentToken } from '../utils/publicTokens';
 import { supabase } from '../db/client';
 import { isValidPeriod, isUuid } from '../utils/validation';
-import packageJson from '../../package.json';
+import { getDeploymentInfo } from '../utils/deploymentInfo';
 
 const MAX_PUBLIC_EXPORT_ROWS = 5000;
 
@@ -23,19 +23,13 @@ export function createPublicRoutes(downloadLimiter: RateLimitRequestHandler): Ro
     res.status(200).json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      service: 'TaxBot API',
       uptime: process.uptime(),
+      ...getDeploymentInfo(),
     });
   });
 
   router.get('/version', (req, res) => {
-    res.status(200).json({
-      service: 'TaxBot API',
-      version: packageJson.version,
-      environment: process.env.NODE_ENV || 'development',
-      commit: process.env.RENDER_GIT_COMMIT || process.env.COMMIT_SHA || process.env.GIT_COMMIT || 'unknown',
-      buildTime: process.env.BUILD_TIME || 'unknown',
-    });
+    res.status(200).json(getDeploymentInfo());
   });
 
   router.get('/ready', async (req, res) => {

@@ -158,6 +158,22 @@ describe('Express app production smoke flows', () => {
     expect(html).toContain('TaxBot');
   });
 
+  it('exposes non-secret deployment metadata on health', async () => {
+    const res = await fetch(`${baseUrl}/health`);
+    const body = await res.json() as any;
+
+    expect(res.status).toBe(200);
+    expect(body).toMatchObject({
+      status: 'healthy',
+      service: 'TaxBot API',
+      version: '1.0.0',
+      environment: 'test',
+    });
+    expect(body).toHaveProperty('commit');
+    expect(body).toHaveProperty('buildTime');
+    expect(JSON.stringify(body)).not.toContain('service_role_key');
+  });
+
   it('exposes non-secret deployment metadata', async () => {
     const res = await fetch(`${baseUrl}/version`);
     const body = await res.json() as any;

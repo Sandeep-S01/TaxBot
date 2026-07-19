@@ -105,6 +105,10 @@ async function run() {
     if (!health.ok) {
       throw new Error(`/health returned ${health.status}`);
     }
+    const healthBody = await health.json() as any;
+    if (healthBody?.service !== 'TaxBot API' || !healthBody?.version) {
+      throw new Error('/health returned unexpected deployment metadata');
+    }
 
     const version = await fetch(`${baseUrl}/version`);
     const versionBody = await version.json() as any;

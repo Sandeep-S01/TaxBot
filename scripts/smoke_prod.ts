@@ -41,8 +41,12 @@ async function run() {
   console.log(`Production smoke target: ${baseUrl}`);
 
   try {
-    const health = await request('/health');
-    record('health', health.ok, `status ${health.status}`);
+    const health = await requestJson('/health');
+    record(
+      'health',
+      health.res.ok && health.body?.service === 'TaxBot API',
+      `status ${health.res.status}, commit ${health.body?.commit || 'unknown'}, build ${health.body?.buildTime || 'unknown'}`
+    );
   } catch (err: any) {
     record('health', false, err.message);
   }
