@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { periodToDateRange } from '../src/db/transactions';
+import { isDuplicateTransactionCandidate, periodToDateRange } from '../src/db/transactions';
 
 describe('Period to Date Range Conversion', () => {
   it('should correctly calculate the start and end of months for standard months', () => {
@@ -34,5 +34,49 @@ describe('Period to Date Range Conversion', () => {
     expect(() => periodToDateRange('2026-13')).toThrow();
     expect(() => periodToDateRange('invalid-period')).toThrow();
     expect(() => periodToDateRange('26-05')).toThrow();
+  });
+});
+
+describe('Duplicate transaction candidate matching', () => {
+  it('matches duplicate invoices across small date and amount differences', () => {
+    expect(isDuplicateTransactionCandidate(
+      {
+        date: '2026-05-10',
+        amount: 1000,
+        tax_amount: 180,
+        invoice_number: ' inv-001 ',
+        vendor_gstin: null,
+        vendor_name: 'Acme Traders',
+      },
+      {
+        date: '2026-05-12',
+        amount: 1000.5,
+        tax_amount: 180,
+        invoice_number: 'INV001',
+        vendor_gstin: null,
+        vendor_name: 'Other Name',
+      }
+    )).toBe(true);
+  });
+
+  it('rejects candidates outside amount or date tolerance', () => {
+    const incoming = {
+      date: '2026-05-10',
+      amount: 1000,
+      tax_amount: 180,
+      invoice_number: 'INV-001',
+      vendor_gstin: null,
+      vendor_name: 'Acme Traders',
+    };
+
+    expect(isDuplicateTransactionCandidate(incoming, {
+      ...incoming,
+      date: '2026-05-20',
+    })).toBe(false);
+
+    expect(isDuplicateTransactionCandidate(incoming, {
+      ...incoming,
+      amount: 1200,
+    })).toBe(false);
   });
 });

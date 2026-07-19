@@ -1,5 +1,6 @@
 import { Transaction } from '../types';
 import { escapeXml } from './sanitize';
+import { splitTransactionGst } from '../gst/taxSplit';
 
 /**
  * Generates an Excel-compatible CSV string from a list of transactions.
@@ -89,12 +90,8 @@ export function exportToTallyXML(
       vchType = 'Purchase';
     }
 
-    // Determine if it is Intra-State or Inter-State GST split
-    // GSTIN first 2 characters represent the state code (e.g. "27" for Maharashtra)
-    let isIntra = true;
-    if (cGstin.length >= 2 && vGstin.length >= 2) {
-      isIntra = cGstin.substring(0, 2) === vGstin.substring(0, 2);
-    }
+    const gstSplit = splitTransactionGst(tx, cGstin);
+    const isIntra = gstSplit.igst === 0;
 
     xml += `        <TALLYMESSAGE xmlns:UDF="TallyUDF">\n`;
     xml += `          <VOUCHER VCHTYPE="${vchType}" ACTION="Create">\n`;
@@ -121,7 +118,7 @@ export function exportToTallyXML(
       // Split tax if applicable
       if (tax > 0) {
         if (isIntra) {
-          const halfTax = tax / 2;
+          const halfTax = gstSplit.cgst;
           const halfRate = tx.gst_rate / 2;
           const cgstLedger = escapeXml(tx.gst_rate > 0 ? `Output CGST @ ${halfRate}%` : 'Output CGST');
           const sgstLedger = escapeXml(tx.gst_rate > 0 ? `Output SGST @ ${halfRate}%` : 'Output SGST');
@@ -143,7 +140,7 @@ export function exportToTallyXML(
           xml += `            <ALLLEDGERENTRIES.LIST>\n`;
           xml += `              <LEDGERNAME>${igstLedger}</LEDGERNAME>\n`;
           xml += `              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n`;
-          xml += `              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n`;
+          xml += `              <AMOUNT>${gstSplit.igst.toFixed(2)}</AMOUNT>\n`;
           xml += `            </ALLLEDGERENTRIES.LIST>\n`;
         }
       }
@@ -157,7 +154,7 @@ export function exportToTallyXML(
 
       if (tax > 0) {
         if (isIntra) {
-          const halfTax = tax / 2;
+          const halfTax = gstSplit.cgst;
           const halfRate = tx.gst_rate / 2;
           const cgstLedger = escapeXml(tx.gst_rate > 0 ? `Input CGST @ ${halfRate}%` : 'Input CGST');
           const sgstLedger = escapeXml(tx.gst_rate > 0 ? `Input SGST @ ${halfRate}%` : 'Input SGST');
@@ -179,7 +176,7 @@ export function exportToTallyXML(
           xml += `            <ALLLEDGERENTRIES.LIST>\n`;
           xml += `              <LEDGERNAME>${igstLedger}</LEDGERNAME>\n`;
           xml += `              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n`;
-          xml += `              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n`;
+          xml += `              <AMOUNT>${gstSplit.igst.toFixed(2)}</AMOUNT>\n`;
           xml += `            </ALLLEDGERENTRIES.LIST>\n`;
         }
       }
@@ -200,7 +197,7 @@ export function exportToTallyXML(
 
       if (tax > 0) {
         if (isIntra) {
-          const halfTax = tax / 2;
+          const halfTax = gstSplit.cgst;
           const halfRate = tx.gst_rate / 2;
           const cgstLedger = escapeXml(tx.gst_rate > 0 ? `Input CGST @ ${halfRate}%` : 'Input CGST');
           const sgstLedger = escapeXml(tx.gst_rate > 0 ? `Input SGST @ ${halfRate}%` : 'Input SGST');
@@ -222,7 +219,7 @@ export function exportToTallyXML(
           xml += `            <ALLLEDGERENTRIES.LIST>\n`;
           xml += `              <LEDGERNAME>${igstLedger}</LEDGERNAME>\n`;
           xml += `              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n`;
-          xml += `              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n`;
+          xml += `              <AMOUNT>${gstSplit.igst.toFixed(2)}</AMOUNT>\n`;
           xml += `            </ALLLEDGERENTRIES.LIST>\n`;
         }
       }

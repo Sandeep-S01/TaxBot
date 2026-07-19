@@ -1,5 +1,7 @@
 import { supabase } from './client';
 import { Transaction, TransactionCategory, TransactionStatus } from '../types';
+import { getClientById } from './clients';
+import { splitTransactionGst } from '../gst/taxSplit';
 
 type TransactionInsert = Omit<Transaction, 'id' | 'created_at' | 'status' | 'review_reason' | 'confirmed_at'> &
   Partial<Pick<Transaction, 'status' | 'review_reason' | 'confirmed_at'>>;
@@ -55,33 +57,84 @@ async function applyReviewStatus(transaction: TransactionInsert): Promise<Transa
 export async function findDuplicateCandidate(
   transaction: Pick<TransactionInsert, 'client_id' | 'date' | 'amount' | 'tax_amount' | 'invoice_number' | 'vendor_gstin' | 'vendor_name'>
 ): Promise<Transaction | null> {
-  let query = supabase
-    .from('transactions')
-    .select('*')
-    .eq('client_id', transaction.client_id)
-    .eq('date', transaction.date)
-    .eq('amount', transaction.amount)
-    .eq('tax_amount', transaction.tax_amount || 0)
-    .limit(1);
-
-  if (transaction.invoice_number) {
-    query = query.eq('invoice_number', transaction.invoice_number);
-  } else if (transaction.vendor_gstin) {
-    query = query.eq('vendor_gstin', transaction.vendor_gstin);
-  } else if (transaction.vendor_name) {
-    query = query.eq('vendor_name', transaction.vendor_name);
-  } else {
+  if (!transaction.invoice_number && !transaction.vendor_gstin && !transaction.vendor_name) {
     return null;
   }
 
-  const { data, error } = await query.maybeSingle();
+  const { startDate, endDate } = duplicateDateWindow(transaction.date);
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('*')
+    .eq('client_id', transaction.client_id)
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .limit(50);
 
   if (error) {
     console.warn('Duplicate transaction check failed:', error.message);
     return null;
   }
 
-  return data;
+  return (data || []).find((candidate) => isDuplicateTransactionCandidate(transaction, candidate)) || null;
+}
+
+export function isDuplicateTransactionCandidate(
+  incoming: Pick<TransactionInsert, 'date' | 'amount' | 'tax_amount' | 'invoice_number' | 'vendor_gstin' | 'vendor_name'>,
+  existing: Pick<Transaction, 'date' | 'amount' | 'tax_amount' | 'invoice_number' | 'vendor_gstin' | 'vendor_name'>
+): boolean {
+  const amountDifference = Math.abs(Number(incoming.amount) - Number(existing.amount));
+  const taxDifference = Math.abs(Number(incoming.tax_amount || 0) - Number(existing.tax_amount || 0));
+  if (amountDifference > 1 || taxDifference > 1) {
+    return false;
+  }
+
+  if (Math.abs(daysBetween(incoming.date, existing.date)) > 3) {
+    return false;
+  }
+
+  const invoiceA = normalizeDuplicateKey(incoming.invoice_number);
+  const invoiceB = normalizeDuplicateKey(existing.invoice_number);
+  if (invoiceA && invoiceB) {
+    return invoiceA === invoiceB;
+  }
+
+  const gstinA = normalizeDuplicateKey(incoming.vendor_gstin);
+  const gstinB = normalizeDuplicateKey(existing.vendor_gstin);
+  if (gstinA && gstinB) {
+    return gstinA === gstinB;
+  }
+
+  const vendorA = normalizeDuplicateKey(incoming.vendor_name);
+  const vendorB = normalizeDuplicateKey(existing.vendor_name);
+  return Boolean(vendorA && vendorB && vendorA === vendorB);
+}
+
+function normalizeDuplicateKey(value: unknown): string {
+  return String(value || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+function duplicateDateWindow(date: string): { startDate: string; endDate: string } {
+  const base = new Date(`${date}T00:00:00Z`);
+  if (!Number.isFinite(base.getTime())) {
+    return { startDate: date, endDate: date };
+  }
+  const start = new Date(base);
+  start.setUTCDate(start.getUTCDate() - 3);
+  const end = new Date(base);
+  end.setUTCDate(end.getUTCDate() + 3);
+  return {
+    startDate: start.toISOString().split('T')[0],
+    endDate: end.toISOString().split('T')[0],
+  };
+}
+
+function daysBetween(a: string, b: string): number {
+  const aTime = new Date(`${a}T00:00:00Z`).getTime();
+  const bTime = new Date(`${b}T00:00:00Z`).getTime();
+  if (!Number.isFinite(aTime) || !Number.isFinite(bTime)) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+  return Math.round((aTime - bTime) / (24 * 60 * 60 * 1000));
 }
 
 export async function getTransactionById(id: string): Promise<Transaction | null> {
@@ -225,6 +278,7 @@ export async function getGSTR3BSummary(
   period: string
 ): Promise<GSTR3BData> {
   const { startDate, endDate } = periodToDateRange(period);
+  const client = await getClientById(clientId);
   const transactions = await getTransactionsByDateRange(clientId, startDate, endDate);
 
   const outwardSupplies = {
@@ -262,11 +316,10 @@ export async function getGSTR3BSummary(
       outwardSupplies.byRate[rate].taxableValue += amount;
       outwardSupplies.byRate[rate].taxAmount += taxAmount;
 
-      // Split tax (approximate 50-50 for CGST/SGST, and IGST for simplicity if we don't have place of supply details)
-      // Standard rule: if it's B2B and we want to show it, or assume local (CGST/SGST) unless specified.
-      // We will split the tax for presentation
-      outwardSupplies.cgst += taxAmount / 2;
-      outwardSupplies.sgst += taxAmount / 2;
+      const split = splitTransactionGst(tx, client?.gstin);
+      outwardSupplies.igst += split.igst;
+      outwardSupplies.cgst += split.cgst;
+      outwardSupplies.sgst += split.sgst;
     } else {
       // purchase, expense, salary, other are parts of business inputs (eligible for ITC if GST registered)
       inwardEligibleITC.taxableValue += amount;

@@ -25,3 +25,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added timeout and retry handling for WhatsApp send/media API calls.
 - Replaced the misleading GitHub Pages workflow with backend CI and Docker build validation.
 - Added a `lint` quality gate and slimmed the Docker image to runtime files only.
+- Added shared GST state-code tax split logic and stronger duplicate transaction candidate matching.
