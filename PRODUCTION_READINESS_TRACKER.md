@@ -8,8 +8,8 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 
 | Area | Target | Status | Notes |
 | --- | --- | --- | --- |
-| Architecture | 8/10 | In progress | App construction is separated from server startup; CA routes and frontend scripts remain large. |
-| Code Quality | 8/10 | In progress | TypeScript gate is clean; remaining work is mostly decomposition and shared browser helpers. |
+| Architecture | 8/10 | In progress | App construction is separated from server startup; CA audit routes are extracted; remaining work is dashboard script decomposition. |
+| Code Quality | 8/10 | In progress | TypeScript gate is clean; remaining work is mostly shared browser helpers and incremental route cleanup. |
 | Security | 8/10 | In progress | JWT/Argon2, CSRF, webhook signatures, export tokens, log redaction, XML/CSV escaping are complete. |
 | Database | 8/10 | In progress | Ordered migrations, audit integrity, and production query indexes are complete; production migration execution must be verified per environment. |
 | GST Correctness | 8/10 | In progress | Regular-GST v1 scope, tax split, provenance, duplicate review, and partial-report visibility are implemented. |
@@ -35,11 +35,12 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - Observability: categorized provider error summaries for Gemini, Anthropic, Meta WhatsApp, Sandbox GSTIN, and Supabase operations.
 - Database performance: query indexes for Tally sync, aggregated ledger reads, and CA audit-log reads.
 - CI readiness: lint, build, tests, mojibake check, frontend safety check, diagnostic script safety check, npm audit, Docker build workflow.
+- Maintainability: CA audit log and AI audit chat endpoints are split into `src/routes/caAudit.ts` with existing `/api/ca/audit/*` paths preserved.
 
 ## Remaining Queue
 
 1. High: verify deployed production smoke after Render redeploy and Supabase migrations, then capture the evidence in this tracker.
-2. Medium: split large CA route and dashboard scripts into smaller modules after behavior is stable.
+2. Medium: continue splitting remaining large CA route areas and dashboard scripts into smaller modules after behavior is stable.
 3. Low: keep the operations runbook updated after live production smoke tests and incidents.
 
 ## Production Smoke Evidence

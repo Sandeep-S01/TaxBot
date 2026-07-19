@@ -62,3 +62,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Redacted development diagnostic script output by default, fixed signed-export smoke-test expectations, and added a CI script-safety gate.
 - Added a public non-secret `/version` endpoint and production smoke coverage for deployed commit/build metadata.
 - Added query-performance migration indexes for Tally sync, aggregated ledgers, and CA audit-log reads.
+- Extracted CA audit log and AI audit chat endpoints into a dedicated route module while preserving the existing `/api/ca/audit/*` API paths.
