@@ -8,7 +8,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 
 | Area | Target | Status | Notes |
 | --- | --- | --- | --- |
-| Architecture | 8/10 | In progress | Core routes are modular, but CA routes and frontend scripts remain large. |
+| Architecture | 8/10 | In progress | App construction is separated from server startup; CA routes and frontend scripts remain large. |
 | Code Quality | 8/10 | In progress | TypeScript gate is clean; remaining work is mostly decomposition and shared browser helpers. |
 | Security | 8/10 | In progress | JWT/Argon2, CSRF, webhook signatures, export tokens, log redaction, XML/CSV escaping are complete. |
 | Database | 8/10 | In progress | Ordered migrations and audit integrity are complete; production migration execution must be verified per environment. |
@@ -16,7 +16,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 | AI Reliability | 8/10 | In progress | Extraction normalization and production audit fallback behavior are implemented; provider observability can improve. |
 | Performance | 8/10 | In progress | Basic limits/retries, paginated ledger APIs, and row ceilings exist; remaining risk is deeper query/index profiling. |
 | Reliability | 8/10 | In progress | Readiness checks, idempotency, retry, and graceful shutdown are complete; production smoke still needs live verification. |
-| Testing | 8/10 | In progress | Unit and integration-style tests cover critical paths; browser E2E and deployed smoke evidence remain open. |
+| Testing | 8/10 | In progress | Unit, integration-style, and Express smoke tests cover critical paths; deployed smoke evidence remains open. |
 | Documentation | 8/10 | In progress | README, migrations, env contract, changelog, tracker, and operations runbook are updated. |
 
 ## Completed Remediation
@@ -31,17 +31,17 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - Export safety: server/browser Tally XML escaping, payment HTML escaping, CSV formula neutralization, frontend regression checks.
 - Performance bounds: paginated CA ledger APIs plus row ceilings for reconciliation, PDFs, AI audit context, and signed exports.
 - Operations: deployment, migration, smoke-test, rollback, and incident triage runbook.
+- Testability: app factory separated from server startup, with E2E-style Express smoke tests for login, protected APIs, exports, and payment denial.
 - CI readiness: lint, build, tests, mojibake check, frontend safety check, npm audit, Docker build workflow.
 
 ## Remaining Queue
 
-1. High: verify deployed production smoke after Render redeploy and Supabase migrations.
-2. High: add browser E2E tests for CA login, dashboard load, protected API access, export download, and payment-link denial without token.
-3. Medium: split large CA route and dashboard scripts into smaller modules after behavior is stable.
-4. Medium: profile Supabase indexes and query plans against larger production-like ledger volumes.
-5. Medium: improve provider observability with structured error categories for Gemini, Anthropic, Meta, and Supabase.
-6. Low: label development-only diagnostic scripts and reduce raw data printing in local helper scripts.
-7. Low: keep the operations runbook updated after live production smoke tests and incidents.
+1. High: verify deployed production smoke after Render redeploy and Supabase migrations, then capture the evidence in this tracker.
+2. Medium: split large CA route and dashboard scripts into smaller modules after behavior is stable.
+3. Medium: profile Supabase indexes and query plans against larger production-like ledger volumes.
+4. Medium: improve provider observability with structured error categories for Gemini, Anthropic, Meta, and Supabase.
+5. Low: label development-only diagnostic scripts and reduce raw data printing in local helper scripts.
+6. Low: keep the operations runbook updated after live production smoke tests and incidents.
 
 ## Verification Command
 

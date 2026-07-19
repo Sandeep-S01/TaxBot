@@ -57,3 +57,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added `PRODUCTION_READINESS_TRACKER.md` to track readiness targets, completed remediation, and the remaining severity queue.
 - Added bounded pagination metadata to CA transaction list APIs and row ceilings for reconciliation, PDF, AI audit context, and signed exports.
 - Added an operations runbook for deployment, migrations, smoke testing, rollback, and incident triage.
+- Split Express app construction from server startup and added E2E-style smoke coverage for public shell, CA login, protected APIs, paginated ledger reads, signed exports, and unsigned payment denial.
