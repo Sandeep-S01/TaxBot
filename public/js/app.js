@@ -23,16 +23,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const mobileToggle = document.getElementById('mobile-nav-toggle');
   const navLinks = document.querySelector('.nav-links');
   if (mobileToggle && navLinks) {
+    const setMobileNavState = (isOpen) => {
+      navLinks.classList.toggle('active', isOpen);
+      mobileToggle.classList.toggle('active', isOpen);
+      mobileToggle.setAttribute('aria-expanded', String(isOpen));
+    };
+
     mobileToggle.addEventListener('click', () => {
-      navLinks.classList.toggle('active');
-      mobileToggle.classList.toggle('active');
+      setMobileNavState(!navLinks.classList.contains('active'));
     });
+
     // Close mobile menu when clicking a link
     navLinks.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
-        navLinks.classList.remove('active');
-        mobileToggle.classList.remove('active');
+        setMobileNavState(false);
       });
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        setMobileNavState(false);
+      }
     });
   }
 
@@ -104,8 +115,8 @@ function updateCalculator(sliderId, countId, unitPriceId, totalId, badgeId, savi
 
   const total = count * unitPrice;
 
-  if (unitPriceDisplay) unitPriceDisplay.textContent = `₹${unitPrice}`;
-  if (totalDisplay) totalDisplay.textContent = `₹${total.toLocaleString('en-IN')}`;
+  if (unitPriceDisplay) unitPriceDisplay.textContent = `Rs. ${unitPrice}`;
+  if (totalDisplay) totalDisplay.textContent = `Rs. ${total.toLocaleString('en-IN')}`;
   
   if (badge) {
     badge.textContent = tierName;
@@ -126,9 +137,9 @@ function updateCalculator(sliderId, countId, unitPriceId, totalId, badgeId, savi
 
   if (savings) {
     if (count >= 50) {
-      savings.textContent = `Save ₹${(count * 50).toLocaleString('en-IN')}/mo (₹99/client)`;
+      savings.textContent = `Save Rs. ${(count * 50).toLocaleString('en-IN')}/mo (Rs. 99/client)`;
     } else if (count >= 10) {
-      savings.textContent = `Save ₹${(count * 30).toLocaleString('en-IN')}/mo (₹119/client)`;
+      savings.textContent = `Save Rs. ${(count * 30).toLocaleString('en-IN')}/mo (Rs. 119/client)`;
     } else {
       savings.textContent = 'Link 10+ clients to save 20%';
     }
@@ -496,7 +507,7 @@ async function loadClients() {
     } else if (clients.length >= 10) {
       unitPrice = 119;
     }
-    tierDisplay.textContent = `₹${unitPrice}/mo`;
+    tierDisplay.textContent = `Rs. ${unitPrice}/mo`;
 
     // Populate Slider in pricing tab with current count
     const slider = document.getElementById('reseller-slider');
@@ -612,8 +623,8 @@ async function openLedgerDrawer(clientId) {
       drawerTransactionsBody.innerHTML = '';
       data.transactions.forEach(tx => {
         const tr = document.createElement('tr');
-        const amountFormatted = `₹${Number(tx.amount).toFixed(2)}`;
-        const taxFormatted = `₹${Number(tx.tax_amount || 0).toFixed(2)}`;
+        const amountFormatted = `Rs. ${Number(tx.amount).toFixed(2)}`;
+        const taxFormatted = `Rs. ${Number(tx.tax_amount || 0).toFixed(2)}`;
         
         tr.innerHTML = `
           <td>${escapeHtml(tx.date)}</td>
@@ -814,9 +825,9 @@ async function loadConsolidatedGSTReport() {
     if (!res.ok) throw new Error('Could not compile consolidated GSTR report');
     const report = await res.json();
 
-    salesDisplay.textContent = `₹${report.totalOutwardTaxableValue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
-    itcDisplay.textContent = `₹${report.totalInwardTaxAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
-    payableDisplay.textContent = `₹${report.netGstPayable.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+    salesDisplay.textContent = `Rs. ${report.totalOutwardTaxableValue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+    itcDisplay.textContent = `Rs. ${report.totalInwardTaxAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+    payableDisplay.textContent = `Rs. ${report.netGstPayable.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
 
     if (report.incomplete && report.warnings?.length) {
       showToast('GSTR report compiled with review-needed client calculations.', 'warning');
@@ -841,12 +852,12 @@ async function loadConsolidatedGSTReport() {
       tr.innerHTML = `
         <td><div style="font-weight:600;">${escapeHtml(client.businessName || client.clientName || 'Unknown Client')}</div></td>
         <td><code style="font-family:monospace;">${escapeHtml(client.gstin || 'N/A')}</code></td>
-        <td>₹${client.outwardTaxable.toFixed(2)}</td>
-        <td>₹${client.outwardTax.toFixed(2)}</td>
-        <td>₹${client.inwardTaxable.toFixed(2)}</td>
-        <td>₹${client.inwardTax.toFixed(2)}</td>
+        <td>Rs. ${client.outwardTaxable.toFixed(2)}</td>
+        <td>Rs. ${client.outwardTax.toFixed(2)}</td>
+        <td>Rs. ${client.inwardTaxable.toFixed(2)}</td>
+        <td>Rs. ${client.inwardTax.toFixed(2)}</td>
         <td style="text-align: right; font-weight:700; color:${netLiability > 0 ? 'var(--color-danger)' : 'var(--color-success)'}">
-          ₹${netLiability.toFixed(2)}
+          Rs. ${netLiability.toFixed(2)}
           ${client.calculationStatus === 'error' ? `<br><span style="font-size:11px;color:var(--color-warning);">${escapeHtml(calculationStatus)}</span>` : ''}
         </td>
       `;
@@ -936,58 +947,58 @@ function setupSecurityModals() {
   if (cardEncryption) {
     cardEncryption.addEventListener('click', () => {
       const html = `
-        <p style="margin-bottom:16px;"><strong>Cryptographic Data Protection:</strong></p>
-        <p style="margin-bottom:16px;">TaxBot utilizes standard 256-bit Advanced Encryption Standard (AES-256) encryption. This ensures all sensitive entries (including your financial details, business contacts, and tax logs) are encrypted before writing to persistent storage layers.</p>
-        <p style="margin-bottom:16px;"><strong>WhatsApp Integration Security Boundary:</strong></p>
+        <p style="margin-bottom:16px;"><strong>Authenticated console access:</strong></p>
+        <p style="margin-bottom:16px;">TaxBot protects CA console workflows with authenticated sessions, scoped route checks, CSRF protection, and signed public links where external access is required.</p>
+        <p style="margin-bottom:16px;"><strong>Security boundary:</strong></p>
         <pre style="background:rgba(255,255,255,0.03); padding:16px; border-radius:8px; font-family:monospace; font-size:12px; border:1px solid var(--border-color); margin-bottom:16px; color:#fff;">
 [User Phone]
-     │ (WhatsApp End-to-End Encryption)
-     ▼
+     | WhatsApp message
+     v
 [Meta Cloud Gateway API]
-     │ (Secure TLS 1.3 Transport)
-     ▼
+     | HTTPS webhook
+     v
 [TaxBot App Server (Render HTTPS)]
-     │ (AES-256 App-Level Encrypt)
-     ▼
-[Supabase Database (Mumbai Region)]
+     | Authenticated database access
+     v
+[Supabase Database]
         </pre>
-        <p>Your WhatsApp chats are transported via Meta's secure cloud APIs using TLS 1.3. Once the input reaches our server, we encrypt the data and write it to our vault. We do not sell data to third-party ad networks.</p>
+        <p>Webhook signatures and server-side authorization checks are used to reduce the risk of unauthorized message or ledger access.</p>
       `;
-      openModal('AES-256 Vault Encryption Standards', html);
+      openModal('Authenticated CA Access', html);
     });
   }
 
   if (cardResidency) {
     cardResidency.addEventListener('click', () => {
       const html = `
-        <p style="margin-bottom:16px;"><strong>Sovereign India Data Residency:</strong></p>
-        <p style="margin-bottom:16px;">In compliance with Reserve Bank of India (RBI) directives for financial data localization, TaxBot maintains all compute nodes and database clusters strictly within the sovereign borders of India.</p>
-        <p style="margin-bottom:16px;"><strong>Hosting Infrastructure details:</strong></p>
+        <p style="margin-bottom:16px;"><strong>Operational audit trail:</strong></p>
+        <p style="margin-bottom:16px;">TaxBot records important console activity with the CA, client, action type, description, and timestamp so bookkeeping decisions are easier to review later.</p>
+        <p style="margin-bottom:16px;"><strong>Tracked context:</strong></p>
         <ul style="margin-left:20px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;">
-          <li><strong>Cloud Provider:</strong> AWS (Amazon Web Services) & Supabase Secure Cloud</li>
-          <li><strong>Primary Region:</strong> Asia Pacific (Mumbai) / ap-south-1</li>
-          <li><strong>Disaster Recovery:</strong> Real-time replication across secondary Indian availability zones.</li>
+          <li><strong>Actor:</strong> Which CA or service action made the change.</li>
+          <li><strong>Client:</strong> Which business record was affected.</li>
+          <li><strong>Event:</strong> What happened and when it happened.</li>
         </ul>
-        <p>By hosting your accounting ledger locally in Mumbai, we guarantee high-speed API performance, absolute compliance with national data privacy rules, and complete independence from foreign data jurisdictions.</p>
+        <p>This supports review and support workflows without claiming that the audit trail replaces statutory compliance review.</p>
       `;
-      openModal('India Data Residency & Sovereign Cloud', html);
+      openModal('Audit Trail Visibility', html);
     });
   }
 
   if (cardCompliance) {
     cardCompliance.addEventListener('click', () => {
       const html = `
-        <p style="margin-bottom:16px;"><strong>Digital Bookkeeping under Indian IT Act, 2000:</strong></p>
-        <p style="margin-bottom:16px;">TaxBot's digital ledger structure has been designed in strict accordance with the legal guidelines set by the Government of India for maintaining books of accounts in electronic format.</p>
-        <p style="margin-bottom:16px;"><strong>Compliance Features:</strong></p>
+        <p style="margin-bottom:16px;"><strong>CA review before filing:</strong></p>
+        <p style="margin-bottom:16px;">TaxBot assists with bookkeeping capture, extraction, regular-GST summaries, and Tally-ready exports. It does not file returns or replace professional CA review.</p>
+        <p style="margin-bottom:16px;"><strong>Review signals:</strong></p>
         <ul style="margin-left:20px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;">
-          <li><strong>Section 4 IT Act compliance:</strong> Legal recognition of electronic records matching physical notebooks.</li>
-          <li><strong>Unmodifiable Audit Logs:</strong> Every transaction is tagged with its source type (WhatsApp text, receipt OCR, PDF, manual entry) and confidence metrics to prevent ledger manipulation.</li>
-          <li><strong>GST-Ready exports:</strong> LEDGER formats fully support standard Tally Prime XML rules for error-free audits.</li>
+          <li><strong>Status:</strong> Draft, confirmed, needs review, or rejected.</li>
+          <li><strong>Reason:</strong> Low-confidence AI extraction or duplicate-candidate warnings.</li>
+          <li><strong>Source:</strong> WhatsApp text, OCR, document upload, or manual entry.</li>
         </ul>
-        <p>CAs can import TaxBot transaction ledgers directly into Tally ERP 9 or Tally Prime, maintaining full digital compliance for annual income tax audits.</p>
+        <p>Confirmed entries can be exported for downstream accounting workflows after review.</p>
       `;
-      openModal('Indian Information Technology Act, 2000 Compliance', html);
+      openModal('Review Before Filing', html);
     });
   }
 }

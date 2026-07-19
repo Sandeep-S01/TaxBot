@@ -49,6 +49,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - Maintainability: CA client management and ledger listing endpoints are split into `src/routes/caClients.ts` with existing `/api/ca/clients*` and `/api/ca/transactions` paths preserved.
 - Maintainability: CA console chart state, data shaping, and rendering are split into `public/js/console-charts.js` and loaded before `public/js/console.js`.
 - Maintainability: CA console notification state and rendering are split into `public/js/console-notifications.js` and loaded before `public/js/console.js`.
+- UI/UX readiness: main landing page messaging now matches the WhatsApp-first AI bookkeeping USP, avoids unsupported security/compliance/sync claims, and improves mobile navigation accessibility.
 
 ## Remaining Queue
 
