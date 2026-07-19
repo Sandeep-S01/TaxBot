@@ -1,11 +1,13 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
+import { isRetriableHttpError, withRetry } from '../utils/retry';
 
 dotenv.config();
 
 const WA_TOKEN = process.env.WA_TOKEN;
 const WA_PHONE_ID = process.env.WA_PHONE_ID;
 const BASE_URL = `https://graph.facebook.com/v19.0/${WA_PHONE_ID}`;
+const WHATSAPP_TIMEOUT_MS = 10000;
 
 if (!WA_TOKEN || !WA_PHONE_ID) {
   console.warn(
@@ -23,23 +25,13 @@ export async function sendMessage(to: string, text: string): Promise<any> {
   }
 
   try {
-    const response = await axios.post(
-      `${BASE_URL}/messages`,
-      {
-        messaging_product: 'whatsapp',
-        recipient_type: 'individual',
-        to,
-        type: 'text',
-        text: { body: text },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${WA_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
+    const response = await postWhatsAppMessage({
+      messaging_product: 'whatsapp',
+      recipient_type: 'individual',
+      to,
+      type: 'text',
+      text: { body: text },
+    });
     return response.data;
   } catch (error: any) {
     console.error('Error sending WhatsApp message:', error.response?.data || error.message);
@@ -62,27 +54,17 @@ export async function sendTemplate(
   }
 
   try {
-    const response = await axios.post(
-      `${BASE_URL}/messages`,
-      {
-        messaging_product: 'whatsapp',
-        recipient_type: 'individual',
-        to,
-        type: 'template',
-        template: {
-          name: templateName,
-          language: { code: languageCode },
-          components,
-        },
+    const response = await postWhatsAppMessage({
+      messaging_product: 'whatsapp',
+      recipient_type: 'individual',
+      to,
+      type: 'template',
+      template: {
+        name: templateName,
+        language: { code: languageCode },
+        components,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${WA_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
+    });
     return response.data;
   } catch (error: any) {
     console.error('Error sending WhatsApp template:', error.response?.data || error.message);
@@ -108,32 +90,22 @@ export async function sendInteractiveButtons(
   }
 
   try {
-    const response = await axios.post(
-      `${BASE_URL}/messages`,
-      {
-        messaging_product: 'whatsapp',
-        recipient_type: 'individual',
-        to,
-        type: 'interactive',
-        interactive: {
-          type: 'button',
-          body: { text: bodyText },
-          action: {
-            buttons: buttons.map((btn) => ({
-              type: 'reply',
-              reply: { id: btn.id, title: btn.title },
-            })),
-          },
+    const response = await postWhatsAppMessage({
+      messaging_product: 'whatsapp',
+      recipient_type: 'individual',
+      to,
+      type: 'interactive',
+      interactive: {
+        type: 'button',
+        body: { text: bodyText },
+        action: {
+          buttons: buttons.map((btn) => ({
+            type: 'reply',
+            reply: { id: btn.id, title: btn.title },
+          })),
         },
       },
-      {
-        headers: {
-          Authorization: `Bearer ${WA_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
+    });
     return response.data;
   } catch (error: any) {
     console.error('Error sending WhatsApp interactive buttons:', error.response?.data || error.message);
@@ -156,33 +128,46 @@ export async function sendInteractiveList(
   }
 
   try {
-    const response = await axios.post(
-      `${BASE_URL}/messages`,
-      {
-        messaging_product: 'whatsapp',
-        recipient_type: 'individual',
-        to,
-        type: 'interactive',
-        interactive: {
-          type: 'list',
-          body: { text: bodyText },
-          action: {
-            button: buttonText,
-            sections,
-          },
+    const response = await postWhatsAppMessage({
+      messaging_product: 'whatsapp',
+      recipient_type: 'individual',
+      to,
+      type: 'interactive',
+      interactive: {
+        type: 'list',
+        body: { text: bodyText },
+        action: {
+          button: buttonText,
+          sections,
         },
       },
-      {
-        headers: {
-          Authorization: `Bearer ${WA_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
+    });
     return response.data;
   } catch (error: any) {
     console.error('Error sending WhatsApp interactive list:', error.response?.data || error.message);
     throw error;
   }
+}
+
+function postWhatsAppMessage(payload: Record<string, unknown>) {
+  return withRetry(
+    () => axios.post(
+      `${BASE_URL}/messages`,
+      payload,
+      {
+        timeout: WHATSAPP_TIMEOUT_MS,
+        headers: {
+          Authorization: `Bearer ${WA_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    ),
+    {
+      attempts: 3,
+      shouldRetry: isRetriableHttpError,
+      onRetry: (error, attempt) => {
+        console.warn(`[WhatsApp] send retry ${attempt}:`, error.response?.status || error.message);
+      },
+    }
+  );
 }

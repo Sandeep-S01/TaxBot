@@ -1,9 +1,11 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
+import { isRetriableHttpError, withRetry } from '../utils/retry';
 
 dotenv.config();
 
 const WA_TOKEN = process.env.WA_TOKEN;
+const WHATSAPP_TIMEOUT_MS = 15000;
 
 if (!WA_TOKEN) {
   console.warn('WARNING: WA_TOKEN is not defined in the environment. Media downloads will fail.');
@@ -24,11 +26,21 @@ export async function downloadMedia(mediaId: string): Promise<DownloadedMedia> {
 
   try {
     // 1. Get media metadata (url and mime_type)
-    const metadataResponse = await axios.get(`https://graph.facebook.com/v19.0/${mediaId}`, {
-      headers: {
-        Authorization: `Bearer ${WA_TOKEN}`,
-      },
-    });
+    const metadataResponse = await withRetry(
+      () => axios.get(`https://graph.facebook.com/v19.0/${mediaId}`, {
+        timeout: WHATSAPP_TIMEOUT_MS,
+        headers: {
+          Authorization: `Bearer ${WA_TOKEN}`,
+        },
+      }),
+      {
+        attempts: 3,
+        shouldRetry: isRetriableHttpError,
+        onRetry: (error, attempt) => {
+          console.warn(`[WhatsApp] media metadata retry ${attempt}:`, error.response?.status || error.message);
+        },
+      }
+    );
 
     const { url, mime_type: mimeType } = metadataResponse.data;
 
@@ -37,12 +49,22 @@ export async function downloadMedia(mediaId: string): Promise<DownloadedMedia> {
     }
 
     // 2. Download the actual binary file from the returned URL
-    const mediaFileResponse = await axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${WA_TOKEN}`,
-      },
-      responseType: 'arraybuffer',
-    });
+    const mediaFileResponse = await withRetry(
+      () => axios.get(url, {
+        timeout: WHATSAPP_TIMEOUT_MS,
+        headers: {
+          Authorization: `Bearer ${WA_TOKEN}`,
+        },
+        responseType: 'arraybuffer',
+      }),
+      {
+        attempts: 3,
+        shouldRetry: isRetriableHttpError,
+        onRetry: (error, attempt) => {
+          console.warn(`[WhatsApp] media download retry ${attempt}:`, error.response?.status || error.message);
+        },
+      }
+    );
 
     const buffer = Buffer.from(mediaFileResponse.data);
 

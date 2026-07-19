@@ -22,3 +22,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added ordered Supabase migration files and documented migration workflow to avoid rerunning the schema snapshot.
 - Added request IDs, structured access logs, `/ready` dependency checks, and readiness smoke coverage.
 - Added inbound WhatsApp message tracking and idempotency migration to prevent duplicate processing of Meta retries.
+- Added timeout and retry handling for WhatsApp send/media API calls.
