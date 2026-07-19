@@ -152,6 +152,8 @@ npm audit --audit-level=moderate
 
 The GitHub Actions workflow runs the same checks and validates that the Docker image builds.
 
+For production deploy, migration, rollback, and incident procedures, see `docs/OPERATIONS_RUNBOOK.md`.
+
 ### Local Tally Sync Connector
 The optional `scripts/tally_sync_connector.ts` helper authenticates against TaxBot before calling `/api/sync/:clientId`.
 
