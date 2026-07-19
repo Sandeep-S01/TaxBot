@@ -1,0 +1,382 @@
+import { supabase } from './client';
+import { Transaction, TransactionCategory, TransactionStatus } from '../types';
+
+type TransactionInsert = Omit<Transaction, 'id' | 'created_at' | 'status' | 'review_reason' | 'confirmed_at'> &
+  Partial<Pick<Transaction, 'status' | 'review_reason' | 'confirmed_at'>>;
+
+export async function createTransaction(
+  transaction: TransactionInsert
+): Promise<Transaction> {
+  const reviewedTransaction = await applyReviewStatus(transaction);
+
+  const { data, error } = await supabase
+    .from('transactions')
+    .insert([reviewedTransaction])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating transaction:', error);
+    throw error;
+  }
+
+  return data;
+}
+
+async function applyReviewStatus(transaction: TransactionInsert): Promise<TransactionInsert> {
+  const reasons: string[] = [];
+
+  if (transaction.confidence === 'low') {
+    reasons.push('low_confidence_ai_extraction');
+  }
+
+  const duplicate = await findDuplicateCandidate(transaction);
+  if (duplicate) {
+    reasons.push(`possible_duplicate:${duplicate.id}`);
+  }
+
+  if (reasons.length === 0) {
+    return {
+      ...transaction,
+      status: transaction.status || 'confirmed',
+      review_reason: transaction.review_reason || null,
+      confirmed_at: transaction.confirmed_at || new Date().toISOString(),
+    };
+  }
+
+  return {
+    ...transaction,
+    status: 'needs_review',
+    review_reason: reasons.join(','),
+    confirmed_at: null,
+  };
+}
+
+export async function findDuplicateCandidate(
+  transaction: Pick<TransactionInsert, 'client_id' | 'date' | 'amount' | 'tax_amount' | 'invoice_number' | 'vendor_gstin' | 'vendor_name'>
+): Promise<Transaction | null> {
+  let query = supabase
+    .from('transactions')
+    .select('*')
+    .eq('client_id', transaction.client_id)
+    .eq('date', transaction.date)
+    .eq('amount', transaction.amount)
+    .eq('tax_amount', transaction.tax_amount || 0)
+    .limit(1);
+
+  if (transaction.invoice_number) {
+    query = query.eq('invoice_number', transaction.invoice_number);
+  } else if (transaction.vendor_gstin) {
+    query = query.eq('vendor_gstin', transaction.vendor_gstin);
+  } else if (transaction.vendor_name) {
+    query = query.eq('vendor_name', transaction.vendor_name);
+  } else {
+    return null;
+  }
+
+  const { data, error } = await query.maybeSingle();
+
+  if (error) {
+    console.warn('Duplicate transaction check failed:', error.message);
+    return null;
+  }
+
+  return data;
+}
+
+export async function getTransactionById(id: string): Promise<Transaction | null> {
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error fetching transaction by ID:', error);
+    throw error;
+  }
+
+  return data;
+}
+
+export async function getTransactionsByDateRange(
+  clientId: string,
+  startDate: string,
+  endDate: string
+): Promise<Transaction[]> {
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('*')
+    .eq('client_id', clientId)
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .order('date', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching transactions by date range:', error);
+    throw error;
+  }
+
+  return data || [];
+}
+
+// Convert YYYY-MM period to start/end dates
+export function periodToDateRange(period: string): { startDate: string; endDate: string } {
+  if (!/^\d{4}-\d{2}$/.test(period)) {
+    throw new Error(`Invalid period format: ${period}. Expected YYYY-MM`);
+  }
+
+  const [yearStr, monthStr] = period.split('-');
+  const year = parseInt(yearStr, 10);
+  const month = parseInt(monthStr, 10);
+
+  if (month < 1 || month > 12) {
+    throw new Error(`Invalid period format: ${period}. Expected YYYY-MM`);
+  }
+
+  const startDate = `${period}-01`;
+  const lastDay = new Date(year, month, 0).getDate();
+  const endDate = `${period}-${String(lastDay).padStart(2, '0')}`;
+
+  return { startDate, endDate };
+}
+
+
+export interface MonthlyPLReport {
+  period: string;
+  totalSales: number;
+  totalPurchases: number;
+  totalExpenses: number;
+  totalSalaries: number;
+  totalOther: number;
+  netProfit: number;
+}
+
+export async function getMonthlyPLReport(
+  clientId: string,
+  period: string
+): Promise<MonthlyPLReport> {
+  const { startDate, endDate } = periodToDateRange(period);
+  const transactions = await getTransactionsByDateRange(clientId, startDate, endDate);
+
+  let totalSales = 0;
+  let totalPurchases = 0;
+  let totalExpenses = 0;
+  let totalSalaries = 0;
+  let totalOther = 0;
+
+  for (const tx of transactions) {
+    if (tx.status && tx.status !== 'confirmed') {
+      continue;
+    }
+
+    const amount = Number(tx.amount);
+    switch (tx.category) {
+      case 'sales':
+        totalSales += amount;
+        break;
+      case 'purchase':
+        totalPurchases += amount;
+        break;
+      case 'expense':
+        totalExpenses += amount;
+        break;
+      case 'salary':
+        totalSalaries += amount;
+        break;
+      case 'other':
+        totalOther += amount;
+        break;
+    }
+  }
+
+  const netProfit = totalSales - (totalPurchases + totalExpenses + totalSalaries + totalOther);
+
+  return {
+    period,
+    totalSales,
+    totalPurchases,
+    totalExpenses,
+    totalSalaries,
+    totalOther,
+    netProfit,
+  };
+}
+
+export interface GSTR3BData {
+  period: string;
+  outwardSupplies: {
+    taxableValue: number;
+    igst: number; // For simplicity in our summaries we calculate tax_amount
+    cgst: number; // and split it or report it under consolidated GST columns
+    sgst: number;
+    totalTax: number;
+    byRate: { [rate: number]: { taxableValue: number; taxAmount: number } };
+  };
+  inwardEligibleITC: {
+    taxableValue: number;
+    totalTax: number;
+    byRate: { [rate: number]: { taxableValue: number; taxAmount: number } };
+  };
+}
+
+export async function getGSTR3BSummary(
+  clientId: string,
+  period: string
+): Promise<GSTR3BData> {
+  const { startDate, endDate } = periodToDateRange(period);
+  const transactions = await getTransactionsByDateRange(clientId, startDate, endDate);
+
+  const outwardSupplies = {
+    taxableValue: 0,
+    igst: 0,
+    cgst: 0,
+    sgst: 0,
+    totalTax: 0,
+    byRate: {} as { [rate: number]: { taxableValue: number; taxAmount: number } },
+  };
+
+  const inwardEligibleITC = {
+    taxableValue: 0,
+    totalTax: 0,
+    byRate: {} as { [rate: number]: { taxableValue: number; taxAmount: number } },
+  };
+
+  for (const tx of transactions) {
+    if (tx.status && tx.status !== 'confirmed') {
+      continue;
+    }
+
+    const amount = Number(tx.amount);
+    const taxAmount = Number(tx.tax_amount || 0);
+    const rate = Number(tx.gst_rate || 0);
+
+    if (tx.category === 'sales') {
+      outwardSupplies.taxableValue += amount;
+      outwardSupplies.totalTax += taxAmount;
+
+      // Group by rate
+      if (!outwardSupplies.byRate[rate]) {
+        outwardSupplies.byRate[rate] = { taxableValue: 0, taxAmount: 0 };
+      }
+      outwardSupplies.byRate[rate].taxableValue += amount;
+      outwardSupplies.byRate[rate].taxAmount += taxAmount;
+
+      // Split tax (approximate 50-50 for CGST/SGST, and IGST for simplicity if we don't have place of supply details)
+      // Standard rule: if it's B2B and we want to show it, or assume local (CGST/SGST) unless specified.
+      // We will split the tax for presentation
+      outwardSupplies.cgst += taxAmount / 2;
+      outwardSupplies.sgst += taxAmount / 2;
+    } else {
+      // purchase, expense, salary, other are parts of business inputs (eligible for ITC if GST registered)
+      inwardEligibleITC.taxableValue += amount;
+      inwardEligibleITC.totalTax += taxAmount;
+
+      // Group by rate
+      if (!inwardEligibleITC.byRate[rate]) {
+        inwardEligibleITC.byRate[rate] = { taxableValue: 0, taxAmount: 0 };
+      }
+      inwardEligibleITC.byRate[rate].taxableValue += amount;
+      inwardEligibleITC.byRate[rate].taxAmount += taxAmount;
+    }
+  }
+
+  return {
+    period,
+    outwardSupplies,
+    inwardEligibleITC,
+  };
+}
+
+export async function updateTransactionCategory(
+  id: string,
+  category: TransactionCategory
+): Promise<Transaction> {
+  const { data, error } = await supabase
+    .from('transactions')
+    .update({
+      category,
+      status: 'confirmed',
+      review_reason: null,
+      confirmed_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating transaction category:', error);
+    throw error;
+  }
+
+  return data;
+}
+
+export async function updateTransactionStatus(
+  id: string,
+  status: TransactionStatus,
+  reviewReason: string | null = null
+): Promise<Transaction> {
+  const updates: Partial<Pick<Transaction, 'status' | 'review_reason' | 'confirmed_at'>> = {
+    status,
+    review_reason: reviewReason,
+    confirmed_at: status === 'confirmed' ? new Date().toISOString() : null,
+  };
+
+  const { data, error } = await supabase
+    .from('transactions')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating transaction status:', error);
+    throw error;
+  }
+
+  return data;
+}
+
+export async function getTransactionsSince(
+  clientId: string,
+  since: string
+): Promise<Transaction[]> {
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('*')
+    .eq('client_id', clientId)
+    .gt('created_at', since)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching transactions since timestamp:', error);
+    throw error;
+  }
+
+  return data || [];
+}
+
+// Batch-fetch transactions across multiple clients within a date range
+export async function getTransactionsForMultipleClients(
+  clientIds: string[],
+  startDate: string,
+  endDate: string
+): Promise<Transaction[]> {
+  if (clientIds.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('*')
+    .in('client_id', clientIds)
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .order('date', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching transactions for multiple clients:', error);
+    throw error;
+  }
+
+  return data || [];
+}

@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaxBot Partner Console | AI-First CA Platform</title>
+  <meta name="description" content="TaxBot Partner Console provides Chartered Accountants with automated bookkeeping, real-time GST reconciliation, AI client insights, and seamless WhatsApp document capture.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563EB' stroke-width='2'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E">
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Consolidated Stylesheet -->
+  <link rel="stylesheet" href="css/console.css">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       1. Authentication Layout (Login & Registration Screen)
+       ========================================================================== -->
+  <div class="auth-layout" id="auth-layout">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="brand-logo justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="brand-icon">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <span class="brand-name">TaxBot <span class="brand-badge">Partner</span></span>
+        </div>
+        <h2 class="auth-title mt-16" id="auth-title">CA Partner Login</h2>
+        <p class="auth-subtitle mt-8" id="auth-subtitle">Access your reseller dashboard and bulk client files.</p>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form mt-24">
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" class="form-input" placeholder="ca.sharma@firm.com" required autocomplete="username">
+        </div>
+        <div class="form-group mt-16">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block mt-24">Sign In to Console</button>
+      </form>
+
+      <!-- Register Form (Hidden by default) -->
+      <form id="register-form" class="auth-form mt-24 hidden">
+        <div class="form-group">
+          <label for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="CA Sandeep Sharma" required autocomplete="name">
+        </div>
+        <div class="form-group mt-16">
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="ca.sharma@firm.com" required autocomplete="email">
+        </div>
+        <div class="form-group mt-16">
+          <label for="reg-firm">CA Firm Name (Optional)</label>
+          <input type="text" id="reg-firm" class="form-input" placeholder="Sharma & Associates" autocomplete="organization">
+        </div>
+        <div class="form-group mt-16">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" class="form-input" placeholder="••••••••" required autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block mt-24">Create Partner Account</button>
+      </form>
+
+      <div class="auth-footer mt-24">
+        <span id="auth-switch-text">Don't have a partner account?</span>
+        <button id="btn-switch-auth" class="auth-switch-btn ml-8 text-primary">Sign Up</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       2. Console Layout Shell (Dashboard Workspace - Hidden until Authenticated)
+       ========================================================================== -->
+  <div class="app-layout" id="console-layout" style="display: none;">
+    <!-- Sidebar mobile backdrop overlay -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+    
+    <!-- Left Sidebar -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="brand-icon">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <span class="brand-name">TaxBot <span class="brand-badge">Partner</span></span>
+        </div>
+        <button class="sidebar-collapse-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+          <i data-lucide="chevron-left"></i>
+        </button>
+      </div>
+      
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav">
+        <ul class="nav-list">
+          <li>
+            <a href="#overview" class="nav-link active" data-view="overview" id="nav-overview">
+              <i data-lucide="layout-dashboard"></i>
+              <span class="link-text">Overview</span>
+            </a>
+          </li>
+          <li>
+            <a href="#clients" class="nav-link" data-view="clients" id="nav-clients">
+              <i data-lucide="users"></i>
+              <span class="link-text">Clients</span>
+              <span class="badge badge-accent" id="clients-count">0</span>
+            </a>
+          </li>
+          <li>
+            <a href="#transactions" class="nav-link" data-view="transactions" id="nav-transactions">
+              <i data-lucide="receipt"></i>
+              <span class="link-text">Transactions</span>
+              <span class="badge badge-warning" id="pending-transactions-badge">0</span>
+            </a>
+          </li>
+          <li>
+            <a href="#documents" class="nav-link" data-view="documents" id="nav-documents">
+              <i data-lucide="folder-open"></i>
+              <span class="link-text">Documents</span>
+              <span class="badge badge-success" id="documents-count-badge">0</span>
+            </a>
+          </li>
+          <li>
+            <a href="#gst" class="nav-link" data-view="gst" id="nav-gst">
+              <i data-lucide="file-text"></i>
+              <span class="link-text">GST Center</span>
+            </a>
+          </li>
+          <li>
+            <a href="#insights" class="nav-link" data-view="insights" id="nav-insights">
+              <i data-lucide="sparkles"></i>
+              <span class="link-text">AI Insights</span>
+              <span class="badge badge-error" id="insights-count-badge">0</span>
+            </a>
+          </li>
+          <li>
+            <a href="#exports" class="nav-link" data-view="exports" id="nav-exports">
+              <i data-lucide="download"></i>
+              <span class="link-text">Exports</span>
+            </a>
+          </li>
+          <li>
+            <a href="#billing" class="nav-link" data-view="billing" id="nav-billing">
+              <i data-lucide="credit-card"></i>
+              <span class="link-text">Billing</span>
+            </a>
+          </li>
+          <li>
+            <a href="#settings" class="nav-link" data-view="settings" id="nav-settings">
+              <i data-lucide="settings"></i>
+              <span class="link-text">Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <!-- Firm Quick Profile -->
+      <div class="sidebar-footer">
+        <div class="firm-profile-mini">
+          <div class="firm-avatar">SS</div>
+          <div class="firm-info">
+            <span class="firm-name-text" id="ca-display-name">Sandeep Sharma</span>
+            <span class="firm-role-text" id="ca-display-email">ca@taxbot.in</span>
+          </div>
+          <button class="btn-logout" id="btn-logout" title="Log Out" style="margin-left:auto;color:var(--text-secondary);"><i data-lucide="log-out" style="width:16px;height:16px;"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <div class="app-main">
+      
+      <!-- Top Header Navigation -->
+      <header class="app-header">
+        <div class="header-left" style="display: flex; align-items: center; width: 100%; gap: var(--space-8);">
+          <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Menu">
+            <i data-lucide="menu"></i>
+          </button>
+          <button class="command-bar-trigger" id="global-command-trigger" style="flex-grow: 1;">
+            <i data-lucide="search" class="search-icon"></i>
+            <span class="trigger-placeholder">Ask TaxBot anything...</span>
+            <kbd class="kbd-shortcut">Ctrl K</kbd>
+          </button>
+        </div>
+        
+        <div class="header-right">
+          <!-- Theme Toggle -->
+          <button class="header-btn" id="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme" style="margin-right: 8px;">
+            <i data-lucide="moon" id="theme-toggle-icon"></i>
+          </button>
+          
+          <!-- Notifications -->
+          <div class="notification-dropdown">
+            <button class="header-btn" id="notification-btn" aria-label="Notifications">
+              <i data-lucide="bell"></i>
+              <span class="indicator-dot"></span>
+            </button>
+            <div class="dropdown-menu hidden" id="notifications-dropdown-menu">
+              <div class="dropdown-header">
+                <span>Notifications</span>
+                <button class="btn-text" id="btn-mark-all-read">Mark all read</button>
+              </div>
+              <div class="dropdown-body" id="notifications-list">
+                <!-- Dynamic notification items -->
+              </div>
+            </div>
+          </div>
+          
+          <!-- Quick WhatsApp Link -->
+          <a href="https://wa.me/taxbot" target="_blank" class="header-btn whatsapp-btn" title="View WhatsApp Service Status">
+            <i data-lucide="message-square"></i>
+            <span class="whatsapp-badge">Live</span>
+          </a>
+          
+          <!-- User Profile Dropdown -->
+          <div class="profile-dropdown">
+            <button class="profile-btn" id="profile-menu-btn">
+              <div class="profile-avatar" id="ca-avatar-letter">S</div>
+              <span class="profile-name" id="ca-display-header-name">Sandeep Sharma</span>
+            </button>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Viewport Wrapper (Scrollable) -->
+      <main class="app-content" id="app-viewport">
+
+        <!-- SCREEN 1: OVERVIEW DASHBOARD -->
+        <section id="view-overview" class="view-section active">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Overview Dashboard</h1>
+              <p class="view-subtitle">Monitor firm operations, urgent client filings, and system health.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-primary" id="overview-add-client-btn">
+                <i data-lucide="plus"></i> Add Client
+              </button>
+            </div>
+          </div>
+          
+          <!-- Top KPI Grid -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">Active Clients</span>
+                <i data-lucide="users" class="kpi-icon text-primary"></i>
+              </div>
+              <div class="kpi-value" id="kpi-active-clients">0</div>
+              <div class="kpi-change text-success">
+                <i data-lucide="trending-up"></i> +4 this month
+              </div>
+            </div>
+            
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">GST Ready</span>
+                <i data-lucide="check-circle" class="kpi-icon text-success"></i>
+              </div>
+              <div class="kpi-value" id="kpi-gst-ready">0</div>
+              <div class="kpi-change text-secondary" id="kpi-gst-ready-sub">0 / 0 reconciled</div>
+            </div>
+            
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">Pending Filings</span>
+                <i data-lucide="alert-circle" class="kpi-icon text-warning"></i>
+              </div>
+              <div class="kpi-value" id="kpi-pending-filings">0</div>
+              <div class="kpi-change text-error">Action required before GSTR-1</div>
+            </div>
+            
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">Documents Today</span>
+                <i data-lucide="file-text" class="kpi-icon text-primary"></i>
+              </div>
+              <div class="kpi-value" id="kpi-docs-today">0</div>
+              <div class="kpi-change text-success">
+                <i data-lucide="arrow-up-right"></i> +12% vs yesterday
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">Transactions Today</span>
+                <i data-lucide="receipt" class="kpi-icon text-secondary"></i>
+              </div>
+              <div class="kpi-value" id="kpi-trans-today">0</div>
+              <div class="kpi-change text-secondary">Auto-extracted via AI</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-meta">
+                <span class="kpi-label">Monthly Revenue</span>
+                <i data-lucide="credit-card" class="kpi-icon text-primary"></i>
+              </div>
+              <div class="kpi-value" id="kpi-monthly-rev">₹0</div>
+              <div class="kpi-change text-success">
+                <i data-lucide="trending-up"></i> +12.4% MoM
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial Analytics Grid -->
+          <div class="analytics-grid mt-24">
+            <div class="card chart-card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Sales & Expenses Trend</h3>
+                  <p class="card-subtitle">Monthly flow of client transactions across the firm.</p>
+                </div>
+              </div>
+              <div class="chart-container" style="position: relative; height: 280px; width: 100%;">
+                <canvas id="chart-sales-expenses"></canvas>
+              </div>
+            </div>
+
+            <div class="card chart-card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Expense Distribution</h3>
+                  <p class="card-subtitle">Breakdown of consolidated firm expenses by category.</p>
+                </div>
+              </div>
+              <div class="chart-container" style="position: relative; height: 280px; width: 100%;">
+                <canvas id="chart-expense-categories"></canvas>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Main Content Split -->
+          <div class="dashboard-split">
+            <!-- Left Area: Urgent Actions & Business Health -->
+            <div class="split-left">
+              
+              <!-- Urgent Actions -->
+              <div class="card card-alert">
+                <div class="card-header">
+                  <h3 class="card-title text-error"><i data-lucide="alert-triangle"></i> Urgent Actions Required</h3>
+                  <span class="badge badge-error" id="kpi-urgent-actions-count">3 Action Items</span>
+                </div>
+                <div class="action-list">
+                  <div class="action-item border-error">
+                    <div class="action-details">
+                      <span class="action-title">GST ITC Mismatch Detected</span>
+                      <span class="action-desc">Verify ITC offsets against GSTR-2B logs for mismatched items.</span>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger btn-view-gst-mismatch">Reconcile</button>
+                  </div>
+                  <div class="action-item border-warning">
+                    <div class="action-details">
+                      <span class="action-title">Missing Expense Vouchers</span>
+                      <span class="action-desc">High-value cash files received via WhatsApp lack mapping tags.</span>
+                    </div>
+                    <button class="btn btn-sm btn-secondary btn-view-missing-docs">Request Files</button>
+                  </div>
+                  <div class="action-item border-primary">
+                    <div class="action-details">
+                      <span class="action-title">GSTR-1 Filing Deadline</span>
+                      <span class="action-desc">Reconciliation checks ready. 14 filings incomplete.</span>
+                    </div>
+                    <button class="btn btn-sm btn-primary btn-view-gst-filing">Bulk File</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Business Health Overview -->
+              <div class="card mt-24">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">Business Health Directory</h3>
+                    <p class="card-subtitle">AI-generated operational risk profiling for client accounts.</p>
+                  </div>
+                </div>
+                <div class="health-overview-container">
+                  <div class="health-breakdown">
+                    <div class="health-metric">
+                      <span class="metric-value text-success" id="health-metric-healthy">0</span>
+                      <span class="metric-label">Healthy (Score &gt; 80)</span>
+                    </div>
+                    <div class="health-metric">
+                      <span class="metric-value text-warning" id="health-metric-review">0</span>
+                      <span class="metric-label">Needs Review (50 - 80)</span>
+                    </div>
+                    <div class="health-metric">
+                      <span class="metric-value text-danger" id="health-metric-critical">0</span>
+                      <span class="metric-label">Critical Risk (&lt; 50)</span>
+                    </div>
+                  </div>
+                  <div class="health-visual-bar" id="health-visual-bar-root">
+                    <!-- Dynamic segments filled in app.js -->
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            
+            <!-- Right Area: Recent Activity & Quick Actions -->
+            <div class="split-right">
+              
+              <!-- Quick Actions -->
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Quick Actions</h3>
+                </div>
+                <div class="quick-actions-panel">
+                  <button class="quick-action-btn" id="qa-add-client">
+                    <div class="qa-icon-wrap bg-primary-light"><i data-lucide="user-plus" class="text-primary"></i></div>
+                    <span>Add New Client</span>
+                  </button>
+                  <button class="quick-action-btn" id="qa-upload-docs">
+                    <div class="qa-icon-wrap bg-success-light"><i data-lucide="upload-cloud" class="text-success"></i></div>
+                    <span>Upload Documents</span>
+                  </button>
+                  <button class="quick-action-btn" id="qa-gen-report">
+                    <div class="qa-icon-wrap bg-warning-light"><i data-lucide="bar-chart-2" class="text-warning"></i></div>
+                    <span>Generate Financials</span>
+                  </button>
+                  <button class="quick-action-btn" id="qa-export-tally">
+                    <div class="qa-icon-wrap bg-secondary-light"><i data-lucide="file-output" class="text-secondary"></i></div>
+                    <span>Export Tally XML</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Recent Activity Feed -->
+              <div class="card mt-24">
+                <div class="card-header">
+                  <h3 class="card-title">Recent Activity</h3>
+                </div>
+                <div class="activity-feed" id="overview-activity-feed">
+                  <!-- JS inserts feed entries -->
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN 2: CLIENT MANAGEMENT -->
+        <section id="view-clients" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Clients Directory</h1>
+              <p class="view-subtitle">Manage business subscriptions, system integrations, and tax profiles.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-primary" id="btn-add-client-modal-trigger">
+                <i data-lucide="plus"></i> Add Client
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter / Toolbar Row -->
+          <div class="toolbar-card card">
+            <div class="toolbar-search">
+              <i data-lucide="search"></i>
+              <input type="text" id="client-search" placeholder="Search clients by name, GSTIN, owner...">
+            </div>
+            <div class="toolbar-actions">
+              <div class="filter-group">
+                <button class="btn btn-secondary filter-tab active" data-filter="all">All</button>
+                <button class="btn btn-secondary filter-tab" data-filter="needs-review">Needs Action</button>
+                <button class="btn btn-secondary filter-tab" data-filter="filed">Filed</button>
+              </div>
+              <button class="btn btn-secondary" id="client-sort-btn">
+                <i data-lucide="arrow-up-down"></i> Sort
+              </button>
+              <div class="layout-toggle">
+                <button class="btn btn-secondary active" id="layout-toggle-table" aria-label="Table View"><i data-lucide="list"></i></button>
+                <button class="btn btn-secondary" id="layout-toggle-grid" aria-label="Grid View"><i data-lucide="grid"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Clients Table/Grid Container -->
+          <div id="clients-list-container" class="mt-24">
+            <div class="card overflow-x">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Business Name</th>
+                    <th>GSTIN</th>
+                    <th>Owner / WhatsApp</th>
+                    <th>Active Plan</th>
+                    <th>Last Activity</th>
+                    <th class="text-right">Health</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><div class="skeleton-line w-75 h-24"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-75"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                  </tr>
+                  <tr>
+                    <td><div class="skeleton-line w-50 h-24"></div></td>
+                    <td><div class="skeleton-line w-75"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                  </tr>
+                  <tr>
+                    <td><div class="skeleton-line w-75 h-24"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-75"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                    <td><div class="skeleton-line w-50"></div></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN 3: CLIENT WORKSPACE (360 VIEW) -->
+        <section id="view-client-workspace" class="view-section hidden">
+          <div class="workspace-header card">
+            <div class="workspace-title-area">
+              <button class="btn btn-secondary btn-sm" id="btn-back-to-clients">
+                <i data-lucide="arrow-left"></i> Back to Clients
+              </button>
+              <div class="workspace-client-meta ml-16">
+                <h2 class="workspace-client-name" id="workspace-client-name">Acme Corp</h2>
+                <div class="workspace-client-tags mt-8">
+                  <span class="badge badge-info" id="workspace-client-gstin">GSTIN: 27AAAAA0000A1Z1</span>
+                  <span class="badge badge-secondary" id="workspace-client-plan">Plan: Partner Pro</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="workspace-actions">
+              <button class="btn btn-outline-success" id="btn-whatsapp-owner-direct">
+                <i data-lucide="message-square"></i> WhatsApp Owner
+              </button>
+              <button class="btn btn-primary" id="btn-workspace-export-tally">
+                <i data-lucide="file-output"></i> Export Tally XML
+              </button>
+            </div>
+          </div>
+
+          <!-- Workspace KPIs -->
+          <div class="kpi-grid mt-24">
+            <div class="kpi-card">
+              <div class="kpi-label">Sales Revenue (Monthly)</div>
+              <div class="kpi-value text-primary" id="ws-kpi-sales">₹0</div>
+              <span class="kpi-change text-success" id="ws-kpi-sales-change"><i data-lucide="trending-up"></i> +18% vs last month</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Total Expenses (Monthly)</div>
+              <div class="kpi-value text-secondary" id="ws-kpi-expenses">₹0</div>
+              <span class="kpi-change text-secondary">Auto-reconciled via OCR</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">GST Payable (Net)</div>
+              <div class="kpi-value text-warning" id="ws-kpi-gst-payable">₹0</div>
+              <span class="kpi-change text-secondary">Based on sales transactions</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Input Tax Credit (ITC)</div>
+              <div class="kpi-value text-success" id="ws-kpi-itc">₹0</div>
+              <span class="kpi-change text-success" id="ws-kpi-itc-sub">Verified from GSTR-2B</span>
+            </div>
+          </div>
+
+          <!-- Workspace Nav Tabs -->
+          <div class="workspace-tabs-container mt-24">
+            <div class="workspace-tabs">
+              <button class="tab-link active" data-ws-tab="overview">Client Overview</button>
+              <button class="tab-link" data-ws-tab="transactions">Transactions</button>
+              <button class="tab-link" data-ws-tab="documents">Documents</button>
+              <button class="tab-link" data-ws-tab="gst">GST Reconciliation</button>
+              <button class="tab-link" data-ws-tab="reconciliation">Bank Match</button>
+              <button class="tab-link" data-ws-tab="reports">Reports</button>
+              <button class="tab-link" data-ws-tab="exports">Exports</button>
+              <button class="tab-link" data-ws-tab="audit">AI Auditor</button>
+            </div>
+          </div>
+
+          <!-- Workspace Tab Contents -->
+          <div class="workspace-tab-contents mt-24" id="ws-tab-viewport">
+            
+            <!-- WS Sub-Tab 1: Overview -->
+            <div class="ws-tab-panel active" id="ws-panel-overview">
+              <!-- GST Liability Trend Chart -->
+              <div class="card mb-24">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">GST Liability Trend</h3>
+                    <p class="card-subtitle">Monthly breakdown of sales tax payable versus eligible Input Tax Credit (ITC).</p>
+                  </div>
+                </div>
+                <div class="chart-container" style="position: relative; height: 240px; width: 100%;">
+                  <canvas id="chart-ws-gst-trend"></canvas>
+                </div>
+              </div>
+
+              <div class="dashboard-split">
+                <div class="split-left">
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">Recent Transactions Requiring Review</h3>
+                    </div>
+                    <div class="action-list mt-16" id="ws-overview-pending-transactions">
+                      <!-- Render transactions waiting for CA sign-off -->
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="split-right">
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">WhatsApp Source Feed</h3>
+                    </div>
+                    <div class="activity-feed mt-16" id="ws-overview-whatsapp-feed">
+                      <!-- Stream of raw files sent by client -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- WS Sub-Tab 2: Transactions -->
+            <div class="ws-tab-panel" id="ws-panel-transactions">
+              <div class="card overflow-x">
+                <table class="data-table" id="ws-transactions-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Type</th>
+                      <th>Category</th>
+                      <th>GST Rate</th>
+                      <th>Amount</th>
+                      <th>Channel</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Injected by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- WS Sub-Tab 3: Documents -->
+            <div class="ws-tab-panel" id="ws-panel-documents">
+              <div class="document-workspace-grid">
+                <div class="doc-folders-sidebar">
+                  <button class="doc-sidebar-item active" data-folder="all">All Documents</button>
+                  <button class="doc-sidebar-item" data-folder="invoices">Invoices</button>
+                  <button class="doc-sidebar-item" data-folder="receipts">Receipts</button>
+                  <button class="doc-sidebar-item" data-folder="statements">Bank Statements</button>
+                  <button class="doc-sidebar-item" data-folder="voice-notes">Voice Notes</button>
+                </div>
+                <div class="doc-files-list">
+                  <div class="card overflow-x">
+                    <table class="data-table" id="ws-docs-table">
+                      <thead>
+                        <tr>
+                          <th>Filename</th>
+                          <th>Received</th>
+                          <th>Category</th>
+                          <th>Size</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <!-- Dynamic -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- WS Sub-Tab 4: GST Reconciliation -->
+            <div class="ws-tab-panel" id="ws-panel-gst">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">GSTR-2B vs Purchase Register Mismatch Analysis</h3>
+                </div>
+                <div class="gst-recon-results mt-16">
+                  <!-- Match status -->
+                </div>
+              </div>
+            </div>
+
+            <!-- WS Sub-Tab 5: Bank Reconciliation -->
+            <div class="ws-tab-panel" id="ws-panel-reconciliation">
+              <div class="card">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">Bank Statement Match</h3>
+                    <p class="card-subtitle">Compare uploaded bank statement rows with confirmed ledger entries for this client.</p>
+                  </div>
+                </div>
+                <div id="ws-recon-summary" class="mt-16">
+                  <p class="text-secondary">Select this tab to load reconciliation results.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- WS Sub-Tab 6: Reports -->
+            <div class="ws-tab-panel" id="ws-panel-reports">
+              <div class="report-cards-grid">
+                <div class="card report-card">
+                  <h4>Profit & Loss Statement</h4>
+                  <p>Auto-generated income and expense statement.</p>
+                  <button class="btn btn-secondary mt-16 btn-ws-dl-pl">Download PDF</button>
+                </div>
+                <div class="card report-card">
+                  <h4>GST Return Summary</h4>
+                  <p>Consolidated inward and outward GST tax summary report.</p>
+                  <button class="btn btn-secondary mt-16 btn-ws-dl-bs">Download PDF</button>
+                </div>
+                <div class="card report-card">
+                  <h4>Ledger Detail Report</h4>
+                  <p>Individual account logs with transaction entries.</p>
+                  <button class="btn btn-secondary mt-16 btn-ws-dl-xlsx">Download XLSX</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- WS Sub-Tab 7: Exports -->
+            <div class="ws-tab-panel" id="ws-panel-exports">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Tally ERP / Prime Export Configuration</h3>
+                </div>
+                <div class="exports-container mt-16">
+                  <p class="card-subtitle">Generate Tally XML with configured ledger mappings.</p>
+                  <button class="btn btn-primary mt-16 btn-ws-export-tally-xml">Generate & Download Tally XML</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- WS Sub-Tab 8: AI Auditor Chat -->
+            <div class="ws-tab-panel" id="ws-panel-audit">
+              <div class="card" style="height: 500px; display: flex; flex-direction: column; padding: 0; overflow: hidden; margin-bottom: 24px;">
+                <div class="card-header" style="padding: var(--space-16) var(--space-24); border-bottom: 1px solid var(--border); background-color: var(--bg-card);">
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <div>
+                      <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="sparkles" class="text-primary" style="width: 18px; height: 18px;"></i>
+                        TaxBot AI Auditor Chat
+                      </h3>
+                      <p class="card-subtitle">Chat with an auditor trained on this client's specific transaction ledgers.</p>
+                    </div>
+                    <span class="badge badge-accent" id="ws-audit-simulated-indicator" style="display: none;">Sandbox Mode</span>
+                  </div>
+                </div>
+                
+                <!-- Chat Message Feed -->
+                <div class="chat-feed" id="ws-audit-chat-feed" style="flex-grow: 1; padding: var(--space-20); overflow-y: auto; background-color: var(--bg-app); display: flex; flex-direction: column; gap: var(--space-16);">
+                  <!-- Welcome message -->
+                  <div class="chat-msg system-msg" style="align-self: flex-start; max-width: 80%; background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-12) var(--radius-12) var(--radius-12) 0; padding: var(--space-12) var(--space-16); box-shadow: var(--shadow-sm);">
+                    <div style="font-weight: 600; color: var(--primary); font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+                      <i data-lucide="bot" style="width: 14px; height: 14px;"></i> AI Auditor
+                    </div>
+                    <p style="margin: 0; font-size: 14px; color: var(--text-primary);">
+                      Hello! I have loaded this client's current ledger transactions. Ask me any auditing questions, such as:
+                    </p>
+                    <ul style="margin: var(--space-8) 0 0 var(--space-16); padding: 0; font-size: 13px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px; list-style-type: disc;">
+                      <li><em>"Check for anomalies or unverified items"</em></li>
+                      <li><em>"What is their GST liability and compliance status?"</em></li>
+                      <li><em>"Identify any duplicate entries"</em></li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Chat Input area -->
+                <form id="ws-audit-chat-form" style="padding: var(--space-16) var(--space-24); border-top: 1px solid var(--border); display: flex; gap: var(--space-12); background-color: var(--bg-card);">
+                  <input type="text" id="ws-audit-chat-input" class="form-input" placeholder="Type audit question about this client's transactions..." required style="flex-grow: 1; border: 1px solid var(--border); padding: 0 var(--space-16); border-radius: var(--radius-8); height: 42px; font-size: 14px; background-color: var(--bg-app); color: var(--text-primary);">
+                  <button type="submit" class="btn btn-primary" style="height: 42px; padding: 0 var(--space-20); display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="send" style="width: 16px; height: 16px;"></i>
+                    Ask AI
+                  </button>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- SCREEN 4: TRANSACTIONS CENTER -->
+        <section id="view-transactions" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Transactions Center</h1>
+              <p class="view-subtitle">Review, adjust, and approve AI-extracted accounting entries globally.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-secondary" id="btn-bulk-approve-transactions">Bulk Approve</button>
+              <button class="btn btn-primary" id="btn-export-transactions">Export CSV</button>
+            </div>
+          </div>
+
+          <!-- Filters Row -->
+          <div class="toolbar-card card">
+            <div class="toolbar-search">
+              <i data-lucide="search"></i>
+              <input type="text" id="transactions-global-search" placeholder="Search transactions...">
+            </div>
+            <div class="toolbar-actions">
+              <select class="btn btn-secondary dropdown-select" id="tx-filter-client">
+                <!-- Filled dynamically inside console.js -->
+              </select>
+              <select class="btn btn-secondary dropdown-select" id="tx-filter-channel">
+                <option value="all">All Channels</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="voice">Voice Note</option>
+                <option value="pdf">PDF Upload</option>
+                <option value="manual">Manual Entry</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Main Table Card -->
+          <div class="card mt-24 overflow-x">
+            <table class="data-table" id="global-transactions-table">
+              <thead>
+                <tr>
+                  <th style="width: 40px;"><input type="checkbox" id="select-all-transactions"></th>
+                  <th>Date</th>
+                  <th>Client</th>
+                  <th>Type</th>
+                  <th>Channel</th>
+                  <th>Category</th>
+                  <th>GST Rate</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="global-transactions-table-body">
+                <!-- Populated dynamically inside console.js -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- SCREEN 5: DOCUMENT CENTER -->
+        <section id="view-documents" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Document Command Center</h1>
+              <p class="view-subtitle">Centralized repository for WhatsApp invoices, bank feeds, and statements.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-primary" id="btn-upload-new-document">
+                <i data-lucide="upload"></i> Upload Files
+              </button>
+            </div>
+          </div>
+
+          <div class="document-split-layout">
+            <!-- Left: Document List & Tabs -->
+            <div class="document-list-side">
+              <div class="toolbar-card card mb-24">
+                <div class="toolbar-search">
+                  <i data-lucide="search"></i>
+                  <input type="text" id="doc-global-search" placeholder="Search files...">
+                </div>
+              </div>
+
+              <!-- Folder Select -->
+              <div class="document-folders mb-24">
+                <button class="doc-folder-chip active" data-doc-folder="all">All</button>
+                <button class="doc-folder-chip" data-doc-folder="invoices">Invoices</button>
+                <button class="doc-folder-chip" data-doc-folder="receipts">Receipts</button>
+                <button class="doc-folder-chip" data-doc-folder="statements">Statements</button>
+                <button class="doc-folder-chip" data-doc-folder="voice">Voice Notes</button>
+              </div>
+
+              <div class="card overflow-x">
+                <table class="data-table" id="global-documents-table">
+                  <thead>
+                    <tr>
+                      <th>Filename</th>
+                      <th>Client</th>
+                      <th>Folder</th>
+                      <th>Received</th>
+                    </tr>
+                  </thead>
+                  <tbody id="global-documents-table-body">
+                    <!-- Dynamic -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right: Document Detail & Preview Panel -->
+            <div class="document-preview-side">
+              <div class="card sticky-preview-card" id="doc-preview-panel">
+                <div class="preview-empty-state">
+                  <i data-lucide="file-text" class="preview-large-icon"></i>
+                  <h3>Select a document to preview</h3>
+                  <p>Preview invoice data, listen to voice notes, or verify OCR extractions.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN 6: GST CENTER -->
+        <section id="view-gst" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">GST Filing Command Center</h1>
+              <p class="view-subtitle">Monitor and verify Indian GST filings across all client accounts.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-primary" id="btn-gst-bulk-file">Bulk Sign & File</button>
+            </div>
+          </div>
+
+          <!-- Top GST KPIs -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">GST Liability (Total)</div>
+              <div class="kpi-value text-warning" id="gst-total-liability-metric">₹0</div>
+              <span class="kpi-change text-secondary">Accrued across active clients</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Input Tax Credit (Total)</div>
+              <div class="kpi-value text-success" id="gst-total-itc-metric">₹0</div>
+              <span class="kpi-change text-secondary">Matched from GSTR-2B logs</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Ready to File</div>
+              <div class="kpi-value text-primary" id="gst-ready-to-file-metric">0</div>
+              <span class="kpi-change text-success">100% reconciled</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Needs Review / Missing Data</div>
+              <div class="kpi-value text-danger" id="gst-needs-review-metric">0</div>
+              <span class="kpi-change text-error">Unresolved mismatches</span>
+            </div>
+          </div>
+
+          <!-- Client GST Filing Table -->
+          <div class="card mt-24 overflow-x">
+            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+              <h3 class="card-title">Filing Status Ledger</h3>
+              <input type="month" id="gst-period-picker" class="btn btn-secondary" style="height:34px; padding:0 8px;">
+            </div>
+            <table class="data-table" id="gst-center-table">
+              <thead>
+                <tr>
+                  <th>Client Name</th>
+                  <th>Sales (GSTR-1)</th>
+                  <th>Purchases (GSTR-2B)</th>
+                  <th>Net GST Due</th>
+                  <th>Filing Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="gst-center-table-body">
+                <!-- Dynamic rows -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- SCREEN 7: AI INSIGHTS -->
+        <section id="view-insights" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">AI Advisory Insights</h1>
+              <p class="view-subtitle">Machine learning flags for potential anomalies, tax credits, and accounting risks.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-secondary" id="btn-insights-run-scanner">Run Diagnostic Scan</button>
+            </div>
+          </div>
+
+          <!-- Severity Filter Chips -->
+          <div class="toolbar-card card mb-24">
+            <div class="filter-group">
+              <button class="btn btn-secondary filter-tab active" data-severity="all">All Anomalies</button>
+              <button class="btn btn-secondary filter-tab" data-severity="high">High Severity</button>
+              <button class="btn btn-secondary filter-tab" data-severity="medium">Medium</button>
+              <button class="btn btn-secondary filter-tab" data-severity="low">Info</button>
+            </div>
+          </div>
+
+          <!-- Insights Cards Stack -->
+          <div class="insights-grid" id="ai-insights-cards-container">
+            <!-- Dynamic Injection -->
+          </div>
+        </section>
+
+        <!-- SCREEN 8: EXPORT CENTER -->
+        <section id="view-exports" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Export Command Center</h1>
+              <p class="view-subtitle">Generate accounting packages for traditional ERP systems in one-click.</p>
+            </div>
+          </div>
+
+          <div class="export-cards-grid mt-24">
+            
+            <div class="card export-card">
+              <div class="export-card-icon-wrap bg-primary-light">
+                <i data-lucide="file-output" class="text-primary"></i>
+              </div>
+              <h3 class="export-card-title mt-16">Tally Prime XML Package</h3>
+              <p class="export-card-desc mt-8">Generates complete double-entry journals, sales receipts, purchase entries, and customer profiles mapped directly to Tally Prime standard configurations.</p>
+              <div class="export-form-group mt-16">
+                <label for="export-tally-client">Select Client</label>
+                <select class="form-select" id="export-tally-client">
+                  <!-- Filled dynamically inside console.js -->
+                </select>
+              </div>
+              <button class="btn btn-primary btn-block mt-24" id="btn-action-export-tally">Generate & Download XML</button>
+            </div>
+
+            <div class="card export-card">
+              <div class="export-card-icon-wrap bg-success-light">
+                <i data-lucide="table" class="text-success"></i>
+              </div>
+              <h3 class="export-card-title mt-16">GST Reconciliation Reports</h3>
+              <p class="export-card-desc mt-8">Produces detailed government-ready Excel worksheets summarizing Sales (GSTR-1 data), Purchase invoices matching GSTR-2B, and tax offset calculations.</p>
+              <div class="export-form-group mt-16">
+                <label for="export-gst-period">Select Period</label>
+                <select class="form-select" id="export-gst-period">
+                  <option value="june-2026">June 2026</option>
+                  <option value="may-2026">May 2026</option>
+                </select>
+              </div>
+              <button class="btn btn-success btn-block mt-24" id="btn-action-export-gst">Generate Excel Ledger</button>
+            </div>
+
+            <div class="card export-card">
+              <div class="export-card-icon-wrap bg-warning-light">
+                <i data-lucide="file-spreadsheet" class="text-warning"></i>
+              </div>
+              <h3 class="export-card-title mt-16">General Ledger CSV dump</h3>
+              <p class="export-card-desc mt-8">Produces structured raw CSV feeds containing complete ledger records and invoice links. Designed for direct loading into ZoHo, Marg, or custom databases.</p>
+              <div class="export-form-group mt-16">
+                <label for="export-csv-client">Select Client</label>
+                <select class="form-select" id="export-csv-client">
+                  <!-- Filled dynamically inside console.js -->
+                </select>
+              </div>
+              <button class="btn btn-warning btn-block mt-24" id="btn-action-export-csv">Download CSV</button>
+            </div>
+
+            <div class="card export-card">
+              <div class="export-card-icon-wrap bg-secondary-light">
+                <i data-lucide="book-open" class="text-secondary"></i>
+              </div>
+              <h3 class="export-card-title mt-16">Financial Statement Package</h3>
+              <p class="export-card-desc mt-8">Generates print-ready PDFs of Profit & Loss Statements, Balance Sheets, and Cash Flow ledgers styled with custom firm letterheads.</p>
+              <div class="export-form-group mt-16">
+                <label for="export-report-template">Templates</label>
+                <select class="form-select" id="export-report-template">
+                  <option value="standard">Standard Audit Report</option>
+                  <option value="detailed">Detailed Ledger Audit</option>
+                  <option value="summarized">One-Page Summary</option>
+                </select>
+              </div>
+              <button class="btn btn-secondary btn-block mt-24" id="btn-action-export-pdf">Generate PDF Package</button>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- SCREEN 9: BILLING -->
+        <section id="view-billing" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Billing & Subscriptions</h1>
+              <p class="view-subtitle">Manage client subscription limits, marginal cost structures, and firm billing tiers.</p>
+            </div>
+          </div>
+
+          <div class="billing-container mt-24">
+            <div class="dashboard-split">
+              <!-- Left: Plan Details -->
+              <div class="split-left">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Firm Subscription</h3>
+                  </div>
+                  
+                  <div class="billing-plan-info mt-16">
+                    <div class="plan-hero-badge">Partner Premium Tiers</div>
+                    <h2 class="mt-16" id="billing-marginal-rate-display">₹14,200 <span class="price-period">/ month</span></h2>
+                    <p class="card-subtitle mt-8" id="billing-subtitle-count">Currently managing 142 clients on TaxBot Partner API.</p>
+                    
+                    <div class="billing-usage-progress mt-24">
+                      <div class="progress-labels">
+                        <span id="billing-limit-label">Client Limit (142 / 200)</span>
+                        <strong id="billing-limit-pct">71% Used</strong>
+                      </div>
+                      <div class="progress-bar-wrap">
+                        <div class="progress-bar-fill" id="billing-progress-fill" style="width: 71%;"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Reseller pricing visualization -->
+                  <div class="reseller-pricing mt-32">
+                    <h4 class="section-sub-title">TaxBot CA Reseller Margin Model</h4>
+                    <p class="card-subtitle mt-8">TaxBot offers progressive pricing based on firm client volume. Earn commissions by billing clients directly.</p>
+                    
+                    <div class="reseller-tiers mt-16">
+                      <div class="reseller-tier-card" id="tier-1-card">
+                        <span class="tier-volume">1 - 9 Clients</span>
+                        <strong class="tier-rate">₹149 /mo per client</strong>
+                      </div>
+                      <div class="reseller-tier-card" id="tier-2-card">
+                        <span class="tier-volume">10 - 49 Clients</span>
+                        <strong class="tier-rate">₹119 /mo per client</strong>
+                      </div>
+                      <div class="reseller-tier-card" id="tier-3-card">
+                        <span class="tier-volume">50+ Clients</span>
+                        <strong class="tier-rate">₹99 /mo per client</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Upgrade & Savings Card -->
+              <div class="split-right">
+                <div class="card bg-primary-gradient text-light">
+                  <h3>Enterprise Partner Upgrade</h3>
+                  <p class="mt-16 text-light-muted">Unlock unlimited client licenses, white-label WhatsApp interfaces (e.g., WhatsApp from your firm's brand number), and dedicated API hooks for ERP systems.</p>
+                  
+                  <div class="upgrade-perks mt-24">
+                    <div class="perk-item"><i data-lucide="check"></i> Unlimited Client Workspace licences</div>
+                    <div class="perk-item mt-8"><i data-lucide="check"></i> Custom Brand WhatsApp Number</div>
+                    <div class="perk-item mt-8"><i data-lucide="check"></i> 24-hour SLA Support desk</div>
+                  </div>
+
+                  <button class="btn btn-light-brand btn-block mt-32" id="btn-upgrade-firm-plan">Upgrade to Enterprise (₹25,000/mo)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN 10: SETTINGS -->
+        <section id="view-settings" class="view-section hidden">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Console Settings</h1>
+              <p class="view-subtitle">Manage workspace credentials, webhook receivers, notifications, and firm profiles.</p>
+            </div>
+          </div>
+
+          <div class="settings-layout mt-24 card">
+            <div class="settings-tabs-side">
+              <button class="settings-tab-link active" data-settings-tab="firm">Firm Profile</button>
+              <button class="settings-tab-link" data-settings-tab="users">Users & Permissions</button>
+              <button class="settings-tab-link" data-settings-tab="notifications">Notifications</button>
+              <button class="settings-tab-link" data-settings-tab="integrations">Integrations</button>
+              <button class="settings-tab-link" data-settings-tab="gst-settings">GST Settings</button>
+              <button class="settings-tab-link" data-settings-tab="api">API Access</button>
+              <button class="settings-tab-link" data-settings-tab="audit-trail">Audit Trail</button>
+            </div>
+
+            <div class="settings-content-side">
+              
+              <!-- Tab Panel: Firm -->
+              <div class="settings-panel active" id="settings-panel-firm">
+                <h3>Firm Profile Settings</h3>
+                <p class="card-subtitle mt-8">Configure public billing details and certification numbers.</p>
+                
+                <form class="settings-form mt-24" id="form-settings-firm">
+                  <div class="form-group">
+                    <label for="settings-firm-name">Registered Firm Name</label>
+                    <input type="text" id="settings-firm-name" value="Sharma & Associates, Chartered Accountants" class="form-input">
+                  </div>
+                  <div class="form-group mt-16">
+                    <label for="settings-principal-name">Principal Partner / Representative</label>
+                    <input type="text" id="settings-principal-name" value="Sandeep Sharma, FCA" class="form-input">
+                  </div>
+                  <div class="form-grid-2 mt-16">
+                    <div class="form-group">
+                      <label for="settings-membership-id">ICAI Membership Registration Number</label>
+                      <input type="text" id="settings-membership-id" value="074321" class="form-input">
+                    </div>
+                    <div class="form-group">
+                      <label for="settings-frn-id">Firm Registration Number (FRN)</label>
+                      <input type="text" id="settings-frn-id" value="123456W" class="form-input">
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary mt-24">Save Profile Changes</button>
+                </form>
+              </div>
+
+              <div class="settings-panel" id="settings-panel-users">
+                <h3>Users & Permissions</h3>
+                <p class="card-subtitle mt-8">Invite your assistants, auditors, and staff members.</p>
+                <div class="user-list mt-24">
+                  <!-- JS will dynamically populate user list -->
+                </div>
+              </div>
+
+              <div class="settings-panel" id="settings-panel-notifications">
+                <h3>Notifications Settings</h3>
+                <p class="card-subtitle mt-8">Manage WhatsApp trigger alerts and document review notifications.</p>
+              </div>
+
+              <div class="settings-panel" id="settings-panel-integrations">
+                <h3>System Integrations</h3>
+                <p class="card-subtitle mt-8">Manage API integrations with bank feeds, Zoho Books, and GST Portal API.</p>
+              </div>
+
+              <div class="settings-panel" id="settings-panel-gst-settings">
+                <h3>GST Portal Credentials</h3>
+                <p class="card-subtitle mt-8">Configure your ASP/GSP client IDs to query GSTR-2B data directly.</p>
+              </div>
+
+              <div class="settings-panel" id="settings-panel-api">
+                <h3>Developer API Keys</h3>
+                <p class="card-subtitle mt-8">Create webhooks to consume auto-categorized bookkeeping transactions into your internal platforms.</p>
+              </div>
+
+              <!-- Tab Panel: Audit Trail -->
+              <div class="settings-panel" id="settings-panel-audit-trail">
+                <h3>Console Audit Trail</h3>
+                <p class="card-subtitle mt-8">Review all administrative activities performed by your CA partner account.</p>
+                <div class="card overflow-x mt-24" style="padding: 0; border: 1px solid var(--border);">
+                  <table class="data-table" id="settings-audit-table">
+                    <thead>
+                      <tr>
+                        <th>Timestamp</th>
+                        <th>Action</th>
+                        <th>User Description</th>
+                      </tr>
+                    </thead>
+                    <tbody id="settings-audit-tbody">
+                      <tr><td colspan="3" class="text-secondary" style="text-align:center; padding: 24px;">Loading audit trail...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- GLOBAL AI COMMAND BAR (RAYCAST / SPOTLIGHT STYLE MODAL) -->
+  <div class="command-bar-backdrop hidden" id="global-command-modal">
+    <div class="command-bar-dialog">
+      <div class="command-bar-input-wrap">
+        <i data-lucide="sparkles" class="ai-sparkles-icon"></i>
+        <input type="text" id="command-bar-search-input" placeholder="Ask TaxBot anything... (e.g. 'Show clients with GST due')" autocomplete="off">
+        <kbd class="kbd-esc">ESC</kbd>
+      </div>
+      <div class="command-bar-results" id="command-bar-suggestions-list">
+        <!-- JS inserts suggestions -->
+      </div>
+      <div class="command-bar-footer">
+        <span>Use <kbd>↑</kbd> <kbd>↓</kbd> to navigate, <kbd>Enter</kbd> to execute, <kbd>Esc</kbd> to close.</span>
+        <span>Powered by TaxBot AI</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD CLIENT MODAL -->
+  <div class="command-bar-backdrop hidden" id="add-client-modal">
+    <div class="modal-dialog-standard">
+      <div class="modal-dialog-header">
+        <h3>Link New Client Business</h3>
+        <button class="modal-close-btn" id="btn-close-add-client"><i data-lucide="x"></i></button>
+      </div>
+      <form id="form-add-client" class="modal-dialog-body mt-16">
+        <div class="form-group">
+          <label for="new-client-owner">Owner/Client Full Name</label>
+          <input type="text" id="new-client-owner" placeholder="Rajesh Patel" required class="form-input">
+        </div>
+        <div class="form-group mt-16">
+          <label for="new-client-phone">WhatsApp Number (with Country Code)</label>
+          <input type="tel" id="new-client-phone" placeholder="919876543210" required class="form-input">
+        </div>
+        <div class="form-group mt-16">
+          <label for="new-client-name">Business / Shop Name</label>
+          <input type="text" id="new-client-name" placeholder="Patel Kirana Store" required class="form-input">
+        </div>
+        <div class="form-group mt-16">
+          <label for="new-client-gstin">GSTIN (15-digit)</label>
+          <input type="text" id="new-client-gstin" placeholder="27AAAAA1111A1Z1" class="form-input">
+        </div>
+        <div class="form-grid-2 mt-16">
+          <div class="form-group">
+            <label for="new-client-plan">Pricing Plan</label>
+            <select id="new-client-plan" class="form-select">
+              <option value="trial">Trial Plan (14d)</option>
+              <option value="starter">Starter Plan</option>
+              <option value="pro" selected>Pro Reseller Plan (₹100/mo)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="new-client-gst-registered">GST Registered?</label>
+            <select id="new-client-gst-registered" class="form-select">
+              <option value="true" selected>Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions mt-32">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-add-client">Cancel</button>
+          <button type="submit" class="btn btn-primary">Link & Authorize Ledger</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toast-root"></div>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Dynamic Logic & Live API bindings -->
+  <script src="js/console.js"></script>
+</body>
+</html>
