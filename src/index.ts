@@ -12,6 +12,7 @@ import { createSyncRoutes } from './routes/sync';
 import { createWebhookRoutes } from './routes/webhook';
 import { initRemindersJob } from './jobs/reminders';
 import { captureRawBody } from './webhook/signature';
+import { getCorsOptions, getHelmetOptions } from './config/security';
 
 dotenv.config();
 validateEnvironment();
@@ -23,10 +24,8 @@ const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 20, standardHea
 const downloadLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 120, standardHeaders: true, legacyHeaders: false });
 
 // Standard middleware
-app.use(helmet({
-  contentSecurityPolicy: false,
-}));
-app.use(cors());
+app.use(helmet(getHelmetOptions()));
+app.use(cors(getCorsOptions()));
 app.use(express.json({ limit: '1mb', verify: captureRawBody }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 

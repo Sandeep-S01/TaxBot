@@ -28,8 +28,8 @@ function checkAuth() {
   if (sessionStr) {
     try {
       const caSession = JSON.parse(sessionStr);
-      if (!caSession.token) {
-        throw new Error('Legacy session missing token');
+      if (!caSession.csrfToken) {
+        throw new Error('Legacy session missing CSRF token');
       }
       authLayout.classList.add('hidden');
       consoleLayout.style.display = 'flex';
@@ -67,12 +67,12 @@ function getCASession() {
 
 function getAuthHeaders(extraHeaders = {}) {
   const caSession = getCASession();
-  if (!caSession || !caSession.token) {
+  if (!caSession || !caSession.csrfToken) {
     throw new Error('Session expired. Please login again.');
   }
   return {
     ...extraHeaders,
-    Authorization: `Bearer ${caSession.token}`
+    'X-CSRF-Token': caSession.csrfToken
   };
 }
 
@@ -80,7 +80,8 @@ async function openAuthenticatedPdf(url) {
   const pdfWindow = window.open('', '_blank');
   try {
     const response = await fetch(url, {
-      headers: getAuthHeaders()
+      headers: getAuthHeaders(),
+      credentials: 'same-origin'
     });
     if (!response.ok) {
       throw new Error('Failed to generate PDF report');
@@ -146,12 +147,13 @@ function setupAuthHandlers() {
       const res = await fetch('/api/ca/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ email, password })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Invalid credentials');
 
-      localStorage.setItem('taxbot_ca_session', JSON.stringify({ ...data.ca, token: data.token }));
+      localStorage.setItem('taxbot_ca_session', JSON.stringify({ ...data.ca, csrfToken: data.csrfToken }));
       showToast('Signed in successfully!');
       checkAuth();
     } catch (err) {
@@ -171,6 +173,7 @@ function setupAuthHandlers() {
       const res = await fetch('/api/ca/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ name, email, password, firmName })
       });
       const data = await res.json();
@@ -185,7 +188,16 @@ function setupAuthHandlers() {
   };
 
   // Logout Submit
-  logoutBtn.onclick = () => {
+  logoutBtn.onclick = async () => {
+    try {
+      await fetch('/api/ca/logout', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        credentials: 'same-origin'
+      });
+    } catch (err) {
+      console.warn('Logout request failed:', err);
+    }
     localStorage.removeItem('taxbot_ca_session');
     showToast('Logged out successfully.');
     showAuthScreen();

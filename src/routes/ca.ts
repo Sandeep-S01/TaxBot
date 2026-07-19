@@ -1,7 +1,16 @@
 import { Router } from 'express';
 import { RateLimitRequestHandler } from 'express-rate-limit';
 import Anthropic from '@anthropic-ai/sdk';
-import { getAuthenticatedCAId, hashPassword, issueCAToken, requireCAAuth, verifyPasswordAndMaybeMigrate } from '../auth/caAuth';
+import {
+  clearCASessionCookie,
+  getAuthenticatedCAId,
+  hashPassword,
+  issueCASession,
+  requireCAAuth,
+  requireCACsrf,
+  setCASessionCookie,
+  verifyPasswordAndMaybeMigrate,
+} from '../auth/caAuth';
 import { getClientById, getClientByPhone, createClient, updateClient } from '../db/clients';
 import { getTransactionsByDateRange, periodToDateRange, getTransactionsForMultipleClients } from '../db/transactions';
 import { createCA, getCAByEmail, getCAById, getCAClients, getConsolidatedGSTRSummary, linkClientToCA } from '../db/cas';
@@ -84,12 +93,14 @@ router.post('/api/ca/login', authLimiter, async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    const token = issueCAToken(ca);
+    const { token, csrfToken } = issueCASession(ca);
+    setCASessionCookie(res, token);
     await logAuthAuditBestEffort(ca.id, 'LOGIN', `CA logged in: ${ca.name}`);
 
     return res.status(200).json({
       message: 'Login successful',
       token,
+      csrfToken,
       ca: { id: ca.id, name: ca.name, email: ca.email, firm_name: ca.firm_name },
     });
   } catch (err: any) {
@@ -99,6 +110,31 @@ router.post('/api/ca/login', authLimiter, async (req, res) => {
 });
 
 router.use('/api/ca', requireCAAuth);
+router.use('/api/ca', requireCACsrf);
+
+router.post('/api/ca/logout', (req, res) => {
+  clearCASessionCookie(res);
+  return res.status(200).json({ message: 'Logout successful' });
+});
+
+router.get('/api/ca/session', async (req, res) => {
+  const caId = getAuthenticatedCAId(req);
+
+  try {
+    const ca = await getCAById(caId);
+    if (!ca) {
+      clearCASessionCookie(res);
+      return res.status(401).json({ error: 'Unauthorized: CA account not found' });
+    }
+    return res.status(200).json({
+      ca: { id: ca.id, name: ca.name, email: ca.email, firm_name: ca.firm_name },
+      csrfToken: (req as any).caCsrfToken,
+    });
+  } catch (err: any) {
+    console.error('Error fetching CA session:', err.message);
+    return res.status(500).json({ error: 'Internal Server Error: Could not fetch session' });
+  }
+});
 
 // 3. Get clients managed by CA
 router.get('/api/ca/clients', async (req, res) => {

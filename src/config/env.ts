@@ -4,6 +4,7 @@ const REQUIRED_PRODUCTION_SECRETS = [
   'JWT_SECRET',
   'EXPORT_TOKEN_SECRET',
   'META_APP_SECRET',
+  'APP_ORIGIN',
 ];
 
 function isUnsafeSecret(value: string | undefined): boolean {

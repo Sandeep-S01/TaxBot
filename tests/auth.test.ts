@@ -1,6 +1,13 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 import jwt from 'jsonwebtoken';
-import { hashPassword, issueCAToken, verifyPasswordAndMaybeMigrate } from '../src/auth/caAuth';
+import {
+  hashPassword,
+  issueCASession,
+  issueCAToken,
+  requireCAAuth,
+  requireCACsrf,
+  verifyPasswordAndMaybeMigrate,
+} from '../src/auth/caAuth';
 
 describe('CA authentication helpers', () => {
   beforeEach(() => {
@@ -26,5 +33,72 @@ describe('CA authentication helpers', () => {
     expect(payload.caId).toBe('ca-123');
     expect(payload.email).toBe('ca@example.com');
     expect(payload.sub).toBe('ca-123');
+  });
+
+  it('authenticates CA requests from HttpOnly session cookies', () => {
+    const { token, csrfToken } = issueCASession({ id: 'ca-cookie', email: 'cookie@example.com' });
+    const req: any = {
+      method: 'GET',
+      headers: {
+        cookie: `other=value; taxbot_ca_session=${encodeURIComponent(token)}`,
+      },
+    };
+    const res: any = {
+      statusCode: 200,
+      status(code: number) {
+        this.statusCode = code;
+        return this;
+      },
+      json(body: unknown) {
+        this.body = body;
+        return this;
+      },
+    };
+    let nextCalled = false;
+
+    requireCAAuth(req, res, () => {
+      nextCalled = true;
+    });
+
+    expect(nextCalled).toBe(true);
+    expect(req.caId).toBe('ca-cookie');
+    expect(req.caCsrfToken).toBe(csrfToken);
+  });
+
+  it('requires matching CSRF token for mutating cookie-authenticated CA requests', () => {
+    const req: any = {
+      method: 'POST',
+      headers: {
+        'x-csrf-token': 'correct-csrf',
+      },
+      caCsrfToken: 'correct-csrf',
+    };
+    const res: any = {
+      statusCode: 200,
+      status(code: number) {
+        this.statusCode = code;
+        return this;
+      },
+      json(body: unknown) {
+        this.body = body;
+        return this;
+      },
+    };
+    let nextCalled = false;
+
+    requireCACsrf(req, res, () => {
+      nextCalled = true;
+    });
+
+    expect(nextCalled).toBe(true);
+
+    req.headers['x-csrf-token'] = 'wrong-csrf';
+    nextCalled = false;
+    requireCACsrf(req, res, () => {
+      nextCalled = true;
+    });
+
+    expect(nextCalled).toBe(false);
+    expect(res.statusCode).toBe(403);
   });
 });

@@ -14,6 +14,8 @@ const checks: EnvCheck[] = [
   { name: 'JWT_SECRET', required: true, minLength: 32 },
   { name: 'EXPORT_TOKEN_SECRET', required: true, minLength: 32 },
   { name: 'META_APP_SECRET', required: true, minLength: 32 },
+  { name: 'APP_ORIGIN', required: true },
+  { name: 'ALLOWED_ORIGINS', required: false },
   { name: 'GEMINI_API_KEY', required: true, minLength: 16 },
   { name: 'SUPABASE_ANON_KEY', required: false, minLength: 16 },
   { name: 'WA_TOKEN', required: false, minLength: 16 },

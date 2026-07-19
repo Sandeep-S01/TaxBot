@@ -143,8 +143,8 @@ function checkAuth() {
   if (caDataStr) {
     try {
       const caData = JSON.parse(caDataStr);
-      if (!caData.token) {
-        throw new Error('Legacy session missing token');
+      if (!caData.csrfToken) {
+        throw new Error('Legacy session missing CSRF token');
       }
       showDashboard(caData);
     } catch (e) {
@@ -236,6 +236,7 @@ function setupAuthSubmits() {
         const res = await fetch('/api/ca/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
           body: JSON.stringify({ email, password }),
         });
 
@@ -244,9 +245,9 @@ function setupAuthSubmits() {
           throw new Error(data.error || 'Login failed');
         }
 
-        localStorage.setItem('taxbot_ca_session', JSON.stringify({ ...data.ca, token: data.token }));
+        localStorage.setItem('taxbot_ca_session', JSON.stringify({ ...data.ca, csrfToken: data.csrfToken }));
         showToast('Login successful! Welcome to CA dashboard.', 'success');
-        showDashboard({ ...data.ca, token: data.token });
+        showDashboard({ ...data.ca, csrfToken: data.csrfToken });
       } catch (err) {
         showToast(err.message, 'error');
       }
@@ -265,6 +266,7 @@ function setupAuthSubmits() {
         const res = await fetch('/api/ca/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
           body: JSON.stringify({ name, email, password, firmName }),
         });
 
@@ -284,7 +286,16 @@ function setupAuthSubmits() {
 
   const logoutBtn = document.getElementById('btn-logout');
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await fetch('/api/ca/logout', {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          credentials: 'same-origin',
+        });
+      } catch (err) {
+        console.warn('Logout request failed:', err);
+      }
       localStorage.removeItem('taxbot_ca_session');
       showToast('Logged out successfully.', 'success');
       showAuth();
@@ -414,12 +425,12 @@ function getCASession() {
 
 function getAuthHeaders(extraHeaders = {}) {
   const caSession = getCASession();
-  if (!caSession || !caSession.token) {
+  if (!caSession || !caSession.csrfToken) {
     throw new Error('Session expired. Please login again.');
   }
   return {
     ...extraHeaders,
-    Authorization: `Bearer ${caSession.token}`
+    'X-CSRF-Token': caSession.csrfToken
   };
 }
 

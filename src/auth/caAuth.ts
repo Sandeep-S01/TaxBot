@@ -5,10 +5,13 @@ import crypto from 'crypto';
 import { updateCA } from '../db/cas';
 
 const JWT_EXPIRES_IN = '12h';
+const SESSION_COOKIE_NAME = 'taxbot_ca_session';
+const SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000;
 
 export interface CAJwtPayload {
   caId: string;
   email: string;
+  csrfToken?: string;
 }
 
 function getJwtSecret(): string {
@@ -19,11 +22,19 @@ function getJwtSecret(): string {
   return secret;
 }
 
-export function issueCAToken(ca: { id: string; email: string }): string {
-  return jwt.sign({ caId: ca.id, email: ca.email }, getJwtSecret(), {
+export function issueCAToken(ca: { id: string; email: string }, csrfToken?: string): string {
+  return jwt.sign({ caId: ca.id, email: ca.email, csrfToken }, getJwtSecret(), {
     expiresIn: JWT_EXPIRES_IN,
     subject: ca.id,
   });
+}
+
+export function issueCASession(ca: { id: string; email: string }): { token: string; csrfToken: string } {
+  const csrfToken = crypto.randomBytes(32).toString('hex');
+  return {
+    token: issueCAToken(ca, csrfToken),
+    csrfToken,
+  };
 }
 
 export async function hashPassword(password: string): Promise<string> {
@@ -56,11 +67,10 @@ export async function verifyPasswordAndMaybeMigrate(
 }
 
 export function requireCAAuth(req: Request, res: Response, next: NextFunction) {
-  const header = req.headers.authorization || '';
-  const [scheme, token] = header.split(' ');
+  const token = getBearerToken(req) || getCookieValue(req, SESSION_COOKIE_NAME);
 
-  if (scheme !== 'Bearer' || !token) {
-    return res.status(401).json({ error: 'Unauthorized: Missing bearer token' });
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized: Missing CA session' });
   }
 
   try {
@@ -70,10 +80,48 @@ export function requireCAAuth(req: Request, res: Response, next: NextFunction) {
     }
     (req as any).caId = payload.caId;
     (req as any).caEmail = payload.email;
+    (req as any).caCsrfToken = payload.csrfToken || null;
     return next();
   } catch (err) {
     return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
   }
+}
+
+export function requireCACsrf(req: Request, res: Response, next: NextFunction) {
+  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    return next();
+  }
+
+  const expected = (req as any).caCsrfToken;
+  const provided = req.headers['x-csrf-token'];
+
+  if (!expected) {
+    return res.status(403).json({ error: 'Forbidden: CSRF token missing from session' });
+  }
+  if (Array.isArray(provided) || provided !== expected) {
+    return res.status(403).json({ error: 'Forbidden: Invalid CSRF token' });
+  }
+
+  return next();
+}
+
+export function setCASessionCookie(res: Response, token: string) {
+  res.cookie(SESSION_COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: SESSION_MAX_AGE_MS,
+    path: '/',
+  });
+}
+
+export function clearCASessionCookie(res: Response) {
+  res.clearCookie(SESSION_COOKIE_NAME, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    path: '/',
+  });
 }
 
 export function getAuthenticatedCAId(req: Request): string {
@@ -82,4 +130,29 @@ export function getAuthenticatedCAId(req: Request): string {
     throw new Error('Authenticated CA id missing from request context');
   }
   return caId;
+}
+
+function getBearerToken(req: Request): string | null {
+  const header = req.headers.authorization || '';
+  const [scheme, token] = header.split(' ');
+  return scheme === 'Bearer' && token ? token : null;
+}
+
+function getCookieValue(req: Request, name: string): string | null {
+  const cookieHeader = req.headers.cookie;
+  if (!cookieHeader) {
+    return null;
+  }
+
+  const cookies = cookieHeader.split(';').map((part) => part.trim());
+  for (const cookie of cookies) {
+    const separator = cookie.indexOf('=');
+    if (separator === -1) continue;
+    const key = cookie.slice(0, separator);
+    if (key === name) {
+      return decodeURIComponent(cookie.slice(separator + 1));
+    }
+  }
+
+  return null;
 }
