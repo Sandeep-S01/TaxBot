@@ -13,6 +13,18 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || 'dummy_key',
 });
 
+async function logAuthAuditBestEffort(
+  caId: string,
+  actionType: string,
+  description: string
+): Promise<void> {
+  try {
+    await logAuditAction(caId, actionType, description);
+  } catch (err: any) {
+    console.error(`[Audit] ${actionType} audit log failed after successful auth action:`, err.message || err);
+  }
+}
+
 export function createCARoutes(authLimiter: RateLimitRequestHandler): Router {
   const router = Router();
 
@@ -40,7 +52,7 @@ router.post('/api/ca/register', authLimiter, async (req, res) => {
       firm_name: firmName || null,
     });
 
-    await logAuditAction(ca.id, 'REGISTER', `New CA registered: ${ca.name} (${ca.firm_name || 'No Firm'})`);
+    await logAuthAuditBestEffort(ca.id, 'REGISTER', `New CA registered: ${ca.name} (${ca.firm_name || 'No Firm'})`);
 
     // Return CA info (excluding password hash)
     return res.status(201).json({
@@ -72,8 +84,8 @@ router.post('/api/ca/login', authLimiter, async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    await logAuditAction(ca.id, 'LOGIN', `CA logged in: ${ca.name}`);
     const token = issueCAToken(ca);
+    await logAuthAuditBestEffort(ca.id, 'LOGIN', `CA logged in: ${ca.name}`);
 
     return res.status(200).json({
       message: 'Login successful',
