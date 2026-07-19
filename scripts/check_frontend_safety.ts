@@ -66,6 +66,26 @@ if (showToastMatch && /\.innerHTML\s*=/.test(showToastMatch[0])) {
   });
 }
 
+const commandJsPath = path.join(PUBLIC_JS_DIR, 'console-command.js');
+if (fs.existsSync(commandJsPath)) {
+  const commandJs = fs.readFileSync(commandJsPath, 'utf8');
+  const unsafeCommandInterpolations = [
+    /<span>\s*\$\{\s*s\.text\s*\}/,
+    /<strong>\s*\$\{\s*c\.name\s*\}/,
+    /\(\s*\$\{\s*c\.owner\s*\}\s*\)/,
+    /Query AI:\s*"\$\{\s*query\s*\}"/,
+  ];
+
+  for (const pattern of unsafeCommandInterpolations) {
+    if (pattern.test(commandJs)) {
+      findings.push({
+        file: path.join('public', 'js', 'console-command.js'),
+        message: 'Command palette innerHTML interpolations must escape client, suggestion, and query text.',
+      });
+    }
+  }
+}
+
 if (findings.length > 0) {
   console.error('Frontend safety check failed:');
   findings.forEach((finding) => {
