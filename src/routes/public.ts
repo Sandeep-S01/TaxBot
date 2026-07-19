@@ -11,6 +11,7 @@ import { exportToCSV, exportToTallyXML } from '../utils/exporter';
 import { escapeHtml } from '../utils/sanitize';
 import { validatePaymentToken } from '../utils/publicTokens';
 import { supabase } from '../db/client';
+import { isValidPeriod, isUuid } from '../utils/validation';
 
 export function createPublicRoutes(downloadLimiter: RateLimitRequestHandler): Router {
   const router = Router();
@@ -68,6 +69,15 @@ export function createPublicRoutes(downloadLimiter: RateLimitRequestHandler): Ro
     if (!format || !period || !token) {
       return res.status(400).send('Bad Request: Missing parameters (format, period, token)');
     }
+    if (!isUuid(clientId)) {
+      return res.status(400).send('Bad Request: Invalid client id');
+    }
+    if (!isValidPeriod(period)) {
+      return res.status(400).send('Bad Request: Invalid period format');
+    }
+    if (format !== 'csv' && format !== 'xml') {
+      return res.status(400).send('Bad Request: Invalid format (must be csv or xml)');
+    }
 
     const isValid = validateExportToken(clientId, period, token);
     if (!isValid) {
@@ -100,7 +110,6 @@ export function createPublicRoutes(downloadLimiter: RateLimitRequestHandler): Ro
         res.setHeader('Content-Disposition', `attachment; filename="TaxBot_Tally_${period}.xml"`);
         return res.status(200).send(xmlContent);
       }
-
       return res.status(400).send('Bad Request: Invalid format (must be csv or xml)');
     } catch (err: any) {
       console.error('Export download error:', err.message);
@@ -112,6 +121,9 @@ export function createPublicRoutes(downloadLimiter: RateLimitRequestHandler): Ro
     const { txId } = req.params;
     const { issued, token } = req.query as { issued?: string; token?: string };
 
+    if (!isUuid(txId)) {
+      return res.status(400).send('Bad Request: Invalid transaction id');
+    }
     if (!issued || !token || !validatePaymentToken(txId, issued, token)) {
       return res.status(403).send('Forbidden: Invalid or expired payment link');
     }

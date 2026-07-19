@@ -27,3 +27,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added a `lint` quality gate and slimmed the Docker image to runtime files only.
 - Added shared GST state-code tax split logic and stronger duplicate transaction candidate matching.
 - Added transaction status, confidence, review reason, and source provenance to CSV/PDF reporting surfaces.
+- Added stricter public export/payment route validation for UUIDs, periods, and formats.
