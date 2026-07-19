@@ -2479,7 +2479,11 @@ function escapeXml(value) {
 }
 
 function csvCell(value) {
-  return `"${String(value ?? '').replace(/"/g, '""')}"`;
+  let text = String(value ?? '');
+  if (/^[=+\-@\t\r]/.test(text)) {
+    text = `'${text}`;
+  }
+  return `"${text.replace(/"/g, '""')}"`;
 }
 
 function safeExportFilename(value, fallback = 'TaxBot_Export') {

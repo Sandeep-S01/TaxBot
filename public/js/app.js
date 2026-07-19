@@ -453,7 +453,11 @@ function escapeXml(value) {
 }
 
 function csvCell(value) {
-  return `"${String(value ?? '').replace(/"/g, '""')}"`;
+  let text = String(value ?? '');
+  if (/^[=+\-@\t\r]/.test(text)) {
+    text = `'${text}`;
+  }
+  return `"${text.replace(/"/g, '""')}"`;
 }
 
 function safeExportFilename(value, fallback = 'TaxBot_Export') {
@@ -855,8 +859,8 @@ async function loadConsolidatedGSTReport() {
       const rows = report.clientBreakdown.map(c => {
         const net = Math.max(0, c.outwardTax - c.inwardTax);
         return [
-          `"${String(c.businessName || c.clientName || 'Unknown Client').replace(/"/g, '""')}"`,
-          String(c.gstin || 'N/A').replace(/"/g, '""'),
+          csvCell(c.businessName || c.clientName || 'Unknown Client'),
+          csvCell(c.gstin || 'N/A'),
           c.outwardTaxable,
           c.outwardTax,
           c.inwardTaxable,

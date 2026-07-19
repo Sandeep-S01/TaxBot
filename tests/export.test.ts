@@ -83,6 +83,21 @@ describe('CA Export Generators (CSV and Tally XML)', () => {
     expect(csvContent).toContain('2026-05-15,Local Tea Vendor,EXPENSE,exempt,0,300,0,300,,"Office tea, coffee & snacks, with a comma and ""quotes"" in description",manual');
   });
 
+  it('neutralizes spreadsheet formula cells in CSV exports', () => {
+    const csvContent = exportToCSV([
+      {
+        ...mockTransactions[0],
+        vendor_name: '=HYPERLINK("https://evil.example","click")',
+        invoice_number: '+SUM(1,2)',
+        description: '@malicious',
+      },
+    ]);
+
+    expect(csvContent).toContain(`"'=HYPERLINK(""https://evil.example"",""click"")"`);
+    expect(csvContent).toContain(`"'+SUM(1,2)"`);
+    expect(csvContent).toContain(",'@malicious,");
+  });
+
   it('should generate a valid Tally XML structure with local CGST and SGST splits', () => {
     const xmlContent = exportToTallyXML(mockTransactions, 'Ananta Store');
 
