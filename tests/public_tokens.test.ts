@@ -1,4 +1,5 @@
 import { describe, expect, it, beforeEach } from 'vitest';
+import { generateExportToken, validateExportToken } from '../src/handlers/commands/export';
 import { createPaymentLink, generatePaymentToken, validatePaymentToken } from '../src/utils/publicTokens';
 
 describe('Public signed tokens', () => {
@@ -26,5 +27,17 @@ describe('Public signed tokens', () => {
     expect(validatePaymentToken(txId, issued, 'invalid-token')).toBe(false);
     expect(validatePaymentToken('other-tx', issued, token)).toBe(false);
     expect(validatePaymentToken(txId, expired, expiredToken)).toBe(false);
+  });
+
+  it('validates export tokens with strict token shape checks', () => {
+    const clientId = '11111111-1111-4111-8111-111111111111';
+    const period = '2026-07';
+    const today = new Date().toISOString().split('T')[0];
+    const token = generateExportToken(clientId, period, today);
+
+    expect(validateExportToken(clientId, period, token)).toBe(true);
+    expect(validateExportToken(clientId, period, 'not-a-token')).toBe(false);
+    expect(validateExportToken(clientId, '2026-08', token)).toBe(false);
+    expect(validateExportToken('22222222-2222-4222-8222-222222222222', period, token)).toBe(false);
   });
 });

@@ -17,14 +17,22 @@ export function generateExportToken(clientId: string, period: string, dateStr: s
  * Validates the temporary download token.
  */
 export function validateExportToken(clientId: string, period: string, token: string): boolean {
+  if (!/^[a-f0-9]{64}$/i.test(token)) {
+    return false;
+  }
+
   const today = new Date().toISOString().split('T')[0];
   const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
   // Token is valid if generated today or yesterday (allows 24-48 hour window)
   const tokenToday = generateExportToken(clientId, period, today);
   const tokenYesterday = generateExportToken(clientId, period, yesterday);
+  const receivedBuffer = Buffer.from(token, 'hex');
 
-  return token === tokenToday || token === tokenYesterday;
+  return [tokenToday, tokenYesterday].some((expected) => {
+    const expectedBuffer = Buffer.from(expected, 'hex');
+    return receivedBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(receivedBuffer, expectedBuffer);
+  });
 }
 
 /**
