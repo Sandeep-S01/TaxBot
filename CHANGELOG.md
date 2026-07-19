@@ -54,3 +54,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added partial-failure provenance to consolidated CA GST reports and surfaced review-needed client calculations in the dashboards.
 - Escaped browser-side Tally XML/CSV export content and expanded frontend safety checks for XML interpolation regressions.
 - Neutralized spreadsheet formula-leading values in server and browser CSV exports.
+- Added `PRODUCTION_READINESS_TRACKER.md` to track readiness targets, completed remediation, and the remaining severity queue.

@@ -1,0 +1,53 @@
+# TaxBot Production Readiness Tracker
+
+Last updated: 2026-07-19
+
+Target: raise each production-readiness area to about 8/10 before declaring the app ready for broad production use.
+
+## Current Gate Status
+
+| Area | Target | Status | Notes |
+| --- | --- | --- | --- |
+| Architecture | 8/10 | In progress | Core routes are modular, but CA routes and frontend scripts remain large. |
+| Code Quality | 8/10 | In progress | TypeScript gate is clean; remaining work is mostly decomposition and shared browser helpers. |
+| Security | 8/10 | In progress | JWT/Argon2, CSRF, webhook signatures, export tokens, log redaction, XML/CSV escaping are complete. |
+| Database | 8/10 | In progress | Ordered migrations and audit integrity are complete; production migration execution must be verified per environment. |
+| GST Correctness | 8/10 | In progress | Regular-GST v1 scope, tax split, provenance, duplicate review, and partial-report visibility are implemented. |
+| AI Reliability | 8/10 | In progress | Extraction normalization and production audit fallback behavior are implemented; provider observability can improve. |
+| Performance | 8/10 | In progress | Basic limits/retries exist; remaining risk is query scaling and report/export pagination. |
+| Reliability | 8/10 | In progress | Readiness checks, idempotency, retry, and graceful shutdown are complete; production smoke still needs live verification. |
+| Testing | 8/10 | In progress | Unit and integration-style tests cover critical paths; browser E2E and deployed smoke evidence remain open. |
+| Documentation | 8/10 | In progress | README, migrations, env contract, and changelog are updated; operator runbooks can improve. |
+
+## Completed Remediation
+
+- Critical auth hardening: JWT sessions, Argon2 password storage, legacy SHA-256 migration, CSRF protection.
+- Public link hardening: signed export/payment tokens and strict token validation.
+- HTTP hardening: Helmet, CORS controls, request limits, and route rate limits.
+- Webhook hardening: Meta signature verification, inbound email shared secret, idempotent WhatsApp message processing.
+- Data integrity: transaction review statuses, low-confidence review routing, duplicate candidate detection, failed duplicate checks routed to review.
+- Auditability: Supabase audit-log schema, audit constraints, client ownership checks, request IDs, readiness endpoint, operational log redaction.
+- GST v1 scope: regular GST only, intra/inter-state split where GSTIN state codes exist, provenance in reports.
+- Export safety: server/browser Tally XML escaping, payment HTML escaping, CSV formula neutralization, frontend regression checks.
+- CI readiness: lint, build, tests, mojibake check, frontend safety check, npm audit, Docker build workflow.
+
+## Remaining Queue
+
+1. High: verify deployed production smoke after Render redeploy and Supabase migrations.
+2. High: add browser E2E tests for CA login, dashboard load, protected API access, export download, and payment-link denial without token.
+3. Medium: split large CA route and dashboard scripts into smaller modules after behavior is stable.
+4. Medium: add query pagination/bounds for report and export paths with larger ledgers.
+5. Medium: improve provider observability with structured error categories for Gemini, Anthropic, Meta, and Supabase.
+6. Low: label development-only diagnostic scripts and reduce raw data printing in local helper scripts.
+7. Low: add an operator runbook for deployment, migrations, smoke testing, rollback, and incident triage.
+
+## Verification Command
+
+```powershell
+npm run lint
+npm run build
+npm test
+npm run check:mojibake
+npm run check:frontend-safety
+npm audit --audit-level=moderate
+```
