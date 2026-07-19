@@ -8,28 +8,27 @@ dotenv.config();
 
 interface SyncConfig {
   clientId: string;
-  caId: string;
   lastSyncTime: string;
   tallyPort: number;
   serverUrl: string;
+  caEmail?: string;
 }
 
 const CONFIG_FILE = path.join(process.cwd(), 'sync_config.json');
 
-// Default config if none exists
 const DEFAULT_CONFIG: SyncConfig = {
   clientId: 'PLACEHOLDER_CLIENT_ID',
-  caId: 'PLACEHOLDER_CA_ID',
-  lastSyncTime: new Date(0).toISOString(), // 1970-01-01
+  lastSyncTime: new Date(0).toISOString(),
   tallyPort: 9000,
   serverUrl: 'http://localhost:3000',
+  caEmail: 'ca@example.com',
 };
 
 async function loadConfig(): Promise<SyncConfig> {
   if (!fs.existsSync(CONFIG_FILE)) {
     console.log(`[Sync] Config file not found. Creating default at: ${CONFIG_FILE}`);
     fs.writeFileSync(CONFIG_FILE, JSON.stringify(DEFAULT_CONFIG, null, 2), 'utf-8');
-    console.log(`[Sync] Please configure 'sync_config.json' with your actual clientId and caId before running sync.`);
+    console.log(`[Sync] Set clientId and caEmail in sync_config.json, then provide TAXBOT_CA_PASSWORD or TAXBOT_CA_TOKEN in your environment.`);
     process.exit(0);
   }
 
@@ -41,11 +40,40 @@ async function saveConfig(config: SyncConfig): Promise<void> {
   fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2), 'utf-8');
 }
 
+async function getAuthToken(config: SyncConfig): Promise<string> {
+  const envToken = process.env.TAXBOT_CA_TOKEN || process.env.SMOKE_CA_TOKEN;
+  if (envToken) {
+    return envToken;
+  }
+
+  const email = process.env.TAXBOT_CA_EMAIL || config.caEmail;
+  const password = process.env.TAXBOT_CA_PASSWORD;
+  if (!email || !password || email === DEFAULT_CONFIG.caEmail) {
+    throw new Error('Set TAXBOT_CA_TOKEN, or set TAXBOT_CA_EMAIL/TAXBOT_CA_PASSWORD before running sync.');
+  }
+
+  const loginUrl = `${config.serverUrl.replace(/\/$/, '')}/api/ca/login`;
+  const response = await axios.post(
+    loginUrl,
+    { email, password },
+    {
+      headers: { 'Content-Type': 'application/json' },
+      timeout: 10000,
+    }
+  );
+
+  const token = response.data?.token;
+  if (!token) {
+    throw new Error('TaxBot login succeeded but did not return a token.');
+  }
+  return token;
+}
+
 async function syncWithTally() {
   const config = await loadConfig();
 
-  if (config.clientId === 'PLACEHOLDER_CLIENT_ID' || config.caId === 'PLACEHOLDER_CA_ID') {
-    console.error(`[Sync Error] Please set your actual 'clientId' and 'caId' in 'sync_config.json'.`);
+  if (config.clientId === DEFAULT_CONFIG.clientId) {
+    console.error(`[Sync Error] Set your actual clientId in sync_config.json.`);
     process.exit(1);
   }
 
@@ -53,31 +81,29 @@ async function syncWithTally() {
   console.log(`[Sync] Querying transactions since: ${config.lastSyncTime}`);
 
   try {
-    // 1. Fetch transactions from TaxBot server
-    const syncUrl = `${config.serverUrl}/api/sync/${config.clientId}?since=${encodeURIComponent(config.lastSyncTime)}`;
+    const authToken = await getAuthToken(config);
+
+    const syncUrl = `${config.serverUrl.replace(/\/$/, '')}/api/sync/${config.clientId}?since=${encodeURIComponent(config.lastSyncTime)}`;
     const response = await axios.get(syncUrl, {
       headers: {
-        'x-ca-id': config.caId,
+        Authorization: `Bearer ${authToken}`,
       },
+      timeout: 10000,
     });
 
     const { transactions, count, businessName, gstin, lastSyncTime } = response.data;
-
     console.log(`[Sync] Fetched ${count} new transactions from server.`);
 
     if (count === 0) {
       console.log(`[Sync] Ledger is already up to date. No new vouchers to sync.`);
-      // Update sync time to the one provided by server
       config.lastSyncTime = lastSyncTime;
       await saveConfig(config);
       return;
     }
 
-    // 2. Generate Tally XML format
     console.log(`[Sync] Generating compliant Tally XML split-vouchers for ${businessName}...`);
     const xmlData = exportToTallyXML(transactions, businessName, gstin);
 
-    // 3. Post XML data to local Tally instance
     const tallyUrl = `http://localhost:${config.tallyPort}`;
     console.log(`[Sync] Connecting to local Tally Prime at: ${tallyUrl}`);
 
@@ -85,14 +111,13 @@ async function syncWithTally() {
       headers: {
         'Content-Type': 'text/xml; charset=utf-8',
       },
-      timeout: 10000, // 10s timeout
+      timeout: 10000,
     });
 
     const responseText = tallyResponse.data as string;
     console.log(`[Sync] Tally response received:`);
     console.log(responseText);
 
-    // 4. Parse Tally Response for errors/creates
     const createdMatch = responseText.match(/<CREATED>(\d+)<\/CREATED>/);
     const alteredMatch = responseText.match(/<ALTERED>(\d+)<\/ALTERED>/);
     const errorsMatch = responseText.match(/<ERRORS>(\d+)<\/ERRORS>/);
@@ -101,15 +126,14 @@ async function syncWithTally() {
     const altered = alteredMatch ? parseInt(alteredMatch[1], 10) : 0;
     const errors = errorsMatch ? parseInt(errorsMatch[1], 10) : 0;
 
-    console.log(`\n📊 *Sync Results:*`);
-    console.log(`• Vouchers Created: ${created}`);
-    console.log(`• Vouchers Altered: ${altered}`);
-    console.log(`• Import Errors: ${errors}`);
+    console.log(`\nSync Results:`);
+    console.log(`- Vouchers Created: ${created}`);
+    console.log(`- Vouchers Altered: ${altered}`);
+    console.log(`- Import Errors: ${errors}`);
 
     if (errors > 0) {
-      console.warn(`[Sync Warning] Tally reported ${errors} errors during import. Check Tally's 'Tally.imp' log file for details.`);
-      
-      // Look for error details in description if any
+      console.warn(`[Sync Warning] Tally reported ${errors} errors during import. Check Tally's Tally.imp log file for details.`);
+
       const lineErrorMatch = responseText.match(/<LINEERROR>(.*?)<\/LINEERROR>/g);
       if (lineErrorMatch) {
         console.warn(`Error Details:`);
@@ -118,24 +142,21 @@ async function syncWithTally() {
         });
       }
     } else {
-      console.log(`✅ [Sync Success] All ${count} transactions imported successfully into Tally!`);
-      // 5. Save progress
+      console.log(`[Sync Success] All ${count} transactions imported successfully into Tally.`);
       config.lastSyncTime = lastSyncTime;
       await saveConfig(config);
       console.log(`[Sync] Config file updated. Next sync starts from: ${config.lastSyncTime}`);
     }
-
   } catch (err: any) {
     if (err.code === 'ECONNREFUSED') {
-      console.error(`\n❌ [Sync Connection Error] Could not connect to Tally on port ${config.tallyPort}.`);
+      console.error(`\n[Sync Connection Error] Could not connect to Tally on port ${config.tallyPort}.`);
       console.error(`Ensure Tally is running locally and HTTP Server is enabled:`);
       console.error(`  Gateway of Tally > Press F12 > Advanced Configuration > Enable ODBC/HTTP Server -> Yes, Port -> ${config.tallyPort}\n`);
     } else {
-      console.error(`\n❌ [Sync Error] ${err.response?.data?.error || err.message}`);
+      console.error(`\n[Sync Error] ${err.response?.data?.error || err.message}`);
     }
     process.exit(1);
   }
 }
 
-// Run the sync
 syncWithTally();

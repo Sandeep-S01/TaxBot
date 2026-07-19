@@ -146,6 +146,14 @@ npm audit --audit-level=moderate
 
 The GitHub Actions workflow runs the same checks and validates that the Docker image builds.
 
+### Local Tally Sync Connector
+The optional `scripts/tally_sync_connector.ts` helper authenticates against TaxBot before calling `/api/sync/:clientId`.
+
+1. Run the script once to generate `sync_config.json`.
+2. Set `clientId`, `serverUrl`, and optionally `caEmail` in `sync_config.json`.
+3. Provide either `TAXBOT_CA_TOKEN`, or `TAXBOT_CA_EMAIL` and `TAXBOT_CA_PASSWORD`, in your shell environment.
+4. Run the connector from a machine where Tally Prime HTTP is available on `tallyPort`.
+
 ### Render Deployment Checklist
 1. Apply pending SQL files from `supabase/migrations/` in order.
 2. Confirm production env vars with `npm run check:env` in the deployed environment where possible.

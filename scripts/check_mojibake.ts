@@ -5,11 +5,13 @@ const ROOT = process.cwd();
 const EXTENSIONS = new Set(['.ts', '.js', '.html', '.css', '.md', '.json']);
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.git']);
 const MOJIBAKE_PATTERNS = [
-  /â[€™€œ€¢€“€”˜„€¦žŸ]/,
-  /ðŸ/,
-  /Ã[^\s]/,
-  /à¤/,
-  /à¥/,
+  /\u00c3\u00a2/,
+  /\u00c3\u00b0/,
+  /\u00c3\u0192[^\s]/,
+  /\u00c3\u00a0/,
+  /\u00c2[^\s]/,
+  /\u00e2[\u0080-\u00bf]/,
+  /\u00f0[\u0080-\u00bf]/,
 ];
 
 interface Finding {
