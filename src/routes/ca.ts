@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { RateLimitRequestHandler } from 'express-rate-limit';
 import Anthropic from '@anthropic-ai/sdk';
 import { isUsableAnthropicKey, shouldUseSimulatedAuditResponse } from '../ai/auditAvailability';
+import { normalizeAuditActionPayload } from '../audit/validation';
 import {
   clearCASessionCookie,
   getAuthenticatedCAId,
@@ -369,13 +370,21 @@ router.get('/api/ca/reports/pdf', async (req, res) => {
 // 9. Log frontend CA action manually
 router.post('/api/ca/audit/log', async (req, res) => {
   const caId = getAuthenticatedCAId(req);
-  const { actionType, description, clientId } = req.body;
+  const parsed = normalizeAuditActionPayload(req.body);
 
-  if (!actionType || !description) {
-    return res.status(400).json({ error: 'Missing required parameters: actionType and description' });
+  if (parsed.error || !parsed.value) {
+    return res.status(400).json({ error: parsed.error });
   }
 
   try {
+    const { actionType, description, clientId } = parsed.value;
+    if (clientId) {
+      const client = await getClientById(clientId);
+      if (!client || client.ca_id !== caId) {
+        return res.status(403).json({ error: 'Forbidden: You do not manage this client' });
+      }
+    }
+
     const log = await logAuditAction(caId, actionType, description, clientId || null);
     return res.status(201).json(log);
   } catch (err: any) {
