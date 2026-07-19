@@ -46,6 +46,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 ## Production Smoke Evidence
 
 - 2026-07-19: Public Render check against `https://taxbot-u2vh.onrender.com` returned `200` for `/health` and `/`, but `/ready` returned `404 Cannot GET /ready`. This indicates the live deployment is reachable but not running the current `main` build that includes `/ready`; redeploy from latest `main` is required before full smoke can pass.
+- 2026-07-19: Rechecked after pushing commit `5b5f543`; `/health` returned `200`, while `/ready` and `/version` still returned `404`. Render is still not serving the latest `main` build.
 
 ## Verification Command
 
