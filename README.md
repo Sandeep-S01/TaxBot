@@ -84,12 +84,17 @@ Use the ordered SQL files in `supabase/migrations/` as the source of truth for d
 For a new Supabase project, run:
 ```text
 supabase/migrations/001_initial_schema.sql
+supabase/migrations/002_production_readiness_upgrade.sql
+supabase/migrations/003_inbound_message_idempotency.sql
+supabase/migrations/004_audit_log_integrity.sql
 ```
+The consolidated `supabase/schema.sql` is a reference snapshot for new installs and should match the migration end state.
 
-For an existing prototype database, run:
+For an existing prototype database that already has older migrations applied, run only the pending files:
 ```text
 supabase/migrations/002_production_readiness_upgrade.sql
 supabase/migrations/003_inbound_message_idempotency.sql
+supabase/migrations/004_audit_log_integrity.sql
 ```
 
 Do not repeatedly paste the full `supabase/schema.sql` snapshot into production. It is kept as a reference snapshot only; production changes should be applied through versioned migration files.

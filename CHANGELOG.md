@@ -20,6 +20,7 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added shared-secret verification and redacted logging for inbound email PDF webhooks.
 - Disabled simulated CA AI Auditor answers in production when Anthropic is missing or unavailable.
 - Validated and client-scoped manual CA audit log writes.
+- Added database-level integrity checks for CA audit log action format, description length, and client ownership.
 
 ### Production Readiness
 - Added `META_APP_SECRET`, `APP_ORIGIN`, and `ALLOWED_ORIGINS` to the environment contract.
@@ -40,3 +41,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added `EMAIL_WEBHOOK_SECRET` to startup, readiness, and environment validation.
 - Documented the CA AI Auditor's Anthropic dependency and added tests for production fallback behavior.
 - Added tests for manual audit-log payload validation.
+- Refreshed the consolidated Supabase schema snapshot and added migration consistency tests.
