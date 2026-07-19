@@ -164,8 +164,9 @@ The optional `scripts/tally_sync_connector.ts` helper authenticates against TaxB
 1. Apply pending SQL files from `supabase/migrations/` in order.
 2. Confirm production env vars with `npm run check:env` in the deployed environment where possible.
 3. Redeploy Render from the latest `main` branch.
-4. Verify `GET /health` and `GET /ready`.
-5. Run `npm run smoke:prod` with `SMOKE_BASE_URL`, `SMOKE_CA_EMAIL`, and `SMOKE_CA_PASSWORD`.
+4. Set `APP_ORIGIN` to the public HTTPS origin; WhatsApp export/payment links use this value.
+5. Verify `GET /health` and `GET /ready`.
+6. Run `npm run smoke:prod` with `SMOKE_BASE_URL`, `SMOKE_CA_EMAIL`, and `SMOKE_CA_PASSWORD`.
 
 ---
 
