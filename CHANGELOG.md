@@ -63,3 +63,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added a public non-secret `/version` endpoint and production smoke coverage for deployed commit/build metadata.
 - Added query-performance migration indexes for Tally sync, aggregated ledgers, and CA audit-log reads.
 - Extracted CA audit log and AI audit chat endpoints into a dedicated route module while preserving the existing `/api/ca/audit/*` API paths.
+- Extracted shared CA console browser utilities for HTML/XML escaping, CSV neutralization, safe export filenames, and audit markdown rendering.

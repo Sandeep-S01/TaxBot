@@ -8,8 +8,8 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 
 | Area | Target | Status | Notes |
 | --- | --- | --- | --- |
-| Architecture | 8/10 | In progress | App construction is separated from server startup; CA audit routes are extracted; remaining work is dashboard script decomposition. |
-| Code Quality | 8/10 | In progress | TypeScript gate is clean; remaining work is mostly shared browser helpers and incremental route cleanup. |
+| Architecture | 8/10 | In progress | App construction is separated from server startup; CA audit routes and CA console utilities are extracted; remaining work is dashboard feature decomposition. |
+| Code Quality | 8/10 | In progress | TypeScript gate is clean; shared browser utilities are split out; remaining work is incremental route and dashboard feature cleanup. |
 | Security | 8/10 | In progress | JWT/Argon2, CSRF, webhook signatures, export tokens, log redaction, XML/CSV escaping are complete. |
 | Database | 8/10 | In progress | Ordered migrations, audit integrity, and production query indexes are complete; production migration execution must be verified per environment. |
 | GST Correctness | 8/10 | In progress | Regular-GST v1 scope, tax split, provenance, duplicate review, and partial-report visibility are implemented. |
@@ -36,6 +36,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - Database performance: query indexes for Tally sync, aggregated ledger reads, and CA audit-log reads.
 - CI readiness: lint, build, tests, mojibake check, frontend safety check, diagnostic script safety check, npm audit, Docker build workflow.
 - Maintainability: CA audit log and AI audit chat endpoints are split into `src/routes/caAudit.ts` with existing `/api/ca/audit/*` paths preserved.
+- Maintainability: shared CA console browser utilities are split into `public/js/console-utils.js` and loaded before `public/js/console.js`.
 
 ## Remaining Queue
 
