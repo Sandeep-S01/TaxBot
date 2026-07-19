@@ -79,3 +79,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Split CA console login, registration, and logout handlers into `public/js/console-auth.js`.
 - Added explicit hook timeout headroom to the Express smoke E2E suite to reduce CI flakiness during dynamic app setup.
 - Split the CA console command palette into `public/js/console-command.js`, escaped command-result text, and added a frontend safety regression check.
+- Split CA console browser CSV/XML export helpers into `public/js/console-exports.js`, preserved asset load-order checks, and used recorded tax amounts in browser XML totals.
