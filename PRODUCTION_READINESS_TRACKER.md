@@ -59,6 +59,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - 2026-07-19: Rechecked after pushing commit `5b5f543`; `/health` returned `200`, while `/ready` and `/version` still returned `404`. Render is still not serving the latest `main` build.
 - 2026-07-19: Rechecked after pushing commit `61cd72b`; `/health` returned `200`, while `/ready` and `/version` still returned `404`. Production smoke remains blocked on Render deploying latest `main`.
 - 2026-07-19: Rechecked after pushing commit `75b6929` and adding `render.yaml`; `/health` returned `200`, while `/ready` and `/version` still returned `404`. The next required action is to confirm the existing Render service is connected to this repo/branch and using the repository build/start settings.
+- 2026-07-19: Rechecked after pushing commit `4a1cb37`; `/health` still returned the legacy body without deployment metadata, while `/ready` and `/version` returned `404`. GitHub is current, but the live Render service is still not running the latest `main` build.
 
 ## Verification Command
 
