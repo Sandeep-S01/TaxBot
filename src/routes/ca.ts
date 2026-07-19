@@ -11,17 +11,15 @@ import {
   verifyPasswordAndMaybeMigrate,
 } from '../auth/caAuth';
 import { createCAAuditRoutes } from './caAudit';
+import { createCAReportRoutes } from './caReports';
 import { getClientById, getClientByPhone, createClient, updateClient } from '../db/clients';
 import {
-  getTransactionsByDateRange,
   getTransactionsByDateRangePage,
   getTransactionsForMultipleClientsPage,
   periodToDateRange,
 } from '../db/transactions';
-import { createCA, getCAByEmail, getCAById, getCAClients, getConsolidatedGSTRSummary, linkClientToCA } from '../db/cas';
+import { createCA, getCAByEmail, getCAById, getCAClients, linkClientToCA } from '../db/cas';
 import { logAuditAction } from '../db/audit';
-import { streamCAReportPdf } from '../reports/caPdfReport';
-import { reconcileTransactions } from '../accounting/reconciliation';
 import {
   isStrongPassword,
   isValidEmail,
@@ -30,13 +28,11 @@ import {
   normalizeEmail,
   normalizeGstin,
   normalizeIndianPhone,
-  normalizeReportType,
   parsePagination,
 } from '../utils/validation';
 
 const DEFAULT_LEDGER_PAGE_LIMIT = 200;
 const MAX_LEDGER_PAGE_LIMIT = 1000;
-const MAX_REPORT_ROWS = 5000;
 
 async function logAuthAuditBestEffort(
   caId: string,
@@ -284,126 +280,7 @@ router.get('/api/ca/clients/:clientId/transactions', async (req, res) => {
   }
 });
 
-// 6. Reconcile bank statement lines against confirmed ledger entries
-router.get('/api/ca/clients/:clientId/reconciliation', async (req, res) => {
-  const caId = getAuthenticatedCAId(req);
-  const { clientId } = req.params;
-  const { period } = req.query as { period?: string };
-
-  if (!isUuid(clientId)) {
-    return res.status(400).json({ error: 'Invalid client id' });
-  }
-  if (period && !isValidPeriod(period)) {
-    return res.status(400).json({ error: 'Invalid period format. Expected YYYY-MM' });
-  }
-
-  try {
-    const client = await getClientById(clientId);
-    if (!client || client.ca_id !== caId) {
-      return res.status(403).json({ error: 'Forbidden: You do not manage this client' });
-    }
-
-    const targetPeriod = period || new Date().toISOString().substring(0, 7);
-    const { startDate, endDate } = periodToDateRange(targetPeriod);
-    const page = await getTransactionsByDateRangePage(clientId, startDate, endDate, {
-      limit: MAX_REPORT_ROWS,
-      offset: 0,
-      ascending: true,
-    });
-    if (page.hasMore) {
-      return res.status(413).json({
-        error: `Reconciliation period contains more than ${MAX_REPORT_ROWS} transactions. Narrow the period before reconciling.`,
-      });
-    }
-    const transactions = page.data;
-    const reconciliation = reconcileTransactions(transactions);
-
-    return res.status(200).json({
-      period: targetPeriod,
-      client,
-      reconciliation,
-    });
-  } catch (err: any) {
-    console.error('Error generating reconciliation summary:', err.message);
-    return res.status(500).json({ error: 'Internal Server Error: Could not reconcile transactions' });
-  }
-});
-
-// 7. Get consolidated GSTR summary for all CA's clients
-router.get('/api/ca/reports/gst', async (req, res) => {
-  const caId = getAuthenticatedCAId(req);
-  const { period } = req.query as { period?: string };
-
-  if (period && !isValidPeriod(period)) {
-    return res.status(400).json({ error: 'Invalid period format. Expected YYYY-MM' });
-  }
-  const targetPeriod = period || new Date().toISOString().substring(0, 7);
-
-  try {
-    const report = await getConsolidatedGSTRSummary(caId, targetPeriod);
-    return res.status(200).json(report);
-  } catch (err: any) {
-    console.error('Error generating consolidated GSTR report:', err.message);
-    return res.status(500).json({ error: 'Internal Server Error: Could not generate GSTR report' });
-  }
-});
-
-// 8. Generate dynamic PDF reports (P&L and GST)
-router.get('/api/ca/reports/pdf', async (req, res) => {
-  const caId = getAuthenticatedCAId(req);
-  const { clientId, reportType, period } = req.query as { clientId?: string; reportType?: string; period?: string };
-
-  if (!clientId || !reportType) {
-    return res.status(400).json({ error: 'Missing required parameters: clientId and reportType' });
-  }
-  if (!isUuid(clientId)) {
-    return res.status(400).json({ error: 'Invalid client id' });
-  }
-  const safeReportType = normalizeReportType(reportType);
-  if (!safeReportType) {
-    return res.status(400).json({ error: 'Invalid reportType. Expected pl or gst' });
-  }
-  if (period && !isValidPeriod(period)) {
-    return res.status(400).json({ error: 'Invalid period format. Expected YYYY-MM' });
-  }
-
-  try {
-    const client = await getClientById(clientId);
-    if (!client || client.ca_id !== caId) {
-      return res.status(403).json({ error: 'Forbidden: You do not manage this client' });
-    }
-
-    const targetPeriod = period || new Date().toISOString().substring(0, 7);
-    const { startDate, endDate } = periodToDateRange(targetPeriod);
-    const page = await getTransactionsByDateRangePage(clientId, startDate, endDate, {
-      limit: MAX_REPORT_ROWS,
-      offset: 0,
-      ascending: true,
-    });
-    if (page.hasMore) {
-      return res.status(413).json({
-        error: `Report period contains more than ${MAX_REPORT_ROWS} transactions. Narrow the period or export in batches.`,
-      });
-    }
-    const transactions = page.data;
-    const ca = await getCAById(caId);
-
-    await logAuditAction(caId, 'PDF_DOWNLOADED', `Generated ${safeReportType.toUpperCase()} PDF report for client: ${client.business_name || client.name}`, clientId);
-
-    streamCAReportPdf({
-      res,
-      ca,
-      client,
-      transactions,
-      reportType: safeReportType,
-      targetPeriod,
-    });
-  } catch (err: any) {
-    console.error('Error generating PDF report:', err.message);
-    return res.status(500).json({ error: 'Internal Server Error: Could not generate report' });
-  }
-});
-
+router.use('/api/ca', createCAReportRoutes());
 router.use('/api/ca/audit', createCAAuditRoutes());
 
 // 7. Get ALL transactions across all CA-managed clients (aggregated view)
