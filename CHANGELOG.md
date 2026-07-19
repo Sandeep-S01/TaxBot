@@ -67,3 +67,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Extracted CA reconciliation, consolidated GST report, and PDF report endpoints into a dedicated route module while preserving existing `/api/ca/*` API paths.
 - Extracted CA client and ledger listing endpoints into a dedicated route module while preserving existing `/api/ca/clients*` and `/api/ca/transactions` API paths.
 - Extracted CA console Chart.js rendering and chart data shaping into a dedicated browser script loaded before the main console controller.
+- Extracted CA console notification tray state/rendering into a dedicated browser script and escaped notification text during render.
