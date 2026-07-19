@@ -9,6 +9,7 @@ import {
 } from '../db/transactions';
 import { exportToCSV, exportToTallyXML } from '../utils/exporter';
 import { escapeHtml } from '../utils/sanitize';
+import { validatePaymentToken } from '../utils/publicTokens';
 
 export function createPublicRoutes(downloadLimiter: RateLimitRequestHandler): Router {
   const router = Router();
@@ -71,6 +72,11 @@ export function createPublicRoutes(downloadLimiter: RateLimitRequestHandler): Ro
 
   router.get('/pay/:txId', downloadLimiter, async (req, res) => {
     const { txId } = req.params;
+    const { issued, token } = req.query as { issued?: string; token?: string };
+
+    if (!issued || !token || !validatePaymentToken(txId, issued, token)) {
+      return res.status(403).send('Forbidden: Invalid or expired payment link');
+    }
 
     try {
       const tx = await getTransactionById(txId);

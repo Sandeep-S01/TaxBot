@@ -98,10 +98,9 @@ async function run() {
   const firstTx = txs[0];
   if (firstTx?.id) {
     const payResp = await request(`/pay/${encodeURIComponent(firstTx.id)}`);
-    const payType = payResp.headers.get('content-type') || '';
-    record('payment page', payResp.ok && payType.includes('text/html'), `status ${payResp.status}, content-type ${payType || 'missing'}`);
+    record('raw payment page blocked', payResp.status === 403, `status ${payResp.status}`);
   } else {
-    record('payment page', true, 'skipped because no transaction id is available');
+    record('raw payment page blocked', true, 'skipped because no transaction id is available');
   }
 
   finish();

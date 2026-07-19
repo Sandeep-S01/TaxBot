@@ -11,6 +11,7 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Restricted production CORS through configured application origins.
 - Re-enabled Helmet Content Security Policy with required frontend/CDN allowlists.
 - Escaped high-risk CA dashboard render paths for API-derived client and transaction fields.
+- Required signed tokens for public customer payment pages instead of exposing details by raw transaction id.
 
 ### Production Readiness
 - Added `META_APP_SECRET`, `APP_ORIGIN`, and `ALLOWED_ORIGINS` to the environment contract.
