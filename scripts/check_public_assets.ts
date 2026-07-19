@@ -65,6 +65,7 @@ if (fs.existsSync(consoleHtmlPath)) {
   const content = fs.readFileSync(consoleHtmlPath, 'utf8');
   const requiredConsoleScripts = [
     'js/console-utils.js',
+    'js/console-api.js',
     'js/console-charts.js',
     'js/console-notifications.js',
     'js/console.js',
