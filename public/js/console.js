@@ -335,10 +335,10 @@ async function fetchClientsList() {
     // Map backend schema to UI schema
     globalClientsList = dbClients.map(c => ({
       id: c.id,
-      name: c.business_name || c.name || 'Unnamed Business',
-      gstin: c.gstin || 'N/A',
-      owner: c.name || 'N/A',
-      phone: '+' + c.phone,
+      name: escapeHtml(c.business_name || c.name || 'Unnamed Business'),
+      gstin: escapeHtml(c.gstin || 'N/A'),
+      owner: escapeHtml(c.name || 'N/A'),
+      phone: escapeHtml('+' + c.phone),
       plan: c.plan === 'pro' ? 'Partner Pro' : (c.plan === 'starter' ? 'Starter Plan' : 'Trial Plan'),
       lastActivity: 'Active',
       health: c.gstin ? 95 : 68,
@@ -390,18 +390,18 @@ async function fetchGlobalTransactions() {
       return {
         id: t.id,
         clientId: t.client_id,
-        clientName: t.client_name || 'Unknown',
-        date: t.date,
+        clientName: escapeHtml(t.client_name || 'Unknown'),
+        date: escapeHtml(t.date),
         type: t.category === 'sales' ? 'Sale' : 'Expense',
-        source: sourceMap[t.source] || t.source || 'WhatsApp',
-        category: t.description || categoryLabel,
+        source: escapeHtml(sourceMap[t.source] || t.source || 'WhatsApp'),
+        category: escapeHtml(t.description || categoryLabel),
         gstRate: t.gst_rate ? `${t.gst_rate}%` : '0%',
         gst_rate: t.gst_rate,
         amount: Number(t.amount),
         taxAmount: Number(t.tax_amount || 0),
         status: t.confidence === 'high' ? 'Verified' : (t.confidence === 'medium' ? 'Auto-Categorized' : 'Review Required'),
-        vendorName: t.vendor_name || null,
-        invoiceNumber: t.invoice_number || null
+        vendorName: t.vendor_name ? escapeHtml(t.vendor_name) : null,
+        invoiceNumber: t.invoice_number ? escapeHtml(t.invoice_number) : null
       };
     });
 
@@ -722,11 +722,11 @@ async function renderClientWorkspace(clientId) {
   const cTx = apiTransactions.length > 0 ? apiTransactions.map(t => ({
     id: t.id,
     clientId: t.client_id,
-    clientName: clientObj.name,
-    date: t.date,
+    clientName: escapeHtml(clientObj.name),
+    date: escapeHtml(t.date),
     type: t.category === 'sales' ? 'Sale' : 'Expense',
-    source: ({ 'whatsapp_text': 'WhatsApp', 'whatsapp_image': 'WhatsApp Image', 'whatsapp_pdf': 'WhatsApp PDF', 'manual': 'Manual' })[t.source] || t.source,
-    category: t.description || t.category,
+    source: escapeHtml(({ 'whatsapp_text': 'WhatsApp', 'whatsapp_image': 'WhatsApp Image', 'whatsapp_pdf': 'WhatsApp PDF', 'manual': 'Manual' })[t.source] || t.source),
+    category: escapeHtml(t.description || t.category),
     gstRate: t.gst_rate ? `${t.gst_rate}%` : '0%',
     gst_rate: t.gst_rate,
     amount: Number(t.amount),

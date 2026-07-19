@@ -434,6 +434,15 @@ function getAuthHeaders(extraHeaders = {}) {
   };
 }
 
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 /**
  * Fetches clients and populates table
  */
@@ -488,12 +497,12 @@ async function loadClients() {
       
       row.innerHTML = `
         <td>
-          <div style="font-weight:600; color: #f8fafc;">${client.business_name || 'Unnamed Shop'}</div>
-          <div style="font-size:12px; color: #94a3b8;">${client.name || 'Owner'}</div>
+          <div style="font-weight:600; color: #f8fafc;">${escapeHtml(client.business_name || 'Unnamed Shop')}</div>
+          <div style="font-size:12px; color: #94a3b8;">${escapeHtml(client.name || 'Owner')}</div>
         </td>
-        <td style="color: #cbd5e1; font-weight: 500;">+${client.phone}</td>
-        <td><code style="font-family: 'JetBrains Mono', monospace; color: #c3c0ff; font-weight: 500;">${client.gstin || 'N/A'}</code></td>
-        <td><span class="badge-status ${client.plan}">${client.plan.toUpperCase()}</span></td>
+        <td style="color: #cbd5e1; font-weight: 500;">+${escapeHtml(client.phone)}</td>
+        <td><code style="font-family: 'JetBrains Mono', monospace; color: #c3c0ff; font-weight: 500;">${escapeHtml(client.gstin || 'N/A')}</code></td>
+        <td><span class="badge-status ${escapeHtml(client.plan)}">${escapeHtml(client.plan).toUpperCase()}</span></td>
         <td style="color: #94a3b8;">${joinedDate}</td>
         <td style="text-align: right;">
           <div class="action-buttons flex items-center justify-end gap-2" style="justify-content: flex-end;">
@@ -555,7 +564,7 @@ async function openLedgerDrawer(clientId) {
     drawerClientName.textContent = data.client.business_name || data.client.name || 'Client Details';
     drawerClientPhone.textContent = `Phone: +${data.client.phone}`;
     drawerClientGstin.textContent = data.client.gstin || 'N/A';
-    drawerClientPlan.innerHTML = `<span class="badge-status ${data.client.plan}">${data.client.plan.toUpperCase()}</span>`;
+    drawerClientPlan.innerHTML = `<span class="badge-status ${escapeHtml(data.client.plan)}">${escapeHtml(data.client.plan).toUpperCase()}</span>`;
 
     // Map exports buttons
     document.getElementById('drawer-export-csv').onclick = (e) => {
@@ -582,12 +591,12 @@ async function openLedgerDrawer(clientId) {
         const taxFormatted = `₹${Number(tx.tax_amount || 0).toFixed(2)}`;
         
         tr.innerHTML = `
-          <td>${tx.date}</td>
-          <td><span style="text-transform: capitalize; font-weight: 500; color: ${tx.category === 'sales' ? 'var(--color-success)' : 'var(--text-main)'}">${tx.category}</span></td>
-          <td>${tx.vendor_name || 'Cash Sale'}</td>
+          <td>${escapeHtml(tx.date)}</td>
+          <td><span style="text-transform: capitalize; font-weight: 500; color: ${tx.category === 'sales' ? 'var(--color-success)' : 'var(--text-main)'}">${escapeHtml(tx.category)}</span></td>
+          <td>${escapeHtml(tx.vendor_name || 'Cash Sale')}</td>
           <td style="font-weight: 600;">${amountFormatted}</td>
-          <td>${taxFormatted} (${tx.gst_rate}%)</td>
-          <td><span class="badge-source ${tx.source}">${tx.source.replace('whatsapp_', '')}</span></td>
+          <td>${taxFormatted} (${escapeHtml(tx.gst_rate)}%)</td>
+          <td><span class="badge-source ${escapeHtml(tx.source)}">${escapeHtml(String(tx.source || '').replace('whatsapp_', ''))}</span></td>
         `;
         drawerTransactionsBody.appendChild(tr);
       });
