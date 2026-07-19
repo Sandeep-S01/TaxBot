@@ -8,6 +8,7 @@ import { handleInteractive } from '../handlers/interactive';
 import { sendMessage } from '../whatsapp/send';
 import { WhatsAppIncomingNotification, WhatsAppMessage } from '../types';
 import crypto from 'crypto';
+import { claimInboundMessage, updateInboundMessageStatus } from '../db/inboundMessages';
 
 /**
  * Handle incoming POST requests from WhatsApp webhook
@@ -71,7 +72,21 @@ function hashPhone(phone: string): string {
  * Main message router running asynchronously
  */
 async function processIncomingMessage(phone: string, contactName: string, message: WhatsAppMessage) {
+  const metaMessageId = message.id;
+
   try {
+    const claim = await claimInboundMessage(metaMessageId, phone, message.type);
+    if (!claim.claimed) {
+      console.log('[Webhook] Duplicate Meta message skipped:', {
+        metaMessageId,
+        phoneHash: hashPhone(phone),
+        existingStatus: claim.message?.status,
+      });
+      return;
+    }
+
+    await updateInboundMessageStatus(metaMessageId, 'processing');
+
     // 1. Identify or register the client
     let client = await getClientByPhone(phone);
     if (!client) {
@@ -88,6 +103,8 @@ async function processIncomingMessage(phone: string, contactName: string, messag
         console.warn(`[Webhook] Could not dispatch WhatsApp welcome message (check WA_TOKEN):`, err.message || err);
       }
     }
+
+    await updateInboundMessageStatus(metaMessageId, 'processing', { client_id: client.id });
 
     // 2. Route based on message type
     switch (message.type) {
@@ -132,8 +149,17 @@ async function processIncomingMessage(phone: string, contactName: string, messag
           'Sorry, this message format is not supported. Please send an invoice image, a bank statement PDF, or a text command.'
         );
     }
+
+    await updateInboundMessageStatus(metaMessageId, 'processed', { client_id: client.id });
   } catch (error: any) {
-    console.error(`Error processing message from ${phone}:`, error);
+    console.error(`Error processing message from ${hashPhone(phone)}:`, error);
+    try {
+      await updateInboundMessageStatus(metaMessageId, 'failed', {
+        last_error: String(error?.message || error).slice(0, 1000),
+      });
+    } catch (statusErr) {
+      console.error('Failed to persist inbound message failure status:', statusErr);
+    }
     try {
       await sendMessage(
         phone,

@@ -89,6 +89,7 @@ supabase/migrations/001_initial_schema.sql
 For an existing prototype database, run:
 ```text
 supabase/migrations/002_production_readiness_upgrade.sql
+supabase/migrations/003_inbound_message_idempotency.sql
 ```
 
 Do not repeatedly paste the full `supabase/schema.sql` snapshot into production. It is kept as a reference snapshot only; production changes should be applied through versioned migration files.

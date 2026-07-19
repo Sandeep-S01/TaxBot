@@ -63,6 +63,22 @@ export interface GstReturn {
   created_at: string;
 }
 
+export type InboundMessageStatus = 'received' | 'processing' | 'processed' | 'failed' | 'duplicate';
+
+export interface InboundMessage {
+  id: string;
+  meta_message_id: string;
+  phone: string;
+  client_id: string | null;
+  message_type: WhatsAppMessage['type'];
+  status: InboundMessageStatus;
+  attempts: number;
+  last_error: string | null;
+  created_at: string;
+  updated_at: string;
+  processed_at: string | null;
+}
+
 // WhatsApp Webhook Interfaces (Meta Cloud API v19.0)
 export interface WhatsAppIncomingNotification {
   object: string;

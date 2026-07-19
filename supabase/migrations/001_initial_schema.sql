@@ -85,11 +85,26 @@ CREATE TABLE IF NOT EXISTS console_audit_logs (
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS inbound_messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    meta_message_id TEXT UNIQUE NOT NULL,
+    phone TEXT NOT NULL,
+    client_id UUID REFERENCES clients(id) ON DELETE SET NULL,
+    message_type TEXT NOT NULL CHECK (message_type IN ('text', 'image', 'document', 'audio', 'interactive', 'unsupported')),
+    status TEXT NOT NULL DEFAULT 'received' CHECK (status IN ('received', 'processing', 'processed', 'failed', 'duplicate')),
+    attempts INTEGER NOT NULL DEFAULT 0,
+    last_error TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    processed_at TIMESTAMPTZ
+);
+
 ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE gst_returns ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE console_audit_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE inbound_messages ENABLE ROW LEVEL SECURITY;
 
 CREATE INDEX IF NOT EXISTS idx_clients_ca_id ON clients(ca_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_client_date ON transactions(client_id, date);
@@ -100,15 +115,19 @@ CREATE INDEX IF NOT EXISTS idx_gst_returns_lookup ON gst_returns(client_id, peri
 CREATE INDEX IF NOT EXISTS idx_console_audit_logs_ca_id ON console_audit_logs(ca_id);
 CREATE INDEX IF NOT EXISTS idx_console_audit_logs_client_id ON console_audit_logs(client_id);
 CREATE INDEX IF NOT EXISTS idx_console_audit_logs_created_at ON console_audit_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_inbound_messages_status_created ON inbound_messages(status, created_at);
+CREATE INDEX IF NOT EXISTS idx_inbound_messages_phone_created ON inbound_messages(phone, created_at DESC);
 
 DROP POLICY IF EXISTS "Allow all access to service_role" ON clients;
 DROP POLICY IF EXISTS "Allow all access to service_role" ON transactions;
 DROP POLICY IF EXISTS "Allow all access to service_role" ON gst_returns;
 DROP POLICY IF EXISTS "Allow all access to service_role" ON cas;
 DROP POLICY IF EXISTS "Allow all access to service_role" ON console_audit_logs;
+DROP POLICY IF EXISTS "Allow all access to service_role" ON inbound_messages;
 
 CREATE POLICY "Allow all access to service_role" ON clients TO service_role USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all access to service_role" ON transactions TO service_role USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all access to service_role" ON gst_returns TO service_role USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all access to service_role" ON cas TO service_role USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all access to service_role" ON console_audit_logs TO service_role USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all access to service_role" ON inbound_messages TO service_role USING (true) WITH CHECK (true);
