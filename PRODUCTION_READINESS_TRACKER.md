@@ -65,6 +65,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - 2026-07-19: Rechecked after pushing commit `4a1cb37`; `/health` still returned the legacy body without deployment metadata, while `/ready` and `/version` returned `404`. GitHub is current, but the live Render service is still not running the latest `main` build.
 - 2026-07-19: Rechecked after pushing commit `2576c65`; `/health` still returned the legacy body without deployment metadata, while `/ready` and `/version` returned `404`. Production smoke remains blocked on Render serving stale code.
 - 2026-07-19: Rechecked after pushing commit `17fd7b0`; `/health` still returned the legacy body without deployment metadata, while `/ready` and `/version` returned `404`. Live production remains blocked on Render deploying the current `main` build.
+- 2026-07-19: Rechecked after pushing commit `20c2ac3`; `/health` still returned the legacy body without deployment metadata, while `/ready` and `/version` returned `404`. Live production remains blocked on Render deploying the current `main` build.
 
 ## Verification Command
 
