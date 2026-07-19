@@ -18,6 +18,7 @@ const checks: EnvCheck[] = [
   { name: 'APP_ORIGIN', required: true },
   { name: 'ALLOWED_ORIGINS', required: false },
   { name: 'GEMINI_API_KEY', required: true, minLength: 16 },
+  { name: 'ANTHROPIC_API_KEY', required: false, minLength: 20 },
   { name: 'SUPABASE_ANON_KEY', required: false, minLength: 16 },
   { name: 'WA_TOKEN', required: false, minLength: 16 },
   { name: 'WA_PHONE_ID', required: false },

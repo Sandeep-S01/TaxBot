@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { RateLimitRequestHandler } from 'express-rate-limit';
 import Anthropic from '@anthropic-ai/sdk';
+import { isUsableAnthropicKey, shouldUseSimulatedAuditResponse } from '../ai/auditAvailability';
 import {
   clearCASessionCookie,
   getAuthenticatedCAId,
@@ -429,11 +430,15 @@ router.post('/api/ca/audit/chat', async (req, res) => {
     await logAuditAction(caId, 'AI_AUDIT_QUERY', `Audited client ${client.business_name || client.name}: "${message.substring(0, 50)}..."`, clientId);
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
-    const isDummyKey = !apiKey || apiKey.includes('placeholder') || apiKey.includes('your_') || apiKey.length < 20;
 
-    if (isDummyKey) {
+    if (shouldUseSimulatedAuditResponse(apiKey)) {
       const simResponse = getSimulatedAIResponse(client, message, clientTransactions);
       return res.status(200).json({ response: simResponse, simulated: true });
+    }
+    if (!isUsableAnthropicKey(apiKey)) {
+      return res.status(503).json({
+        error: 'AI audit chat is not configured. Set ANTHROPIC_API_KEY to enable this production feature.',
+      });
     }
 
     try {
@@ -452,7 +457,11 @@ Analyze the transaction list and answer the user's question accurately. Focus on
       const reply = firstBlock.type === 'text' ? firstBlock.text : '';
       return res.status(200).json({ response: reply, simulated: false });
     } catch (apiErr: any) {
-      console.warn('[Anthropic] API call failed, falling back to simulator:', apiErr.message || apiErr);
+      if (process.env.NODE_ENV === 'production') {
+        console.error('[Anthropic] Production audit chat failed:', apiErr.message || apiErr);
+        return res.status(502).json({ error: 'AI audit provider unavailable. Please retry later.' });
+      }
+      console.warn('[Anthropic] API call failed, falling back to development simulator:', apiErr.message || apiErr);
       const simResponse = getSimulatedAIResponse(client, message, clientTransactions);
       return res.status(200).json({ response: simResponse, simulated: true });
     }

@@ -100,8 +100,8 @@ Copy `.env.example` to `.env` and fill in your API credentials:
 cp .env.example .env
 ```
 Ensure you set the variables:
-- `ANTHROPIC_API_KEY`: Anthropic key.
-- `GEMINI_API_KEY`: Optional Gemini key used for Gemini 2.5 Flash document, receipt, and audio flows.
+- `ANTHROPIC_API_KEY`: Optional Anthropic key for the CA AI Auditor. In production, the audit chat returns `503` instead of simulated answers when this is missing.
+- `GEMINI_API_KEY`: Required Gemini key used for Gemini 2.5 Flash document, receipt, and audio flows.
 - `SUPABASE_URL`, `SUPABASE_ANON_KEY` & `SUPABASE_SERVICE_ROLE_KEY`: Supabase project values. The backend should use the service-role key on the server.
 - `JWT_SECRET`: Long random secret used to sign CA console sessions.
 - `EXPORT_TOKEN_SECRET`: Long random secret used to sign temporary export links.
