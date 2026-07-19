@@ -1420,7 +1420,7 @@ function renderExports() {
   const tallySelect = document.getElementById('export-tally-client');
   const csvSelect = document.getElementById('export-csv-client');
 
-  const optHtml = globalClientsList.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  const optHtml = globalClientsList.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name || c.business_name || 'Unnamed Client')}</option>`).join('');
   tallySelect.innerHTML = optHtml;
   csvSelect.innerHTML = optHtml;
 
@@ -1507,7 +1507,7 @@ function renderSettingsUsers() {
       <div class="user-item-info">
         <div class="firm-avatar">SS</div>
         <div class="user-item-text">
-          <strong>${session ? session.name : 'Sandeep Sharma'}</strong>
+          <strong>${escapeHtml(session ? session.name : 'Sandeep Sharma')}</strong>
           <span class="firm-role-text">FCA Principal &amp; Owner</span>
         </div>
       </div>
@@ -1538,7 +1538,7 @@ function downloadClientFile(clientId, format, preloadedTx = null) {
   
   let fileContent = '';
   let mimeType = '';
-  let fileName = `TaxBot_${clientObj.name.replace(/\s+/g, '_')}_${period}`;
+  let fileName = safeExportFilename(`TaxBot_${clientObj.name || clientObj.business_name || 'Client'}_${period}`);
 
   if (format === 'csv') {
     mimeType = 'text/csv;charset=utf-8;';
@@ -1546,13 +1546,13 @@ function downloadClientFile(clientId, format, preloadedTx = null) {
     
     const headers = ['Date', 'Type', 'Category', 'GST Rate', 'Amount', 'Source', 'Status'];
     const rows = txList.map(t => [
-      t.date,
-      t.type || 'Expense',
-      t.category,
+      csvCell(t.date),
+      csvCell(t.type || 'Expense'),
+      csvCell(t.category),
       t.gstRate,
       t.amount,
-      t.source,
-      t.status
+      csvCell(t.source),
+      csvCell(t.status)
     ].join(','));
     fileContent = [headers.join(','), ...rows].join('\r\n');
   } else {
@@ -1569,8 +1569,8 @@ function downloadClientFile(clientId, format, preloadedTx = null) {
       const total = amount + tax;
       const vchType = t.type === 'Sale' ? 'Sales' : 'Purchase';
       
-      xml += `        <TALLYMESSAGE xmlns:UDF="TallyUDF">\n          <VOUCHER VCHTYPE="${vchType}" ACTION="Create">\n            <DATE>${tallyDate}</DATE>\n            <VOUCHERTYPENAME>${vchType}</VOUCHERTYPENAME>\n            <NARRATION>${t.category} recorded via TaxBot</NARRATION>\n            <EFFECTIVEDATE>${tallyDate}</EFFECTIVEDATE>\n`;
-      xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${vchType === 'Sales' ? 'Sales Account' : 'Purchase Account'}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>${vchType === 'Sales' ? 'No' : 'Yes'}</ISDEEMEDPOSITIVE>\n              <AMOUNT>${amount.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+      xml += `        <TALLYMESSAGE xmlns:UDF="TallyUDF">\n          <VOUCHER VCHTYPE="${escapeXml(vchType)}" ACTION="Create">\n            <DATE>${escapeXml(tallyDate)}</DATE>\n            <VOUCHERTYPENAME>${escapeXml(vchType)}</VOUCHERTYPENAME>\n            <NARRATION>${escapeXml(`${t.category} recorded via TaxBot`)}</NARRATION>\n            <EFFECTIVEDATE>${escapeXml(tallyDate)}</EFFECTIVEDATE>\n`;
+      xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${escapeXml(vchType === 'Sales' ? 'Sales Account' : 'Purchase Account')}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>${vchType === 'Sales' ? 'No' : 'Yes'}</ISDEEMEDPOSITIVE>\n              <AMOUNT>${amount.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
       xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>Cash/Bank Account</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>${vchType === 'Sales' ? 'Yes' : 'No'}</ISDEEMEDPOSITIVE>\n              <AMOUNT>-${total.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
       xml += `          </VOUCHER>\n        </TALLYMESSAGE>\n`;
     });
@@ -2467,6 +2467,27 @@ function escapeHtml(text) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+function escapeXml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+function csvCell(value) {
+  return `"${String(value ?? '').replace(/"/g, '""')}"`;
+}
+
+function safeExportFilename(value, fallback = 'TaxBot_Export') {
+  const cleaned = String(value ?? '')
+    .replace(/[<>:"/\\|?*\x00-\x1F]/g, '_')
+    .replace(/\s+/g, '_')
+    .slice(0, 120);
+  return cleaned || fallback;
 }
 
 function parseMarkdown(text) {

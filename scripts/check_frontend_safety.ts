@@ -35,6 +35,26 @@ for (const source of readPublicJsFiles()) {
       message: 'Frontend must not store CA JWTs in localStorage.',
     });
   }
+
+  const xmlInterpolations = source.content.matchAll(/<(LEDGERNAME|REFERENCE|NARRATION|DATE|EFFECTIVEDATE|VOUCHERTYPENAME)>[$][{]([^}]+)[}]/g);
+  for (const match of xmlInterpolations) {
+    if (!match[2].trim().startsWith('escapeXml(')) {
+      findings.push({
+        file: source.file,
+        message: `Tally XML ${match[1]} interpolation must use escapeXml().`,
+      });
+    }
+  }
+
+  const xmlAttributeInterpolations = source.content.matchAll(/VCHTYPE="[$][{]([^}]+)[}]"/g);
+  for (const match of xmlAttributeInterpolations) {
+    if (!match[1].trim().startsWith('escapeXml(')) {
+      findings.push({
+        file: source.file,
+        message: 'Tally XML VCHTYPE interpolation must use escapeXml().',
+      });
+    }
+  }
 }
 
 const consoleJs = fs.readFileSync(path.join(PUBLIC_JS_DIR, 'console.js'), 'utf8');

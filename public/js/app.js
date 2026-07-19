@@ -443,6 +443,27 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
+function escapeXml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+function csvCell(value) {
+  return `"${String(value ?? '').replace(/"/g, '""')}"`;
+}
+
+function safeExportFilename(value, fallback = 'TaxBot_Export') {
+  const cleaned = String(value ?? '')
+    .replace(/[<>:"/\\|?*\x00-\x1F]/g, '_')
+    .replace(/\s+/g, '_')
+    .slice(0, 120);
+  return cleaned || fallback;
+}
+
 /**
  * Fetches clients and populates table
  */
@@ -635,7 +656,7 @@ async function downloadClientFile(clientId, format) {
     const businessName = data.client.business_name || data.client.name || 'Client Account';
     let fileContent = '';
     let mimeType = '';
-    let fileName = `TaxBot_${businessName.replace(/\s+/g, '_')}_${period}`;
+    let fileName = safeExportFilename(`TaxBot_${businessName}_${period}`);
 
     if (format === 'csv') {
       mimeType = 'text/csv;charset=utf-8;';
@@ -645,17 +666,17 @@ async function downloadClientFile(clientId, format) {
       const rows = transactions.map(tx => {
         const total = Number(tx.amount) + Number(tx.tax_amount || 0);
         return [
-          tx.date,
-          `"${(tx.vendor_name || '').replace(/"/g, '""')}"`,
-          tx.category.toUpperCase(),
-          tx.gst_category || 'B2C',
+          csvCell(tx.date),
+          csvCell(tx.vendor_name || ''),
+          csvCell(String(tx.category || '').toUpperCase()),
+          csvCell(tx.gst_category || 'B2C'),
           tx.gst_rate,
           tx.amount,
           tx.tax_amount || 0,
           total,
-          `"${(tx.invoice_number || '').replace(/"/g, '""')}"`,
-          `"${(tx.description || '').replace(/"/g, '""')}"`,
-          tx.source
+          csvCell(tx.invoice_number || ''),
+          csvCell(tx.description || ''),
+          csvCell(tx.source)
         ].join(',');
       });
       fileContent = [headers.join(','), ...rows].join('\r\n');
@@ -684,7 +705,7 @@ async function downloadClientFile(clientId, format) {
           isIntra = cGstin.substring(0, 2) === vGstin.substring(0, 2);
         }
 
-        xml += `        <TALLYMESSAGE xmlns:UDF="TallyUDF">\n          <VOUCHER VCHTYPE="${vchType}" ACTION="Create">\n            <DATE>${tallyDate}</DATE>\n            <VOUCHERTYPENAME>${vchType}</VOUCHERTYPENAME>\n            <REFERENCE>${invoiceNo}</REFERENCE>\n            <NARRATION>${desc}</NARRATION>\n            <EFFECTIVEDATE>${tallyDate}</EFFECTIVEDATE>\n`;
+        xml += `        <TALLYMESSAGE xmlns:UDF="TallyUDF">\n          <VOUCHER VCHTYPE="${escapeXml(vchType)}" ACTION="Create">\n            <DATE>${escapeXml(tallyDate)}</DATE>\n            <VOUCHERTYPENAME>${escapeXml(vchType)}</VOUCHERTYPENAME>\n            <REFERENCE>${escapeXml(invoiceNo)}</REFERENCE>\n            <NARRATION>${escapeXml(desc)}</NARRATION>\n            <EFFECTIVEDATE>${escapeXml(tallyDate)}</EFFECTIVEDATE>\n`;
 
         if (vchType === 'Sales') {
           xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>Cash/Bank Account</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>-${total.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
@@ -697,11 +718,11 @@ async function downloadClientFile(clientId, format) {
               const cgstLedger = tx.gst_rate > 0 ? `Output CGST @ ${halfRate}%` : 'Output CGST';
               const sgstLedger = tx.gst_rate > 0 ? `Output SGST @ ${halfRate}%` : 'Output SGST';
 
-              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${cgstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
-              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${sgstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${escapeXml(cgstLedger)}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${escapeXml(sgstLedger)}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
             } else {
               const igstLedger = tx.gst_rate > 0 ? `Output IGST @ ${tx.gst_rate}%` : 'Output IGST';
-              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${igstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${escapeXml(igstLedger)}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
             }
           }
         } else if (vchType === 'Purchase') {
@@ -714,17 +735,17 @@ async function downloadClientFile(clientId, format) {
               const cgstLedger = tx.gst_rate > 0 ? `Input CGST @ ${halfRate}%` : 'Input CGST';
               const sgstLedger = tx.gst_rate > 0 ? `Input SGST @ ${halfRate}%` : 'Input SGST';
 
-              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${cgstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
-              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${sgstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${escapeXml(cgstLedger)}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${escapeXml(sgstLedger)}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
             } else {
               const igstLedger = tx.gst_rate > 0 ? `Input IGST @ ${tx.gst_rate}%` : 'Input IGST';
-              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${igstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${escapeXml(igstLedger)}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
             }
           }
-          xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${vendor}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>-${total.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+          xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${escapeXml(vendor)}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>-${total.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
         } else {
           const expenseLedgerName = tx.description ? `${tx.description.substring(0, 30)} Ledger` : 'General Expense';
-          xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${expenseLedgerName}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${amount.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+          xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${escapeXml(expenseLedgerName)}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${amount.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
           
           if (tax > 0) {
             if (isIntra) {
@@ -733,11 +754,11 @@ async function downloadClientFile(clientId, format) {
               const cgstLedger = tx.gst_rate > 0 ? `Input CGST @ ${halfRate}%` : 'Input CGST';
               const sgstLedger = tx.gst_rate > 0 ? `Input SGST @ ${halfRate}%` : 'Input SGST';
 
-              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${cgstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
-              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${sgstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${escapeXml(cgstLedger)}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${escapeXml(sgstLedger)}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${halfTax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
             } else {
               const igstLedger = tx.gst_rate > 0 ? `Input IGST @ ${tx.gst_rate}%` : 'Input IGST';
-              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${igstLedger}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
+              xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>${escapeXml(igstLedger)}</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>\n              <AMOUNT>${tax.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
             }
           }
           xml += `            <ALLLEDGERENTRIES.LIST>\n              <LEDGERNAME>Cash/Bank Account</LEDGERNAME>\n              <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>\n              <AMOUNT>-${total.toFixed(2)}</AMOUNT>\n            </ALLLEDGERENTRIES.LIST>\n`;
