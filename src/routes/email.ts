@@ -1,14 +1,26 @@
 import { Router } from 'express';
+import { RateLimitRequestHandler } from 'express-rate-limit';
 import multer from 'multer';
 import { handleDocumentBuffer } from '../handlers/document';
 import { getClientById } from '../db/clients';
+import { requireEmailWebhookSecret } from '../webhook/emailAuth';
 
-export function createEmailRoutes(): Router {
+export function createEmailRoutes(emailWebhookLimiter: RateLimitRequestHandler): Router {
   const router = Router();
-  const upload = multer({ limits: { fileSize: 10 * 1024 * 1024 } });
+  const upload = multer({
+    limits: {
+      fileSize: 10 * 1024 * 1024,
+      files: 5,
+      fields: 20,
+      parts: 30,
+    },
+  });
 
-  router.post('/api/webhooks/email', upload.any(), async (req, res) => {
-    console.log('Received inbound email webhook:', req.body);
+  router.post('/api/webhooks/email', emailWebhookLimiter, requireEmailWebhookSecret, upload.any(), async (req, res) => {
+    console.log('[Email Webhook] Received inbound email webhook', {
+      to: req.body.to || undefined,
+      attachmentCount: Array.isArray(req.files) ? req.files.length : 0,
+    });
 
     const toEmail = req.body.to || '';
     const match = toEmail.match(/ledger-([a-zA-Z0-9\-]+)@taxbot\.in/i);

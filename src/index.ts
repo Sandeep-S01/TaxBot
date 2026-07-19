@@ -23,6 +23,7 @@ const PORT = process.env.PORT || 3000;
 const publicDir = path.resolve(__dirname, '..', 'public');
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 20, standardHeaders: true, legacyHeaders: false });
 const downloadLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 120, standardHeaders: true, legacyHeaders: false });
+const emailWebhookLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 60, standardHeaders: true, legacyHeaders: false });
 
 // Standard middleware
 app.use(requestIdMiddleware);
@@ -38,7 +39,7 @@ app.get('/', (_req, res) => {
 });
 app.use(createCARoutes(authLimiter));
 app.use(createPublicRoutes(downloadLimiter));
-app.use(createEmailRoutes());
+app.use(createEmailRoutes(emailWebhookLimiter));
 app.use(createSyncRoutes());
 app.use(createWebhookRoutes());
 

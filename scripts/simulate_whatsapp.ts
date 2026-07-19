@@ -111,7 +111,8 @@ async function simulatePdfUpload(clientId: string, pdfPath: string) {
   try {
     const res = await axios.post(`${BACKEND_URL}/api/webhooks/email`, form, {
       headers: {
-        ...form.getHeaders()
+        ...form.getHeaders(),
+        ...(process.env.EMAIL_WEBHOOK_SECRET ? { 'x-taxbot-email-secret': process.env.EMAIL_WEBHOOK_SECRET } : {}),
       }
     });
     console.log(`[Simulator] Webhook response code: ${res.status}`);

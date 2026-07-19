@@ -105,6 +105,7 @@ Ensure you set the variables:
 - `SUPABASE_URL`, `SUPABASE_ANON_KEY` & `SUPABASE_SERVICE_ROLE_KEY`: Supabase project values. The backend should use the service-role key on the server.
 - `JWT_SECRET`: Long random secret used to sign CA console sessions.
 - `EXPORT_TOKEN_SECRET`: Long random secret used to sign temporary export links.
+- `EMAIL_WEBHOOK_SECRET`: Long random secret required by `/api/webhooks/email`; send it as `Authorization: Bearer <secret>` or `x-taxbot-email-secret`.
 - `WA_TOKEN`: Meta WhatsApp Cloud permanent authorization bearer token.
 - `WA_PHONE_ID`: Phone number ID from Meta developer panel.
 - `WA_VERIFY_TOKEN`: A custom string of your choice used to verify your webhook subscription.
@@ -175,3 +176,6 @@ To sync incoming WhatsApp messages to TaxBot:
 5. Set the **Verify Token** to the exact value of your local `WA_VERIFY_TOKEN`.
 6. Click **Verify and Save**.
 7. Subscribe to **messages** under the Webhook Fields grid.
+
+## Inbound Email Webhook
+The PDF email ingestion route is `POST /api/webhooks/email`. Configure your inbound email provider to include either `Authorization: Bearer <EMAIL_WEBHOOK_SECRET>` or `x-taxbot-email-secret: <EMAIL_WEBHOOK_SECRET>`. The route accepts multipart PDF attachments and rejects anonymous requests in production.

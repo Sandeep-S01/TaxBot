@@ -32,6 +32,7 @@ export function createPublicRoutes(downloadLimiter: RateLimitRequestHandler): Ro
       'JWT_SECRET',
       'EXPORT_TOKEN_SECRET',
       'META_APP_SECRET',
+      'EMAIL_WEBHOOK_SECRET',
       'APP_ORIGIN',
     ];
     const missingEnv = requiredEnv.filter((name) => !process.env[name]);

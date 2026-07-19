@@ -17,6 +17,7 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Removed raw toast HTML rendering for backend/user-visible error text in the CA console.
 - Escaped consolidated GST report fields rendered from API responses.
 - Updated the local Tally sync connector to use JWT login/token auth instead of legacy `x-ca-id`.
+- Added shared-secret verification and redacted logging for inbound email PDF webhooks.
 
 ### Production Readiness
 - Added `META_APP_SECRET`, `APP_ORIGIN`, and `ALLOWED_ORIGINS` to the environment contract.
@@ -34,3 +35,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added a frontend safety check to block JWT localStorage and bearer-token regressions.
 - Added keyboard and ARIA support for client workspace tabs.
 - Strengthened the mojibake quality gate and cleaned Tally connector console output.
+- Added `EMAIL_WEBHOOK_SECRET` to startup, readiness, and environment validation.
