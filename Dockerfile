@@ -12,6 +12,9 @@ RUN npm ci
 # Copy tsconfig and source files
 COPY tsconfig.json ./
 COPY src/ ./src/
+COPY public/ ./public/
+COPY scripts/ ./scripts/
+COPY supabase/ ./supabase/
 
 # Compile TypeScript
 RUN npm run build
