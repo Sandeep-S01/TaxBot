@@ -24,6 +24,7 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Validated WhatsApp interactive category/export replies and removed hardcoded production hosts from WhatsApp link generation.
 - Added production proxy trust and graceful HTTP shutdown handling.
 - Hardened public export token validation with strict shape checks and constant-time comparison.
+- Redacted WhatsApp/webhook/provider operational logs to avoid raw phone numbers and full upstream payloads.
 
 ### Production Readiness
 - Added `META_APP_SECRET`, `APP_ORIGIN`, and `ALLOWED_ORIGINS` to the environment contract.
@@ -48,3 +49,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added tests for WhatsApp interactive reply validation and public origin selection.
 - Added tests for server lifecycle and reverse-proxy behavior.
 - Added tests for malformed and mismatched export download tokens.
+- Added tests for privacy-safe log summarization.

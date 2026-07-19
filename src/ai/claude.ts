@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import dotenv from 'dotenv';
+import { summarizeHttpError } from '../utils/privacy';
 
 dotenv.config();
 
@@ -69,7 +70,7 @@ export async function askClaude(
     const content = response.content[0].type === 'text' ? response.content[0].text : '';
     return content || fallback;
   } catch (error: any) {
-    console.error('Claude API Error:', error.response?.data || error.message);
+    console.error('Claude API Error:', summarizeHttpError(error));
     return fallback;
   }
 }

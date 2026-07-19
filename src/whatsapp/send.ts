@@ -1,6 +1,7 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
 import { isRetriableHttpError, withRetry } from '../utils/retry';
+import { summarizeHttpError } from '../utils/privacy';
 
 dotenv.config();
 
@@ -34,7 +35,7 @@ export async function sendMessage(to: string, text: string): Promise<any> {
     });
     return response.data;
   } catch (error: any) {
-    console.error('Error sending WhatsApp message:', error.response?.data || error.message);
+    console.error('Error sending WhatsApp message:', summarizeHttpError(error));
     throw error;
   }
 }
@@ -67,7 +68,7 @@ export async function sendTemplate(
     });
     return response.data;
   } catch (error: any) {
-    console.error('Error sending WhatsApp template:', error.response?.data || error.message);
+    console.error('Error sending WhatsApp template:', summarizeHttpError(error));
     throw error;
   }
 }
@@ -108,7 +109,7 @@ export async function sendInteractiveButtons(
     });
     return response.data;
   } catch (error: any) {
-    console.error('Error sending WhatsApp interactive buttons:', error.response?.data || error.message);
+    console.error('Error sending WhatsApp interactive buttons:', summarizeHttpError(error));
     throw error;
   }
 }
@@ -144,7 +145,7 @@ export async function sendInteractiveList(
     });
     return response.data;
   } catch (error: any) {
-    console.error('Error sending WhatsApp interactive list:', error.response?.data || error.message);
+    console.error('Error sending WhatsApp interactive list:', summarizeHttpError(error));
     throw error;
   }
 }
@@ -166,7 +167,7 @@ function postWhatsAppMessage(payload: Record<string, unknown>) {
       attempts: 3,
       shouldRetry: isRetriableHttpError,
       onRetry: (error, attempt) => {
-        console.warn(`[WhatsApp] send retry ${attempt}:`, error.response?.status || error.message);
+        console.warn(`[WhatsApp] send retry ${attempt}:`, summarizeHttpError(error));
       },
     }
   );

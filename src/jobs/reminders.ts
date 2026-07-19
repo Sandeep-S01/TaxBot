@@ -3,6 +3,7 @@ import { getGstRegisteredClients } from '../db/clients';
 import { buildGstr3b } from '../gst/gstr3b';
 import { sendMessage } from '../whatsapp/send';
 import { formatINR } from '../handlers/commands/gst';
+import { hashIdentifier, summarizeHttpError } from '../utils/privacy';
 
 /**
  * Calculates the previous month's period string (YYYY-MM).
@@ -76,12 +77,18 @@ Please review your bills and transactions to ensure accuracy.
 _TaxBot - AI-native compliance for Indian SMBs._`;
 
         await sendMessage(client.phone, reminderText);
-        console.log(`Successfully dispatched GST reminder to client: ${client.phone}`);
+        console.log('[Reminders] Successfully dispatched GST reminder', {
+          clientId: client.id,
+          phoneHash: hashIdentifier(client.phone),
+        });
       } catch (clientErr: any) {
-        console.error(`Failed to send reminder to client ID ${client.id}:`, clientErr.message);
+        console.error('[Reminders] Failed to send GST reminder', {
+          clientId: client.id,
+          error: summarizeHttpError(clientErr),
+        });
       }
     }
   } catch (error: any) {
-    console.error('Error running GST reminders task:', error.message);
+    console.error('[Reminders] Error running GST reminders task:', summarizeHttpError(error));
   }
 }

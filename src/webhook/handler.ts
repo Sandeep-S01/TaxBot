@@ -7,8 +7,8 @@ import { handleAudio } from '../handlers/audio';
 import { handleInteractive } from '../handlers/interactive';
 import { sendMessage } from '../whatsapp/send';
 import { WhatsAppIncomingNotification, WhatsAppMessage } from '../types';
-import crypto from 'crypto';
 import { claimInboundMessage, updateInboundMessageStatus } from '../db/inboundMessages';
+import { hashIdentifier, summarizeHttpError } from '../utils/privacy';
 
 /**
  * Handle incoming POST requests from WhatsApp webhook
@@ -55,17 +55,13 @@ function logWebhookSummary(body: WhatsAppIncomingNotification) {
     .map((message) => ({
       messageId: message.id,
       type: message.type,
-      phoneHash: hashPhone(message.from),
+      phoneHash: hashIdentifier(message.from),
     }));
 
   console.log('[Webhook] Incoming event summary:', {
     object: body.object,
     messages: summaries,
   });
-}
-
-function hashPhone(phone: string): string {
-  return crypto.createHash('sha256').update(phone).digest('hex').slice(0, 12);
 }
 
 /**
@@ -79,7 +75,7 @@ async function processIncomingMessage(phone: string, contactName: string, messag
     if (!claim.claimed) {
       console.log('[Webhook] Duplicate Meta message skipped:', {
         metaMessageId,
-        phoneHash: hashPhone(phone),
+        phoneHash: hashIdentifier(phone),
         existingStatus: claim.message?.status,
       });
       return;
@@ -90,7 +86,7 @@ async function processIncomingMessage(phone: string, contactName: string, messag
     // 1. Identify or register the client
     let client = await getClientByPhone(phone);
     if (!client) {
-      console.log(`New registration: Creating client for phone: ${phone}`);
+      console.log('[Webhook] New registration: creating client', { phoneHash: hashIdentifier(phone) });
       client = await createClient(phone, contactName);
       
       // Send a welcome message
@@ -100,7 +96,7 @@ async function processIncomingMessage(phone: string, contactName: string, messag
           `Welcome to TaxBot, ${contactName}! 🇮🇳\n\nI am your AI accounting assistant. Send me your receipt photos, bank statement PDFs, or simply ask me tax questions in English or Hindi.\n\nType *help* to see what I can do.`
         );
       } catch (err: any) {
-        console.warn(`[Webhook] Could not dispatch WhatsApp welcome message (check WA_TOKEN):`, err.message || err);
+        console.warn('[Webhook] Could not dispatch WhatsApp welcome message:', summarizeHttpError(err));
       }
     }
 
@@ -152,7 +148,11 @@ async function processIncomingMessage(phone: string, contactName: string, messag
 
     await updateInboundMessageStatus(metaMessageId, 'processed', { client_id: client.id });
   } catch (error: any) {
-    console.error(`Error processing message from ${hashPhone(phone)}:`, error);
+    console.error('[Webhook] Error processing message:', {
+      phoneHash: hashIdentifier(phone),
+      messageId: metaMessageId,
+      error: summarizeHttpError(error),
+    });
     try {
       await updateInboundMessageStatus(metaMessageId, 'failed', {
         last_error: String(error?.message || error).slice(0, 1000),
@@ -166,7 +166,7 @@ async function processIncomingMessage(phone: string, contactName: string, messag
         'An error occurred while processing your request. Please try again in a few moments.'
       );
     } catch (sendErr) {
-      console.error('Failed to dispatch error response to client:', sendErr);
+      console.error('[Webhook] Failed to dispatch error response to client:', summarizeHttpError(sendErr));
     }
   }
 }

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
+import { summarizeHttpError } from '../utils/privacy';
 
 dotenv.config();
 
@@ -78,7 +79,7 @@ export async function askGemini(
     const content = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
     return content || fallback;
   } catch (error: any) {
-    console.error('Gemini API Error:', error.response?.data || error.message);
+    console.error('Gemini API Error:', summarizeHttpError(error));
     return fallback;
   }
 }
