@@ -140,6 +140,7 @@ npm run lint
 npm run build
 npm test
 npm run check:mojibake
+npm run check:frontend-safety
 npm audit --audit-level=moderate
 ```
 

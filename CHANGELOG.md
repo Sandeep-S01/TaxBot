@@ -14,6 +14,8 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Required signed tokens for public customer payment pages instead of exposing details by raw transaction id.
 - Changed CA audit chat so the server fetches authorized ledger context instead of trusting browser-supplied transactions.
 - Added lightweight request validation for CA auth, client creation, report periods/types, UUID params, phone numbers, and GSTINs.
+- Removed raw toast HTML rendering for backend/user-visible error text in the CA console.
+- Escaped consolidated GST report fields rendered from API responses.
 
 ### Production Readiness
 - Added `META_APP_SECRET`, `APP_ORIGIN`, and `ALLOWED_ORIGINS` to the environment contract.
@@ -28,3 +30,5 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added shared GST state-code tax split logic and stronger duplicate transaction candidate matching.
 - Added transaction status, confidence, review reason, and source provenance to CSV/PDF reporting surfaces.
 - Added stricter public export/payment route validation for UUIDs, periods, and formats.
+- Added a frontend safety check to block JWT localStorage and bearer-token regressions.
+- Added keyboard and ARIA support for client workspace tabs.

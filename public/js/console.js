@@ -758,16 +758,39 @@ async function renderClientWorkspace(clientId) {
   // Setup sub-tabs
   const tabLinks = document.querySelectorAll('[data-ws-tab]');
   const panels = document.querySelectorAll('.ws-tab-panel');
+  const activateWorkspaceTab = (btn) => {
+    tabLinks.forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+      b.setAttribute('tabindex', '-1');
+    });
+    panels.forEach(p => p.classList.remove('active'));
+
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    btn.removeAttribute('tabindex');
+    const activeTab = btn.getAttribute('data-ws-tab');
+    document.getElementById(`ws-panel-${activeTab}`).classList.add('active');
+    renderWorkspaceTabPanel(activeTab, clientId, cTx);
+  };
   
-  tabLinks.forEach(btn => {
+  tabLinks.forEach((btn, index) => {
+    btn.setAttribute('tabindex', index === 0 ? '0' : '-1');
     btn.onclick = () => {
-      tabLinks.forEach(b => b.classList.remove('active'));
-      panels.forEach(p => p.classList.remove('active'));
-      
-      btn.classList.add('active');
-      const activeTab = btn.getAttribute('data-ws-tab');
-      document.getElementById(`ws-panel-${activeTab}`).classList.add('active');
-      renderWorkspaceTabPanel(activeTab, clientId, cTx);
+      activateWorkspaceTab(btn);
+    };
+    btn.onkeydown = (event) => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const currentIndex = Array.from(tabLinks).indexOf(btn);
+      let nextIndex = currentIndex;
+      if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabLinks.length;
+      if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabLinks.length) % tabLinks.length;
+      if (event.key === 'Home') nextIndex = 0;
+      if (event.key === 'End') nextIndex = tabLinks.length - 1;
+      const nextTab = tabLinks[nextIndex];
+      nextTab.focus();
+      activateWorkspaceTab(nextTab);
     };
   });
 
@@ -1297,13 +1320,13 @@ async function renderGSTCenter() {
 
       return `
         <tr>
-          <td><strong>${client.businessName || client.clientName}</strong><br><code style="font-size:12px;color:var(--text-secondary);">${client.gstin || 'N/A'}</code></td>
+          <td><strong>${escapeHtml(client.businessName || client.clientName || 'Unknown Client')}</strong><br><code style="font-size:12px;color:var(--text-secondary);">${escapeHtml(client.gstin || 'N/A')}</code></td>
           <td>₹${client.outwardTaxable.toLocaleString('en-IN')}</td>
           <td>₹${client.inwardTaxable.toLocaleString('en-IN')}</td>
           <td><strong>₹${netLiability.toLocaleString('en-IN')}</strong></td>
           <td>
             <span class="badge ${cObj.filedStatus === 'Ready' ? 'badge-success' : cObj.filedStatus === 'Filed' ? 'badge-success' : 'badge-warning'}">
-              ${cObj.filedStatus}
+              ${escapeHtml(cObj.filedStatus)}
             </span>
           </td>
           <td>
@@ -1795,7 +1818,7 @@ function initCommandBar() {
           <div class="command-result-group-title">AI Command Search</div>
           <div class="command-result-item" id="ai-command-search-btn">
             <i data-lucide="sparkles"></i>
-            <span>Query AI: "${query}"</span>
+            <span>Query AI: "${escapeHtml(query)}"</span>
           </div>
         `;
       } else {
@@ -1843,10 +1866,13 @@ function showToast(message) {
   const root = document.getElementById('toast-root');
   const toast = document.createElement('div');
   toast.className = 'toast';
-  toast.innerHTML = `
-    <i data-lucide="info" style="width:16px;height:16px;"></i>
-    <span>${message}</span>
-  `;
+  const icon = document.createElement('i');
+  icon.setAttribute('data-lucide', 'info');
+  icon.style.width = '16px';
+  icon.style.height = '16px';
+  const label = document.createElement('span');
+  label.textContent = String(message || '');
+  toast.append(icon, label);
   root.appendChild(toast);
   initIcons();
 

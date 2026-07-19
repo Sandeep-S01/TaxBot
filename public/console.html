@@ -583,15 +583,15 @@
 
           <!-- Workspace Nav Tabs -->
           <div class="workspace-tabs-container mt-24">
-            <div class="workspace-tabs">
-              <button class="tab-link active" data-ws-tab="overview">Client Overview</button>
-              <button class="tab-link" data-ws-tab="transactions">Transactions</button>
-              <button class="tab-link" data-ws-tab="documents">Documents</button>
-              <button class="tab-link" data-ws-tab="gst">GST Reconciliation</button>
-              <button class="tab-link" data-ws-tab="reconciliation">Bank Match</button>
-              <button class="tab-link" data-ws-tab="reports">Reports</button>
-              <button class="tab-link" data-ws-tab="exports">Exports</button>
-              <button class="tab-link" data-ws-tab="audit">AI Auditor</button>
+            <div class="workspace-tabs" role="tablist" aria-label="Client workspace sections">
+              <button class="tab-link active" id="ws-tab-overview" role="tab" aria-selected="true" aria-controls="ws-panel-overview" data-ws-tab="overview">Client Overview</button>
+              <button class="tab-link" id="ws-tab-transactions" role="tab" aria-selected="false" aria-controls="ws-panel-transactions" data-ws-tab="transactions">Transactions</button>
+              <button class="tab-link" id="ws-tab-documents" role="tab" aria-selected="false" aria-controls="ws-panel-documents" data-ws-tab="documents">Documents</button>
+              <button class="tab-link" id="ws-tab-gst" role="tab" aria-selected="false" aria-controls="ws-panel-gst" data-ws-tab="gst">GST Reconciliation</button>
+              <button class="tab-link" id="ws-tab-reconciliation" role="tab" aria-selected="false" aria-controls="ws-panel-reconciliation" data-ws-tab="reconciliation">Bank Match</button>
+              <button class="tab-link" id="ws-tab-reports" role="tab" aria-selected="false" aria-controls="ws-panel-reports" data-ws-tab="reports">Reports</button>
+              <button class="tab-link" id="ws-tab-exports" role="tab" aria-selected="false" aria-controls="ws-panel-exports" data-ws-tab="exports">Exports</button>
+              <button class="tab-link" id="ws-tab-audit" role="tab" aria-selected="false" aria-controls="ws-panel-audit" data-ws-tab="audit">AI Auditor</button>
             </div>
           </div>
 
@@ -599,7 +599,7 @@
           <div class="workspace-tab-contents mt-24" id="ws-tab-viewport">
             
             <!-- WS Sub-Tab 1: Overview -->
-            <div class="ws-tab-panel active" id="ws-panel-overview">
+            <div class="ws-tab-panel active" id="ws-panel-overview" role="tabpanel" aria-labelledby="ws-tab-overview">
               <!-- GST Liability Trend Chart -->
               <div class="card mb-24">
                 <div class="card-header">
@@ -639,7 +639,7 @@
             </div>
 
             <!-- WS Sub-Tab 2: Transactions -->
-            <div class="ws-tab-panel" id="ws-panel-transactions">
+            <div class="ws-tab-panel" id="ws-panel-transactions" role="tabpanel" aria-labelledby="ws-tab-transactions">
               <div class="card overflow-x">
                 <table class="data-table" id="ws-transactions-table">
                   <thead>
@@ -661,7 +661,7 @@
             </div>
 
             <!-- WS Sub-Tab 3: Documents -->
-            <div class="ws-tab-panel" id="ws-panel-documents">
+            <div class="ws-tab-panel" id="ws-panel-documents" role="tabpanel" aria-labelledby="ws-tab-documents">
               <div class="document-workspace-grid">
                 <div class="doc-folders-sidebar">
                   <button class="doc-sidebar-item active" data-folder="all">All Documents</button>
@@ -691,7 +691,7 @@
             </div>
 
             <!-- WS Sub-Tab 4: GST Reconciliation -->
-            <div class="ws-tab-panel" id="ws-panel-gst">
+            <div class="ws-tab-panel" id="ws-panel-gst" role="tabpanel" aria-labelledby="ws-tab-gst">
               <div class="card">
                 <div class="card-header">
                   <h3 class="card-title">GSTR-2B vs Purchase Register Mismatch Analysis</h3>
@@ -703,7 +703,7 @@
             </div>
 
             <!-- WS Sub-Tab 5: Bank Reconciliation -->
-            <div class="ws-tab-panel" id="ws-panel-reconciliation">
+            <div class="ws-tab-panel" id="ws-panel-reconciliation" role="tabpanel" aria-labelledby="ws-tab-reconciliation">
               <div class="card">
                 <div class="card-header">
                   <div>
@@ -718,7 +718,7 @@
             </div>
 
             <!-- WS Sub-Tab 6: Reports -->
-            <div class="ws-tab-panel" id="ws-panel-reports">
+            <div class="ws-tab-panel" id="ws-panel-reports" role="tabpanel" aria-labelledby="ws-tab-reports">
               <div class="report-cards-grid">
                 <div class="card report-card">
                   <h4>Profit & Loss Statement</h4>
@@ -739,7 +739,7 @@
             </div>
 
             <!-- WS Sub-Tab 7: Exports -->
-            <div class="ws-tab-panel" id="ws-panel-exports">
+            <div class="ws-tab-panel" id="ws-panel-exports" role="tabpanel" aria-labelledby="ws-tab-exports">
               <div class="card">
                 <div class="card-header">
                   <h3 class="card-title">Tally ERP / Prime Export Configuration</h3>
@@ -752,7 +752,7 @@
             </div>
 
             <!-- WS Sub-Tab 8: AI Auditor Chat -->
-            <div class="ws-tab-panel" id="ws-panel-audit">
+            <div class="ws-tab-panel" id="ws-panel-audit" role="tabpanel" aria-labelledby="ws-tab-audit">
               <div class="card" style="height: 500px; display: flex; flex-direction: column; padding: 0; overflow: hidden; margin-bottom: 24px;">
                 <div class="card-header" style="padding: var(--space-16) var(--space-24); border-bottom: 1px solid var(--border); background-color: var(--bg-card);">
                   <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">

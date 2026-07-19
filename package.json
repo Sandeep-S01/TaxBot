@@ -11,6 +11,7 @@
     "test": "vitest run",
     "check:env": "tsx scripts/check_env.ts",
     "check:mojibake": "tsx scripts/check_mojibake.ts",
+    "check:frontend-safety": "tsx scripts/check_frontend_safety.ts",
     "smoke:prod": "tsx scripts/smoke_prod.ts",
     "simulate": "tsx scripts/simulate_whatsapp.ts"
   },
