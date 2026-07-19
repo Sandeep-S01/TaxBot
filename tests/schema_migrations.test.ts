@@ -17,6 +17,8 @@ describe('Supabase schema and migrations', () => {
     expect(schema).toContain('CONSTRAINT console_audit_logs_action_type_format');
     expect(schema).toContain('CREATE OR REPLACE FUNCTION enforce_console_audit_log_client_scope');
     expect(schema).toContain('DROP POLICY IF EXISTS "Allow all access to service_role" ON clients');
+    expect(schema).toContain('idx_transactions_client_created_at');
+    expect(schema).toContain('idx_console_audit_logs_ca_created_at');
   });
 
   it('uses idempotent DO blocks for the audit integrity migration constraints', () => {
@@ -26,5 +28,13 @@ describe('Supabase schema and migrations', () => {
     expect(migration).toContain('DROP TRIGGER IF EXISTS enforce_console_audit_log_client_scope_trigger');
     expect(migration).toMatch(/SELECT\s+1\s+FROM\s+pg_constraint/);
     expect(migration).not.toContain('ADD CONSTRAINT IF NOT EXISTS');
+  });
+
+  it('adds idempotent query performance indexes for production access paths', () => {
+    const migration = read('supabase/migrations/005_query_performance_indexes.sql');
+
+    expect(migration).toContain('CREATE INDEX IF NOT EXISTS idx_transactions_client_created_at');
+    expect(migration).toContain('CREATE INDEX IF NOT EXISTS idx_transactions_date_client');
+    expect(migration).toContain('CREATE INDEX IF NOT EXISTS idx_console_audit_logs_ca_created_at');
   });
 });

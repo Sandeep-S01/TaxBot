@@ -87,6 +87,7 @@ supabase/migrations/001_initial_schema.sql
 supabase/migrations/002_production_readiness_upgrade.sql
 supabase/migrations/003_inbound_message_idempotency.sql
 supabase/migrations/004_audit_log_integrity.sql
+supabase/migrations/005_query_performance_indexes.sql
 ```
 The consolidated `supabase/schema.sql` is a reference snapshot for new installs and should match the migration end state.
 
@@ -95,6 +96,7 @@ For an existing prototype database that already has older migrations applied, ru
 supabase/migrations/002_production_readiness_upgrade.sql
 supabase/migrations/003_inbound_message_idempotency.sql
 supabase/migrations/004_audit_log_integrity.sql
+supabase/migrations/005_query_performance_indexes.sql
 ```
 
 Do not repeatedly paste the full `supabase/schema.sql` snapshot into production. It is kept as a reference snapshot only; production changes should be applied through versioned migration files.

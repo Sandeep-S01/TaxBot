@@ -11,10 +11,10 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 | Architecture | 8/10 | In progress | App construction is separated from server startup; CA routes and frontend scripts remain large. |
 | Code Quality | 8/10 | In progress | TypeScript gate is clean; remaining work is mostly decomposition and shared browser helpers. |
 | Security | 8/10 | In progress | JWT/Argon2, CSRF, webhook signatures, export tokens, log redaction, XML/CSV escaping are complete. |
-| Database | 8/10 | In progress | Ordered migrations and audit integrity are complete; production migration execution must be verified per environment. |
+| Database | 8/10 | In progress | Ordered migrations, audit integrity, and production query indexes are complete; production migration execution must be verified per environment. |
 | GST Correctness | 8/10 | In progress | Regular-GST v1 scope, tax split, provenance, duplicate review, and partial-report visibility are implemented. |
 | AI Reliability | 8/10 | In progress | Extraction normalization, production audit fallback behavior, and provider-category logging are implemented. |
-| Performance | 8/10 | In progress | Basic limits/retries, paginated ledger APIs, and row ceilings exist; remaining risk is deeper query/index profiling. |
+| Performance | 8/10 | In progress | Basic limits/retries, paginated ledger APIs, row ceilings, and targeted ledger/audit indexes exist. |
 | Reliability | 8/10 | In progress | Readiness checks, idempotency, retry, and graceful shutdown are complete; production smoke still needs live verification. |
 | Testing | 8/10 | In progress | Unit, integration-style, and Express smoke tests cover critical paths; deployed smoke evidence remains open. |
 | Documentation | 8/10 | In progress | README, migrations, env contract, changelog, tracker, and operations runbook are updated. |
@@ -33,14 +33,14 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - Operations: deployment, migration, smoke-test, rollback, and incident triage runbook.
 - Testability: app factory separated from server startup, with E2E-style Express smoke tests for login, protected APIs, exports, and payment denial.
 - Observability: categorized provider error summaries for Gemini, Anthropic, Meta WhatsApp, Sandbox GSTIN, and Supabase operations.
+- Database performance: query indexes for Tally sync, aggregated ledger reads, and CA audit-log reads.
 - CI readiness: lint, build, tests, mojibake check, frontend safety check, diagnostic script safety check, npm audit, Docker build workflow.
 
 ## Remaining Queue
 
 1. High: verify deployed production smoke after Render redeploy and Supabase migrations, then capture the evidence in this tracker.
 2. Medium: split large CA route and dashboard scripts into smaller modules after behavior is stable.
-3. Medium: profile Supabase indexes and query plans against larger production-like ledger volumes.
-4. Low: keep the operations runbook updated after live production smoke tests and incidents.
+3. Low: keep the operations runbook updated after live production smoke tests and incidents.
 
 ## Production Smoke Evidence
 

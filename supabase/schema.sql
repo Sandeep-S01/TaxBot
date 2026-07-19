@@ -141,10 +141,13 @@ CREATE INDEX IF NOT EXISTS idx_transactions_client_date ON transactions(client_i
 CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions(category);
 CREATE INDEX IF NOT EXISTS idx_transactions_client_status_date ON transactions(client_id, status, date);
 CREATE INDEX IF NOT EXISTS idx_transactions_duplicate_lookup ON transactions(client_id, invoice_number, vendor_gstin, vendor_name, date, amount, tax_amount);
+CREATE INDEX IF NOT EXISTS idx_transactions_client_created_at ON transactions(client_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_transactions_date_client ON transactions(date DESC, client_id);
 CREATE INDEX IF NOT EXISTS idx_gst_returns_lookup ON gst_returns(client_id, period, return_type);
 CREATE INDEX IF NOT EXISTS idx_console_audit_logs_ca_id ON console_audit_logs(ca_id);
 CREATE INDEX IF NOT EXISTS idx_console_audit_logs_client_id ON console_audit_logs(client_id);
 CREATE INDEX IF NOT EXISTS idx_console_audit_logs_created_at ON console_audit_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_console_audit_logs_ca_created_at ON console_audit_logs(ca_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_inbound_messages_status_created ON inbound_messages(status, created_at);
 CREATE INDEX IF NOT EXISTS idx_inbound_messages_phone_created ON inbound_messages(phone, created_at DESC);
 

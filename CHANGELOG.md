@@ -61,3 +61,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added provider/category error summaries for Gemini, Anthropic, Meta WhatsApp, Sandbox GSTIN, and Supabase operations without logging response bodies or secrets.
 - Redacted development diagnostic script output by default, fixed signed-export smoke-test expectations, and added a CI script-safety gate.
 - Added a public non-secret `/version` endpoint and production smoke coverage for deployed commit/build metadata.
+- Added query-performance migration indexes for Tally sync, aggregated ledgers, and CA audit-log reads.
