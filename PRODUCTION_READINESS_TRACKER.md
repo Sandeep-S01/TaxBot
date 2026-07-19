@@ -16,7 +16,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 | AI Reliability | 8/10 | In progress | Extraction normalization, production audit fallback behavior, and provider-category logging are implemented. |
 | Performance | 8/10 | In progress | Basic limits/retries, paginated ledger APIs, row ceilings, and targeted ledger/audit indexes exist. |
 | Reliability | 8/10 | In progress | Readiness checks, idempotency, retry, graceful shutdown, and Render deployment config checks are complete; production smoke still needs live verification. |
-| Testing | 8/10 | In progress | Unit, integration-style, and Express smoke tests cover critical paths; deployed smoke evidence remains open. |
+| Testing | 8/10 | In progress | Unit, integration-style, Express smoke tests, and public asset integrity checks cover critical paths; deployed smoke evidence remains open. |
 | Documentation | 8/10 | In progress | README, migrations, env contract, changelog, tracker, and operations runbook are updated. |
 
 ## Completed Remediation
@@ -34,7 +34,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - Testability: app factory separated from server startup, with E2E-style Express smoke tests for login, protected APIs, exports, and payment denial.
 - Observability: categorized provider error summaries for Gemini, Anthropic, Meta WhatsApp, Sandbox GSTIN, and Supabase operations.
 - Database performance: query indexes for Tally sync, aggregated ledger reads, and CA audit-log reads.
-- CI readiness: lint, build, tests, mojibake check, frontend safety check, diagnostic script safety check, npm audit, Docker build workflow.
+- CI readiness: lint, build, tests, mojibake check, frontend safety check, public asset check, diagnostic script safety check, npm audit, Docker build workflow.
 - Deployment readiness: Render build/start settings are version controlled in `render.yaml` and checked by `npm run check:render-config`.
 - Maintainability: CA audit log and AI audit chat endpoints are split into `src/routes/caAudit.ts` with existing `/api/ca/audit/*` paths preserved.
 - Maintainability: shared CA console browser utilities are split into `public/js/console-utils.js` and loaded before `public/js/console.js`.
@@ -64,6 +64,7 @@ npm run build
 npm test
 npm run check:mojibake
 npm run check:frontend-safety
+npm run check:public-assets
 npm run check:script-safety
 npm run check:render-config
 npm audit --audit-level=moderate

@@ -40,6 +40,9 @@ jobs:
       - name: Check frontend safety
         run: npm run check:frontend-safety
 
+      - name: Check public assets
+        run: npm run check:public-assets
+
       - name: Check diagnostic script safety
         run: npm run check:script-safety
 

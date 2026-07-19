@@ -69,3 +69,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Extracted CA console Chart.js rendering and chart data shaping into a dedicated browser script loaded before the main console controller.
 - Extracted CA console notification tray state/rendering into a dedicated browser script and escaped notification text during render.
 - Added a version-controlled Render Blueprint plus CI deployment-config validation for production build/start settings.
+- Added a CI-ready public asset integrity check for local HTML asset references and CA console browser script ordering.
