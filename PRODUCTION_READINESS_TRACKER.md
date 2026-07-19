@@ -16,7 +16,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 | AI Reliability | 8/10 | In progress | Extraction normalization, production audit fallback behavior, and provider-category logging are implemented. |
 | Performance | 8/10 | In progress | Basic limits/retries, paginated ledger APIs, row ceilings, and targeted ledger/audit indexes exist. |
 | Reliability | 8/10 | In progress | Readiness checks, idempotency, retry, graceful shutdown, and Render deployment config checks are complete; production smoke still needs live verification. |
-| Testing | 8/10 | In progress | Unit, integration-style, Express smoke tests, and public asset integrity checks cover critical paths; deployed smoke evidence remains open. |
+| Testing | 8/10 | In progress | Unit, integration-style, Express source smoke, compiled dist smoke, and public asset integrity checks cover critical paths; deployed smoke evidence remains open. |
 | Documentation | 8/10 | In progress | README, migrations, env contract, changelog, tracker, and operations runbook are updated. |
 
 ## Completed Remediation
@@ -31,7 +31,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - Export safety: server/browser Tally XML escaping, payment HTML escaping, CSV formula neutralization, frontend regression checks.
 - Performance bounds: paginated CA ledger APIs plus row ceilings for reconciliation, PDFs, AI audit context, and signed exports.
 - Operations: deployment, migration, smoke-test, rollback, and incident triage runbook.
-- Testability: app factory separated from server startup, with E2E-style Express smoke tests for login, protected APIs, exports, and payment denial.
+- Testability: app factory separated from server startup, with E2E-style Express smoke tests for login, protected APIs, exports, payment denial, and compiled `dist/index.js` operational endpoints.
 - Observability: categorized provider error summaries for Gemini, Anthropic, Meta WhatsApp, Sandbox GSTIN, and Supabase operations.
 - Database performance: query indexes for Tally sync, aggregated ledger reads, and CA audit-log reads.
 - CI readiness: lint, build, tests, mojibake check, frontend safety check, public asset check, diagnostic script safety check, npm audit, Docker build workflow.
@@ -61,6 +61,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 ```powershell
 npm run lint
 npm run build
+npm run smoke:dist
 npm test
 npm run check:mojibake
 npm run check:frontend-safety

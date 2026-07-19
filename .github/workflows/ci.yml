@@ -31,6 +31,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Smoke compiled server
+        run: npm run smoke:dist
+
       - name: Test
         run: npm test
 

@@ -15,6 +15,7 @@
     "check:script-safety": "tsx scripts/check_script_safety.ts",
     "check:render-config": "tsx scripts/check_render_config.ts",
     "check:public-assets": "tsx scripts/check_public_assets.ts",
+    "smoke:dist": "tsx scripts/smoke_dist.ts",
     "smoke:prod": "tsx scripts/smoke_prod.ts",
     "simulate": "tsx scripts/simulate_whatsapp.ts"
   },

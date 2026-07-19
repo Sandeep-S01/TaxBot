@@ -146,6 +146,7 @@ Run these checks before pushing or redeploying:
 ```bash
 npm run lint
 npm run build
+npm run smoke:dist
 npm test
 npm run check:mojibake
 npm run check:frontend-safety
