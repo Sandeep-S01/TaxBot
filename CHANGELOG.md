@@ -51,3 +51,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added tests for malformed and mismatched export download tokens.
 - Added tests for privacy-safe log summarization.
 - Changed failed duplicate transaction checks to force `needs_review` instead of allowing silent confirmed ledger entries.
+- Added partial-failure provenance to consolidated CA GST reports and surfaced review-needed client calculations in the dashboards.

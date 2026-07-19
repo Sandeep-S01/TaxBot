@@ -1285,7 +1285,7 @@ async function renderGSTCenter() {
   const caSession = getCASession();
   if (!caSession) return;
 
-  let report = { totalOutwardTaxableValue: 0, totalInwardTaxAmount: 0, netGstPayable: 0, clientBreakdown: [] };
+  let report = { totalOutwardTaxableValue: 0, totalInwardTaxAmount: 0, netGstPayable: 0, clientBreakdown: [], incomplete: false, warnings: [] };
   try {
     const res = await fetch(`/api/ca/reports/gst?period=${picker.value}`, {
       headers: getAuthHeaders()
@@ -1305,6 +1305,10 @@ async function renderGSTCenter() {
   document.getElementById('gst-ready-to-file-metric').textContent = readyCount;
   document.getElementById('gst-needs-review-metric').textContent = globalClientsList.length - readyCount;
 
+  if (report.incomplete && report.warnings?.length) {
+    showToast('GSTR report compiled with review-needed client calculations.', 'warning');
+  }
+
   // Render table body
   if (report.clientBreakdown.length === 0) {
     tbody.innerHTML = `
@@ -1317,6 +1321,7 @@ async function renderGSTCenter() {
     tbody.innerHTML = report.clientBreakdown.map(client => {
       const netLiability = Math.max(0, client.outwardTax - client.inwardTax);
       const cObj = globalClientsList.find(c => c.id === client.clientId) || { filedStatus: 'Review Required' };
+      const filedStatus = client.calculationStatus === 'error' ? 'Review Required' : cObj.filedStatus;
 
       return `
         <tr>
@@ -1325,13 +1330,13 @@ async function renderGSTCenter() {
           <td>₹${client.inwardTaxable.toLocaleString('en-IN')}</td>
           <td><strong>₹${netLiability.toLocaleString('en-IN')}</strong></td>
           <td>
-            <span class="badge ${cObj.filedStatus === 'Ready' ? 'badge-success' : cObj.filedStatus === 'Filed' ? 'badge-success' : 'badge-warning'}">
-              ${escapeHtml(cObj.filedStatus)}
+            <span class="badge ${filedStatus === 'Ready' ? 'badge-success' : filedStatus === 'Filed' ? 'badge-success' : 'badge-warning'}">
+              ${escapeHtml(filedStatus)}
             </span>
           </td>
           <td>
-            <button class="btn btn-sm ${cObj.filedStatus === 'Ready' ? 'btn-primary' : 'btn-secondary'} btn-gst-file-action" data-client-id="${client.clientId}">
-              ${cObj.filedStatus === 'Ready' ? 'File GSTR-1' : 'Verify'}
+            <button class="btn btn-sm ${filedStatus === 'Ready' ? 'btn-primary' : 'btn-secondary'} btn-gst-file-action" data-client-id="${client.clientId}">
+              ${filedStatus === 'Ready' ? 'File GSTR-1' : 'Verify'}
             </button>
           </td>
         </tr>

@@ -101,6 +101,8 @@ export async function linkClientToCA(clientId: string, caId: string): Promise<Cl
 
 export interface CAAggregatedGSTRReport {
   period: string;
+  incomplete: boolean;
+  warnings: string[];
   clientsCount: number;
   totalOutwardTaxableValue: number;
   totalOutwardTaxAmount: number;
@@ -116,6 +118,8 @@ export interface CAAggregatedGSTRReport {
     outwardTax: number;
     inwardTaxable: number;
     inwardTax: number;
+    calculationStatus: 'ok' | 'error';
+    reviewReason: string | null;
   }>;
 }
 
@@ -131,6 +135,7 @@ export async function getConsolidatedGSTRSummary(
   let totalInwardTaxAmount = 0;
   
   const clientBreakdown: CAAggregatedGSTRReport['clientBreakdown'] = [];
+  const warnings: string[] = [];
 
   for (const client of clients) {
     try {
@@ -155,10 +160,13 @@ export async function getConsolidatedGSTRSummary(
         outwardTax: oTax,
         inwardTaxable: iTaxable,
         inwardTax: iTax,
+        calculationStatus: 'ok',
+        reviewReason: null,
       });
     } catch (err: any) {
-      console.warn(`Could not compute GSTR summary for client ${client.id}:`, err.message);
-      // Fallback empty details for this client
+      const warning = `Could not compute GSTR summary for client ${client.id}`;
+      console.warn(warning, err.message);
+      warnings.push(warning);
       clientBreakdown.push({
         clientId: client.id,
         clientName: client.name || 'Unnamed Client',
@@ -168,6 +176,8 @@ export async function getConsolidatedGSTRSummary(
         outwardTax: 0,
         inwardTaxable: 0,
         inwardTax: 0,
+        calculationStatus: 'error',
+        reviewReason: 'summary_calculation_failed',
       });
     }
   }
@@ -176,6 +186,8 @@ export async function getConsolidatedGSTRSummary(
 
   return {
     period,
+    incomplete: warnings.length > 0,
+    warnings,
     clientsCount: clients.length,
     totalOutwardTaxableValue,
     totalOutwardTaxAmount,

@@ -793,6 +793,10 @@ async function loadConsolidatedGSTReport() {
     itcDisplay.textContent = `₹${report.totalInwardTaxAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
     payableDisplay.textContent = `₹${report.netGstPayable.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
 
+    if (report.incomplete && report.warnings?.length) {
+      showToast('GSTR report compiled with review-needed client calculations.', 'warning');
+    }
+
     if (report.clientBreakdown.length === 0) {
       tableBody.innerHTML = `
         <tr>
@@ -807,16 +811,18 @@ async function loadConsolidatedGSTReport() {
     report.clientBreakdown.forEach(client => {
       const tr = document.createElement('tr');
       const netLiability = Math.max(0, client.outwardTax - client.inwardTax);
+      const calculationStatus = client.calculationStatus === 'error' ? 'Review Required' : 'OK';
       
       tr.innerHTML = `
-        <td><div style="font-weight:600;">${client.businessName || client.clientName}</div></td>
-        <td><code style="font-family:monospace;">${client.gstin || 'N/A'}</code></td>
+        <td><div style="font-weight:600;">${escapeHtml(client.businessName || client.clientName || 'Unknown Client')}</div></td>
+        <td><code style="font-family:monospace;">${escapeHtml(client.gstin || 'N/A')}</code></td>
         <td>₹${client.outwardTaxable.toFixed(2)}</td>
         <td>₹${client.outwardTax.toFixed(2)}</td>
         <td>₹${client.inwardTaxable.toFixed(2)}</td>
         <td>₹${client.inwardTax.toFixed(2)}</td>
         <td style="text-align: right; font-weight:700; color:${netLiability > 0 ? 'var(--color-danger)' : 'var(--color-success)'}">
           ₹${netLiability.toFixed(2)}
+          ${client.calculationStatus === 'error' ? `<br><span style="font-size:11px;color:var(--color-warning);">${escapeHtml(calculationStatus)}</span>` : ''}
         </td>
       `;
       tableBody.appendChild(tr);
@@ -828,8 +834,8 @@ async function loadConsolidatedGSTReport() {
       const rows = report.clientBreakdown.map(c => {
         const net = Math.max(0, c.outwardTax - c.inwardTax);
         return [
-          `"${(c.businessName || c.clientName).replace(/"/g, '""')}"`,
-          c.gstin || 'N/A',
+          `"${String(c.businessName || c.clientName || 'Unknown Client').replace(/"/g, '""')}"`,
+          String(c.gstin || 'N/A').replace(/"/g, '""'),
           c.outwardTaxable,
           c.outwardTax,
           c.inwardTaxable,
