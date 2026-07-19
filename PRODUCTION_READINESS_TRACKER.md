@@ -14,7 +14,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 | Database | 8/10 | In progress | Ordered migrations and audit integrity are complete; production migration execution must be verified per environment. |
 | GST Correctness | 8/10 | In progress | Regular-GST v1 scope, tax split, provenance, duplicate review, and partial-report visibility are implemented. |
 | AI Reliability | 8/10 | In progress | Extraction normalization and production audit fallback behavior are implemented; provider observability can improve. |
-| Performance | 8/10 | In progress | Basic limits/retries exist; remaining risk is query scaling and report/export pagination. |
+| Performance | 8/10 | In progress | Basic limits/retries, paginated ledger APIs, and row ceilings exist; remaining risk is deeper query/index profiling. |
 | Reliability | 8/10 | In progress | Readiness checks, idempotency, retry, and graceful shutdown are complete; production smoke still needs live verification. |
 | Testing | 8/10 | In progress | Unit and integration-style tests cover critical paths; browser E2E and deployed smoke evidence remain open. |
 | Documentation | 8/10 | In progress | README, migrations, env contract, and changelog are updated; operator runbooks can improve. |
@@ -29,6 +29,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - Auditability: Supabase audit-log schema, audit constraints, client ownership checks, request IDs, readiness endpoint, operational log redaction.
 - GST v1 scope: regular GST only, intra/inter-state split where GSTIN state codes exist, provenance in reports.
 - Export safety: server/browser Tally XML escaping, payment HTML escaping, CSV formula neutralization, frontend regression checks.
+- Performance bounds: paginated CA ledger APIs plus row ceilings for reconciliation, PDFs, AI audit context, and signed exports.
 - CI readiness: lint, build, tests, mojibake check, frontend safety check, npm audit, Docker build workflow.
 
 ## Remaining Queue
@@ -36,7 +37,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 1. High: verify deployed production smoke after Render redeploy and Supabase migrations.
 2. High: add browser E2E tests for CA login, dashboard load, protected API access, export download, and payment-link denial without token.
 3. Medium: split large CA route and dashboard scripts into smaller modules after behavior is stable.
-4. Medium: add query pagination/bounds for report and export paths with larger ledgers.
+4. Medium: profile Supabase indexes and query plans against larger production-like ledger volumes.
 5. Medium: improve provider observability with structured error categories for Gemini, Anthropic, Meta, and Supabase.
 6. Low: label development-only diagnostic scripts and reduce raw data printing in local helper scripts.
 7. Low: add an operator runbook for deployment, migrations, smoke testing, rollback, and incident triage.

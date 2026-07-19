@@ -14,7 +14,12 @@ import {
   verifyPasswordAndMaybeMigrate,
 } from '../auth/caAuth';
 import { getClientById, getClientByPhone, createClient, updateClient } from '../db/clients';
-import { getTransactionsByDateRange, periodToDateRange, getTransactionsForMultipleClients } from '../db/transactions';
+import {
+  getTransactionsByDateRange,
+  getTransactionsByDateRangePage,
+  getTransactionsForMultipleClientsPage,
+  periodToDateRange,
+} from '../db/transactions';
 import { createCA, getCAByEmail, getCAById, getCAClients, getConsolidatedGSTRSummary, linkClientToCA } from '../db/cas';
 import { logAuditAction, getAuditLogs } from '../db/audit';
 import { streamCAReportPdf } from '../reports/caPdfReport';
@@ -28,11 +33,16 @@ import {
   normalizeGstin,
   normalizeIndianPhone,
   normalizeReportType,
+  parsePagination,
 } from '../utils/validation';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || 'dummy_key',
 });
+const DEFAULT_LEDGER_PAGE_LIMIT = 200;
+const MAX_LEDGER_PAGE_LIMIT = 1000;
+const MAX_REPORT_ROWS = 5000;
+const MAX_AI_AUDIT_ROWS = 500;
 
 async function logAuthAuditBestEffort(
   caId: string,
@@ -236,12 +246,19 @@ router.get('/api/ca/clients/:clientId/transactions', async (req, res) => {
   const caId = getAuthenticatedCAId(req);
   const { clientId } = req.params;
   const { period } = req.query as { period?: string };
+  const pagination = parsePagination(req.query, {
+    defaultLimit: DEFAULT_LEDGER_PAGE_LIMIT,
+    maxLimit: MAX_LEDGER_PAGE_LIMIT,
+  });
 
   if (!isUuid(clientId)) {
     return res.status(400).json({ error: 'Invalid client id' });
   }
   if (period && !isValidPeriod(period)) {
     return res.status(400).json({ error: 'Invalid period format. Expected YYYY-MM' });
+  }
+  if (!pagination) {
+    return res.status(400).json({ error: `Invalid pagination. limit must be 1-${MAX_LEDGER_PAGE_LIMIT} and offset must be 0 or greater.` });
   }
 
   try {
@@ -255,11 +272,17 @@ router.get('/api/ca/clients/:clientId/transactions', async (req, res) => {
     const targetPeriod = period || new Date().toISOString().substring(0, 7);
     const { startDate, endDate } = periodToDateRange(targetPeriod);
 
-    const transactions = await getTransactionsByDateRange(clientId, startDate, endDate);
+    const page = await getTransactionsByDateRangePage(clientId, startDate, endDate, pagination);
     return res.status(200).json({
       period: targetPeriod,
       client,
-      transactions,
+      transactions: page.data,
+      pagination: {
+        limit: page.limit,
+        offset: page.offset,
+        count: page.count,
+        hasMore: page.hasMore,
+      },
     });
   } catch (err: any) {
     console.error('Error fetching CA client transactions:', err.message);
@@ -288,7 +311,17 @@ router.get('/api/ca/clients/:clientId/reconciliation', async (req, res) => {
 
     const targetPeriod = period || new Date().toISOString().substring(0, 7);
     const { startDate, endDate } = periodToDateRange(targetPeriod);
-    const transactions = await getTransactionsByDateRange(clientId, startDate, endDate);
+    const page = await getTransactionsByDateRangePage(clientId, startDate, endDate, {
+      limit: MAX_REPORT_ROWS,
+      offset: 0,
+      ascending: true,
+    });
+    if (page.hasMore) {
+      return res.status(413).json({
+        error: `Reconciliation period contains more than ${MAX_REPORT_ROWS} transactions. Narrow the period before reconciling.`,
+      });
+    }
+    const transactions = page.data;
     const reconciliation = reconcileTransactions(transactions);
 
     return res.status(200).json({
@@ -348,7 +381,17 @@ router.get('/api/ca/reports/pdf', async (req, res) => {
 
     const targetPeriod = period || new Date().toISOString().substring(0, 7);
     const { startDate, endDate } = periodToDateRange(targetPeriod);
-    const transactions = await getTransactionsByDateRange(clientId, startDate, endDate);
+    const page = await getTransactionsByDateRangePage(clientId, startDate, endDate, {
+      limit: MAX_REPORT_ROWS,
+      offset: 0,
+      ascending: true,
+    });
+    if (page.hasMore) {
+      return res.status(413).json({
+        error: `Report period contains more than ${MAX_REPORT_ROWS} transactions. Narrow the period or export in batches.`,
+      });
+    }
+    const transactions = page.data;
     const ca = await getCAById(caId);
 
     await logAuditAction(caId, 'PDF_DOWNLOADED', `Generated ${safeReportType.toUpperCase()} PDF report for client: ${client.business_name || client.name}`, clientId);
@@ -432,8 +475,18 @@ router.post('/api/ca/audit/chat', async (req, res) => {
       ? period
       : new Date().toISOString().substring(0, 7);
     const { startDate, endDate } = periodToDateRange(targetPeriod);
-    const clientTransactions = await getTransactionsByDateRange(clientId, startDate, endDate);
-    const txString = JSON.stringify(clientTransactions);
+    const page = await getTransactionsByDateRangePage(clientId, startDate, endDate, {
+      limit: MAX_AI_AUDIT_ROWS,
+      offset: 0,
+      ascending: true,
+    });
+    const clientTransactions = page.data;
+    const txString = JSON.stringify({
+      transactions: clientTransactions,
+      truncated: page.hasMore,
+      totalCount: page.count,
+      includedRows: clientTransactions.length,
+    });
     
     // Log the audit query
     await logAuditAction(caId, 'AI_AUDIT_QUERY', `Audited client ${client.business_name || client.name}: "${message.substring(0, 50)}..."`, clientId);
@@ -458,7 +511,7 @@ router.post('/api/ca/audit/chat', async (req, res) => {
 The client's current transactions for the month are:
 ${txString}
 
-Analyze the transaction list and answer the user's question accurately. Focus on Indian tax laws, GSTR compliance, potential anomalies, duplicate transactions, missing invoices, and expense categorization. Be concise and professional.`,
+Analyze the transaction list and answer the user's question accurately. If truncated is true, clearly say the analysis is based on the included rows only. Focus on Indian tax laws, GSTR compliance, potential anomalies, duplicate transactions, missing invoices, and expense categorization. Be concise and professional.`,
         messages: [{ role: 'user', content: message }],
       });
 
@@ -563,15 +616,27 @@ I am ready to assist with auditing. You can ask me:
 router.get('/api/ca/transactions', async (req, res) => {
   const caId = getAuthenticatedCAId(req);
   const { period } = req.query as { period?: string };
+  const pagination = parsePagination(req.query, {
+    defaultLimit: DEFAULT_LEDGER_PAGE_LIMIT,
+    maxLimit: MAX_LEDGER_PAGE_LIMIT,
+  });
 
   if (period && !isValidPeriod(period)) {
     return res.status(400).json({ error: 'Invalid period format. Expected YYYY-MM' });
+  }
+  if (!pagination) {
+    return res.status(400).json({ error: `Invalid pagination. limit must be 1-${MAX_LEDGER_PAGE_LIMIT} and offset must be 0 or greater.` });
   }
 
   try {
     const clients = await getCAClients(caId);
     if (clients.length === 0) {
-      return res.status(200).json({ period: period || 'all', transactions: [] });
+      return res.status(200).json({
+        period: period || 'all',
+        count: 0,
+        transactions: [],
+        pagination: { ...pagination, count: 0, hasMore: false },
+      });
     }
 
     const clientIds = clients.map(c => c.id);
@@ -596,10 +661,10 @@ router.get('/api/ca/transactions', async (req, res) => {
       endDate = range.endDate;
     }
 
-    const transactions = await getTransactionsForMultipleClients(clientIds, startDate, endDate);
+    const page = await getTransactionsForMultipleClientsPage(clientIds, startDate, endDate, pagination);
 
     // Enrich transactions with client display info
-    const enriched = transactions.map(tx => ({
+    const enriched = page.data.map(tx => ({
       ...tx,
       client_name: clientMap[tx.client_id]?.business_name || clientMap[tx.client_id]?.name || 'Unknown',
       client_phone: clientMap[tx.client_id]?.phone || '',
@@ -609,6 +674,12 @@ router.get('/api/ca/transactions', async (req, res) => {
       period: period || new Date().toISOString().substring(0, 7),
       count: enriched.length,
       transactions: enriched,
+      pagination: {
+        limit: page.limit,
+        offset: page.offset,
+        count: page.count,
+        hasMore: page.hasMore,
+      },
     });
   } catch (err: any) {
     console.error('Error fetching aggregated CA transactions:', err.message);

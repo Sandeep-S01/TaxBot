@@ -45,3 +45,29 @@ export function normalizeReportType(value: unknown): 'pl' | 'gst' | null {
   const reportType = String(value || '').trim().toLowerCase();
   return reportType === 'pl' || reportType === 'gst' ? reportType : null;
 }
+
+export interface PaginationOptions {
+  limit: number;
+  offset: number;
+}
+
+export function parsePagination(
+  raw: { limit?: unknown; offset?: unknown },
+  defaults: { defaultLimit: number; maxLimit: number }
+): PaginationOptions | null {
+  const limit = raw.limit === undefined
+    ? defaults.defaultLimit
+    : Number(raw.limit);
+  const offset = raw.offset === undefined
+    ? 0
+    : Number(raw.offset);
+
+  if (!Number.isInteger(limit) || !Number.isInteger(offset)) {
+    return null;
+  }
+  if (limit < 1 || limit > defaults.maxLimit || offset < 0) {
+    return null;
+  }
+
+  return { limit, offset };
+}

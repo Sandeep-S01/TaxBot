@@ -12,6 +12,14 @@ interface DuplicateCheckOutcome {
   failed: boolean;
 }
 
+export interface TransactionPage {
+  data: Transaction[];
+  count: number | null;
+  limit: number;
+  offset: number;
+  hasMore: boolean;
+}
+
 export async function createTransaction(
   transaction: TransactionInsert
 ): Promise<Transaction> {
@@ -204,6 +212,37 @@ export async function getTransactionsByDateRange(
   }
 
   return data || [];
+}
+
+export async function getTransactionsByDateRangePage(
+  clientId: string,
+  startDate: string,
+  endDate: string,
+  options: { limit: number; offset?: number; ascending?: boolean }
+): Promise<TransactionPage> {
+  const limit = options.limit;
+  const offset = options.offset || 0;
+  const { data, error, count } = await supabase
+    .from('transactions')
+    .select('*', { count: 'exact' })
+    .eq('client_id', clientId)
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .order('date', { ascending: options.ascending ?? true })
+    .range(offset, offset + limit - 1);
+
+  if (error) {
+    console.error('Error fetching paginated transactions by date range:', error);
+    throw error;
+  }
+
+  return {
+    data: data || [],
+    count,
+    limit,
+    offset,
+    hasMore: count === null ? (data || []).length === limit : offset + (data || []).length < count,
+  };
 }
 
 // Convert YYYY-MM period to start/end dates
@@ -465,4 +504,39 @@ export async function getTransactionsForMultipleClients(
   }
 
   return data || [];
+}
+
+export async function getTransactionsForMultipleClientsPage(
+  clientIds: string[],
+  startDate: string,
+  endDate: string,
+  options: { limit: number; offset?: number }
+): Promise<TransactionPage> {
+  if (clientIds.length === 0) {
+    return { data: [], count: 0, limit: options.limit, offset: options.offset || 0, hasMore: false };
+  }
+
+  const limit = options.limit;
+  const offset = options.offset || 0;
+  const { data, error, count } = await supabase
+    .from('transactions')
+    .select('*', { count: 'exact' })
+    .in('client_id', clientIds)
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .order('date', { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error) {
+    console.error('Error fetching paginated transactions for multiple clients:', error);
+    throw error;
+  }
+
+  return {
+    data: data || [],
+    count,
+    limit,
+    offset,
+    hasMore: count === null ? (data || []).length === limit : offset + (data || []).length < count,
+  };
 }

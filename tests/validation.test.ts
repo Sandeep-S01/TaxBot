@@ -8,6 +8,7 @@ import {
   normalizeGstin,
   normalizeIndianPhone,
   normalizeReportType,
+  parsePagination,
 } from '../src/utils/validation';
 
 describe('request validation helpers', () => {
@@ -37,5 +38,14 @@ describe('request validation helpers', () => {
     expect(isValidPeriod('2026-13')).toBe(false);
     expect(normalizeReportType(' GST ')).toBe('gst');
     expect(normalizeReportType('trial')).toBeNull();
+  });
+
+  it('parses bounded pagination parameters', () => {
+    expect(parsePagination({}, { defaultLimit: 200, maxLimit: 1000 })).toEqual({ limit: 200, offset: 0 });
+    expect(parsePagination({ limit: '50', offset: '10' }, { defaultLimit: 200, maxLimit: 1000 })).toEqual({ limit: 50, offset: 10 });
+    expect(parsePagination({ limit: '1001' }, { defaultLimit: 200, maxLimit: 1000 })).toBeNull();
+    expect(parsePagination({ limit: '0' }, { defaultLimit: 200, maxLimit: 1000 })).toBeNull();
+    expect(parsePagination({ offset: '-1' }, { defaultLimit: 200, maxLimit: 1000 })).toBeNull();
+    expect(parsePagination({ limit: '10.5' }, { defaultLimit: 200, maxLimit: 1000 })).toBeNull();
   });
 });

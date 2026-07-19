@@ -4,7 +4,7 @@ import { validateExportToken } from '../handlers/commands/export';
 import { getClientById } from '../db/clients';
 import {
   getTransactionById,
-  getTransactionsByDateRange,
+  getTransactionsByDateRangePage,
   periodToDateRange,
 } from '../db/transactions';
 import { exportToCSV, exportToTallyXML } from '../utils/exporter';
@@ -12,6 +12,8 @@ import { escapeHtml } from '../utils/sanitize';
 import { validatePaymentToken } from '../utils/publicTokens';
 import { supabase } from '../db/client';
 import { isValidPeriod, isUuid } from '../utils/validation';
+
+const MAX_PUBLIC_EXPORT_ROWS = 5000;
 
 export function createPublicRoutes(downloadLimiter: RateLimitRequestHandler): Router {
   const router = Router();
@@ -92,7 +94,15 @@ export function createPublicRoutes(downloadLimiter: RateLimitRequestHandler): Ro
       }
 
       const { startDate, endDate } = periodToDateRange(period);
-      const transactions = await getTransactionsByDateRange(clientId, startDate, endDate);
+      const page = await getTransactionsByDateRangePage(clientId, startDate, endDate, {
+        limit: MAX_PUBLIC_EXPORT_ROWS,
+        offset: 0,
+        ascending: true,
+      });
+      if (page.hasMore) {
+        return res.status(413).send(`Export contains more than ${MAX_PUBLIC_EXPORT_ROWS} transactions. Narrow the period or request a paginated export from the CA console.`);
+      }
+      const transactions = page.data;
 
       if (format === 'csv') {
         const csvContent = exportToCSV(transactions);

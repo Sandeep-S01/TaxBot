@@ -55,3 +55,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Escaped browser-side Tally XML/CSV export content and expanded frontend safety checks for XML interpolation regressions.
 - Neutralized spreadsheet formula-leading values in server and browser CSV exports.
 - Added `PRODUCTION_READINESS_TRACKER.md` to track readiness targets, completed remediation, and the remaining severity queue.
+- Added bounded pagination metadata to CA transaction list APIs and row ceilings for reconciliation, PDF, AI audit context, and signed exports.
