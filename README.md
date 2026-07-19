@@ -172,7 +172,7 @@ The optional `scripts/tally_sync_connector.ts` helper authenticates against TaxB
 1. Apply pending SQL files from `supabase/migrations/` in order.
 2. Use `render.yaml` as the source of truth for Render build/start settings.
 3. Confirm Render uses `buildCommand: npm ci && npm run build` and `startCommand: npm start`.
-4. Confirm production env vars with `npm run check:env` in the deployed environment where possible.
+4. Confirm production env vars with `npm run check:env` in the deployed environment where possible; production URL values must use HTTPS.
 5. Redeploy Render from the latest `main` branch.
 6. Set `APP_ORIGIN` to the public HTTPS origin; WhatsApp export/payment links use this value.
 7. Verify `GET /health`, `GET /ready`, and `GET /version`; `/health` and `/version` should expose the expected non-secret commit/build metadata.

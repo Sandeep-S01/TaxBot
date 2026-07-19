@@ -10,7 +10,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 | --- | --- | --- | --- |
 | Architecture | 8/10 | In progress | App construction is separated from server startup; CA client/audit/report routes plus console utilities/charts/notifications are extracted; remaining work is dashboard feature decomposition. |
 | Code Quality | 8/10 | In progress | TypeScript gate is clean; CA route responsibilities and shared browser utilities/charts/notifications are split out; remaining work is dashboard feature cleanup. |
-| Security | 8/10 | In progress | JWT/Argon2, CSRF, webhook signatures, export tokens, env validation, log redaction, XML/CSV escaping are complete. |
+| Security | 8/10 | In progress | JWT/Argon2, CSRF, webhook signatures, export tokens, runtime/script env validation, log redaction, XML/CSV escaping are complete. |
 | Database | 8/10 | In progress | Ordered migrations, audit integrity, and production query indexes are complete; production migration execution must be verified per environment. |
 | GST Correctness | 8/10 | In progress | Regular-GST v1 scope, tax split, provenance, duplicate review, and partial-report visibility are implemented. |
 | AI Reliability | 8/10 | In progress | Extraction normalization, production audit fallback behavior, and provider-category logging are implemented. |
@@ -22,7 +22,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 ## Completed Remediation
 
 - Critical auth hardening: JWT sessions, Argon2 password storage, legacy SHA-256 migration, CSRF protection.
-- Production config hardening: secrets require long non-placeholder values, while public origins and Supabase URLs are validated as real HTTPS URLs.
+- Production config hardening: runtime and `npm run check:env` require long non-placeholder secrets, while public origins and Supabase URLs are validated as real HTTPS URLs.
 - Public link hardening: signed export/payment tokens and strict token validation.
 - HTTP hardening: Helmet, CORS controls, request limits, and route rate limits.
 - Webhook hardening: Meta signature verification, inbound email shared secret, idempotent WhatsApp message processing.

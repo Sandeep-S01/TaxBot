@@ -73,3 +73,4 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Added a compiled `dist/index.js` smoke test that verifies production artifact `/health`, `/version`, and `/ready` endpoints before deployment.
 - Added non-secret deployment fingerprint metadata to `/health` as well as `/version` for stale-deploy diagnosis.
 - Split production environment validation between HTTPS URL checks and long-random-secret checks, with focused test coverage.
+- Aligned `npm run check:env` with production URL and secret validation rules, including tests for HTTPS production origins.
