@@ -17,6 +17,16 @@ import { createCA, getCAByEmail, getCAById, getCAClients, getConsolidatedGSTRSum
 import { logAuditAction, getAuditLogs } from '../db/audit';
 import { streamCAReportPdf } from '../reports/caPdfReport';
 import { reconcileTransactions } from '../accounting/reconciliation';
+import {
+  isStrongPassword,
+  isValidEmail,
+  isValidPeriod,
+  isUuid,
+  normalizeEmail,
+  normalizeGstin,
+  normalizeIndianPhone,
+  normalizeReportType,
+} from '../utils/validation';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || 'dummy_key',
@@ -41,10 +51,17 @@ export function createCARoutes(authLimiter: RateLimitRequestHandler): Router {
 
 // 1. CA Registration
 router.post('/api/ca/register', authLimiter, async (req, res) => {
-  const { name, email, password, firmName } = req.body;
+  const { name, password, firmName } = req.body;
+  const email = normalizeEmail(req.body.email);
 
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'Missing required fields (name, email, password)' });
+  }
+  if (!isValidEmail(email)) {
+    return res.status(400).json({ error: 'Invalid email address' });
+  }
+  if (!isStrongPassword(password)) {
+    return res.status(400).json({ error: 'Password must be at least 10 characters and include letters and numbers' });
   }
 
   try {
@@ -76,10 +93,14 @@ router.post('/api/ca/register', authLimiter, async (req, res) => {
 
 // 2. CA Login
 router.post('/api/ca/login', authLimiter, async (req, res) => {
-  const { email, password } = req.body;
+  const email = normalizeEmail(req.body.email);
+  const { password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Missing email or password' });
+  }
+  if (!isValidEmail(email)) {
+    return res.status(400).json({ error: 'Invalid email address' });
   }
 
   try {
@@ -157,14 +178,16 @@ router.post('/api/ca/clients', async (req, res) => {
   if (!phone) {
     return res.status(400).json({ error: 'Missing phone number' });
   }
+  const cleanPhone = normalizeIndianPhone(phone);
+  if (!cleanPhone) {
+    return res.status(400).json({ error: 'Invalid Indian mobile phone number' });
+  }
+  const normalizedGstin = gstin ? normalizeGstin(gstin) : null;
+  if (gstin && !normalizedGstin) {
+    return res.status(400).json({ error: 'Invalid GSTIN format' });
+  }
 
   try {
-    // Standardize phone format
-    let cleanPhone = phone.trim().replace(/\D/g, '');
-    if (cleanPhone.length === 10) {
-      cleanPhone = '91' + cleanPhone;
-    }
-
     // Check if client already exists
     let client = await getClientByPhone(cleanPhone);
 
@@ -176,7 +199,7 @@ router.post('/api/ca/clients', async (req, res) => {
         client = await updateClient(client.id, {
           name: name || client.name,
           business_name: businessName || client.business_name,
-          gstin: gstin || client.gstin,
+          gstin: normalizedGstin || client.gstin,
           plan: plan || client.plan,
           gst_registered: gstRegistered !== undefined ? gstRegistered : client.gst_registered,
         });
@@ -187,7 +210,7 @@ router.post('/api/ca/clients', async (req, res) => {
       // Link and set other details
       client = await updateClient(newClient.id, {
         business_name: businessName || null,
-        gstin: gstin || null,
+        gstin: normalizedGstin,
         plan: plan || 'trial',
         gst_registered: gstRegistered || false,
         ca_id: caId,
@@ -211,6 +234,13 @@ router.get('/api/ca/clients/:clientId/transactions', async (req, res) => {
   const caId = getAuthenticatedCAId(req);
   const { clientId } = req.params;
   const { period } = req.query as { period?: string };
+
+  if (!isUuid(clientId)) {
+    return res.status(400).json({ error: 'Invalid client id' });
+  }
+  if (period && !isValidPeriod(period)) {
+    return res.status(400).json({ error: 'Invalid period format. Expected YYYY-MM' });
+  }
 
   try {
     // Verify client is managed by this CA
@@ -241,6 +271,13 @@ router.get('/api/ca/clients/:clientId/reconciliation', async (req, res) => {
   const { clientId } = req.params;
   const { period } = req.query as { period?: string };
 
+  if (!isUuid(clientId)) {
+    return res.status(400).json({ error: 'Invalid client id' });
+  }
+  if (period && !isValidPeriod(period)) {
+    return res.status(400).json({ error: 'Invalid period format. Expected YYYY-MM' });
+  }
+
   try {
     const client = await getClientById(clientId);
     if (!client || client.ca_id !== caId) {
@@ -268,6 +305,9 @@ router.get('/api/ca/reports/gst', async (req, res) => {
   const caId = getAuthenticatedCAId(req);
   const { period } = req.query as { period?: string };
 
+  if (period && !isValidPeriod(period)) {
+    return res.status(400).json({ error: 'Invalid period format. Expected YYYY-MM' });
+  }
   const targetPeriod = period || new Date().toISOString().substring(0, 7);
 
   try {
@@ -287,6 +327,16 @@ router.get('/api/ca/reports/pdf', async (req, res) => {
   if (!clientId || !reportType) {
     return res.status(400).json({ error: 'Missing required parameters: clientId and reportType' });
   }
+  if (!isUuid(clientId)) {
+    return res.status(400).json({ error: 'Invalid client id' });
+  }
+  const safeReportType = normalizeReportType(reportType);
+  if (!safeReportType) {
+    return res.status(400).json({ error: 'Invalid reportType. Expected pl or gst' });
+  }
+  if (period && !isValidPeriod(period)) {
+    return res.status(400).json({ error: 'Invalid period format. Expected YYYY-MM' });
+  }
 
   try {
     const client = await getClientById(clientId);
@@ -299,14 +349,14 @@ router.get('/api/ca/reports/pdf', async (req, res) => {
     const transactions = await getTransactionsByDateRange(clientId, startDate, endDate);
     const ca = await getCAById(caId);
 
-    await logAuditAction(caId, 'PDF_DOWNLOADED', `Generated ${reportType.toUpperCase()} PDF report for client: ${client.business_name || client.name}`, clientId);
+    await logAuditAction(caId, 'PDF_DOWNLOADED', `Generated ${safeReportType.toUpperCase()} PDF report for client: ${client.business_name || client.name}`, clientId);
 
     streamCAReportPdf({
       res,
       ca,
       client,
       transactions,
-      reportType,
+      reportType: safeReportType,
       targetPeriod,
     });
   } catch (err: any) {
@@ -353,6 +403,12 @@ router.post('/api/ca/audit/chat', async (req, res) => {
 
   if (!clientId || !message) {
     return res.status(400).json({ error: 'Missing required parameters: clientId and message' });
+  }
+  if (!isUuid(clientId)) {
+    return res.status(400).json({ error: 'Invalid client id' });
+  }
+  if (period && !isValidPeriod(period)) {
+    return res.status(400).json({ error: 'Invalid period format. Expected YYYY-MM' });
   }
 
   try {
@@ -489,6 +545,10 @@ I am ready to assist with auditing. You can ask me:
 router.get('/api/ca/transactions', async (req, res) => {
   const caId = getAuthenticatedCAId(req);
   const { period } = req.query as { period?: string };
+
+  if (period && !isValidPeriod(period)) {
+    return res.status(400).json({ error: 'Invalid period format. Expected YYYY-MM' });
+  }
 
   try {
     const clients = await getCAClients(caId);

@@ -13,6 +13,7 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Escaped high-risk CA dashboard render paths for API-derived client and transaction fields.
 - Required signed tokens for public customer payment pages instead of exposing details by raw transaction id.
 - Changed CA audit chat so the server fetches authorized ledger context instead of trusting browser-supplied transactions.
+- Added lightweight request validation for CA auth, client creation, report periods/types, UUID params, phone numbers, and GSTINs.
 
 ### Production Readiness
 - Added `META_APP_SECRET`, `APP_ORIGIN`, and `ALLOWED_ORIGINS` to the environment contract.
