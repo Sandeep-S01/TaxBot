@@ -47,6 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- Landing Page Metric Count-Up ---
+  setupMetricCounters();
+
   // --- Sidebar Mobile Toggle (Console Page) ---
   const sidebarToggle = document.getElementById('sidebar-toggle');
   const sidebar = document.querySelector('.sidebar');
@@ -85,6 +88,48 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   setupSecurityModals();
 });
+
+function setupMetricCounters() {
+  const counters = Array.from(document.querySelectorAll('.count-up'));
+  if (counters.length === 0) return;
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const runCounter = (counter) => {
+    const target = Number(counter.getAttribute('data-count') || counter.textContent || 0);
+    if (!Number.isFinite(target)) return;
+    if (prefersReducedMotion) {
+      counter.textContent = String(target);
+      return;
+    }
+
+    const durationMs = 700;
+    const startedAt = performance.now();
+    const tick = (now) => {
+      const progress = Math.min((now - startedAt) / durationMs, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      counter.textContent = String(Math.round(target * eased));
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      }
+    };
+    requestAnimationFrame(tick);
+  };
+
+  if (!('IntersectionObserver' in window)) {
+    counters.forEach(runCounter);
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      runCounter(entry.target);
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.35 });
+
+  counters.forEach((counter) => observer.observe(counter));
+}
 
 /**
  * Calculates and updates pricing display based on reseller tiers
