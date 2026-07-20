@@ -27,6 +27,7 @@ All notable product, security, and production-readiness changes to TaxBot are tr
 - Redacted WhatsApp/webhook/provider operational logs to avoid raw phone numbers and full upstream payloads.
 
 ### Production Readiness
+- Hardened WhatsApp text handling by cleaning the help reply and allowing webhook processing to continue if inbound idempotency storage is not yet migrated.
 - Aligned the landing page with the WhatsApp-first AI bookkeeping USP, softened unverifiable compliance/sync claims, and improved mobile navigation accessibility.
 - Added `META_APP_SECRET`, `APP_ORIGIN`, and `ALLOWED_ORIGINS` to the environment contract.
 - Added focused tests for webhook signature verification, cookie session auth, CSRF, and security config.

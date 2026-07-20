@@ -64,4 +64,32 @@ describe('inbound message idempotency helpers', () => {
     expect(result.claimed).toBe(false);
     expect(result.message?.status).toBe('processed');
   });
+
+  it('fails open when inbound idempotency storage has not been migrated yet', async () => {
+    const { claimInboundMessage, updateInboundMessageStatus } = await import('../src/db/inboundMessages');
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    single.mockResolvedValueOnce({
+      data: null,
+      error: { code: '42P01', message: 'relation "inbound_messages" does not exist' },
+    });
+
+    const result = await claimInboundMessage('wamid-2', '919876543210', 'text');
+
+    expect(result).toEqual({ message: null, claimed: true });
+
+    maybeSingle.mockResolvedValueOnce({
+      data: null,
+      error: { code: '42P01', message: 'relation "inbound_messages" does not exist' },
+    });
+    updateEq.mockResolvedValueOnce({
+      data: null,
+      error: { code: '42P01', message: 'relation "inbound_messages" does not exist' },
+    });
+
+    await expect(updateInboundMessageStatus('wamid-2', 'processing')).resolves.toBeUndefined();
+    expect(warnSpy).toHaveBeenCalled();
+
+    warnSpy.mockRestore();
+  });
 });

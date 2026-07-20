@@ -1,6 +1,8 @@
 import { supabase } from './client';
 import { InboundMessage, InboundMessageStatus, WhatsAppMessage } from '../types';
 
+const IDEMPOTENCY_STORAGE_UNAVAILABLE_CODES = new Set(['42P01', '42703']);
+
 export async function claimInboundMessage(
   metaMessageId: string,
   phone: string,
@@ -27,6 +29,14 @@ export async function claimInboundMessage(
     return { message: existing, claimed: false };
   }
 
+  if (isIdempotencyStorageUnavailable(error)) {
+    console.warn('Inbound message idempotency storage is unavailable; processing without duplicate protection:', {
+      code: error.code,
+      message: error.message,
+    });
+    return { message: null, claimed: true };
+  }
+
   console.error('Error claiming inbound message:', error);
   throw error;
 }
@@ -39,6 +49,14 @@ export async function getInboundMessageByMetaId(metaMessageId: string): Promise<
     .maybeSingle();
 
   if (error) {
+    if (isIdempotencyStorageUnavailable(error)) {
+      console.warn('Inbound message idempotency lookup skipped because storage is unavailable:', {
+        code: error.code,
+        message: error.message,
+      });
+      return null;
+    }
+
     console.error('Error fetching inbound message:', error);
     throw error;
   }
@@ -71,6 +89,13 @@ export async function updateInboundMessageStatus(
     .eq('meta_message_id', metaMessageId);
 
   if (error) {
+    if (isIdempotencyStorageUnavailable(error)) {
+      console.warn('Inbound message status update skipped because storage is unavailable:', {
+        code: error.code,
+        message: error.message,
+      });
+      return;
+    }
     console.error('Error updating inbound message status:', error);
     throw error;
   }
@@ -79,4 +104,8 @@ export async function updateInboundMessageStatus(
 async function nextAttemptCount(metaMessageId: string): Promise<number> {
   const existing = await getInboundMessageByMetaId(metaMessageId);
   return Number(existing?.attempts || 0) + 1;
+}
+
+function isIdempotencyStorageUnavailable(error: any): boolean {
+  return IDEMPOTENCY_STORAGE_UNAVAILABLE_CODES.has(String(error?.code || ''));
 }

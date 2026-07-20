@@ -50,6 +50,7 @@ Target: raise each production-readiness area to about 8/10 before declaring the 
 - Maintainability: CA console chart state, data shaping, and rendering are split into `public/js/console-charts.js` and loaded before `public/js/console.js`.
 - Maintainability: CA console notification state and rendering are split into `public/js/console-notifications.js` and loaded before `public/js/console.js`.
 - UI/UX readiness: main landing page messaging now matches the WhatsApp-first AI bookkeeping USP, avoids unsupported security/compliance/sync claims, and improves mobile navigation accessibility.
+- Reliability: WhatsApp help responses use clean ASCII-safe copy, and webhook processing now fails open if inbound idempotency storage is unavailable so ordinary replies do not break during migration drift.
 
 ## Remaining Queue
 
