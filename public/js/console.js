@@ -1468,14 +1468,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('taxbot_theme');
   if (savedTheme === 'dark') {
     document.body.classList.add('dark-theme');
+    document.documentElement.classList.add('dark');
     if (themeToggleIcon) {
       themeToggleIcon.setAttribute('data-lucide', 'sun');
     }
+  } else {
+    document.body.classList.remove('dark-theme');
+    document.documentElement.classList.remove('dark');
   }
 
   if (themeToggleBtn) {
     themeToggleBtn.onclick = () => {
       const isDark = document.body.classList.toggle('dark-theme');
+      document.documentElement.classList.toggle('dark', isDark);
       localStorage.setItem('taxbot_theme', isDark ? 'dark' : 'light');
       if (themeToggleIcon) {
         themeToggleIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');

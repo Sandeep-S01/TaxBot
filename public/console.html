@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -10,14 +10,14 @@
   <!-- Premium Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2-family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon-family=Material+Icons" rel="stylesheet"/>
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <script src="https://cdn.tailwindcss.com-plugins=forms,typography"></script>
 
   <script>
       tailwind.config = {
@@ -48,6 +48,11 @@
 
   <style>
     body { font-family: 'Space Grotesk', sans-serif; }
+
+    /* Ensure font matches globally */
+    * {
+      font-family: 'Space Grotesk', sans-serif !important;
+    }
 
     /* Dynamic active navigation overrides */
     .nav-link.active {
@@ -94,6 +99,14 @@
     .ws-tab-panel { display: none; }
     .ws-tab-panel.active { display: block; }
 
+    /* Left Sidebar widths & smooth transition */
+    #app-sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
     /* Sidebar collapsed styles */
     #app-sidebar.collapsed {
       width: 72px;
@@ -107,16 +120,24 @@
     }
     #app-sidebar.collapsed .sidebar-header {
       justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
     }
     #app-sidebar.collapsed .sidebar-collapse-btn {
       transform: rotate(180deg);
+      position: absolute;
+      right: -14px;
+      top: 18px;
+      z-index: 50;
     }
     #app-sidebar.collapsed .nav-link {
       justify-content: center;
       padding: 12px;
     }
     #app-sidebar.collapsed .sidebar-footer {
-      padding: 8px;
+      padding: 16px 8px;
+      display: flex;
+      justify-content: center;
     }
 
     /* Mobile drawer states */
@@ -128,7 +149,7 @@
         left: -280px;
         z-index: 50;
         width: 280px;
-        transition: left 0.3s ease;
+        transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       }
       #app-sidebar.drawer-open {
         left: 0;
@@ -200,32 +221,161 @@
       --text-muted: #4e656a;
     }
 
-    /* Legacy stylesheet fallback container rules to ensure backward-compatible table/cards display */
+    /* Cards & CRM containers layout definitions */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .card:hover {
+      border-color: rgba(41, 227, 193, 0.4);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* Dynamic Badges styling */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+    .badge-accent {
+      background-color: rgba(41, 227, 193, 0.15);
+      color: #29e3c1;
+    }
+    .badge-success {
+      background-color: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+    }
+    .badge-warning {
+      background-color: rgba(234, 179, 8, 0.15);
+      color: #eab308;
+    }
+    .badge-error {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+    .badge-info {
+      background-color: rgba(59, 130, 246, 0.15);
+      color: #3b82f6;
+    }
+    .badge-secondary {
+      background-color: rgba(156, 163, 175, 0.15);
+      color: #9ca3af;
+    }
+
+    /* Grid Layout for CRM Cards */
+    .clients-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .client-card-crm {
+      cursor: pointer;
+    }
+    .client-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .client-card-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .client-card-details {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .client-detail-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+    }
+    .client-detail-label {
+      color: var(--text-secondary);
+    }
+    .client-detail-value {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    /* Dynamic CRM/Ledger Table View styling */
     .data-table {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
+      text-align: left;
     }
     .data-table th {
-      font-weight: 600;
-      font-size: 13px;
-      padding: 12px 16px;
+      padding: 14px 16px;
+      font-size: 11px;
+      font-weight: 700;
       color: var(--text-secondary);
       border-bottom: 1px solid var(--border);
       background-color: var(--bg-app);
-      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
     .dark-theme .data-table th {
       background-color: #0e1a1d;
     }
     .data-table td {
       padding: 14px 16px;
-      font-size: 14px;
+      font-size: 13.5px;
       color: var(--text-primary);
       border-bottom: 1px solid var(--border);
+      transition: background-color 0.15s ease;
     }
-    .data-table tbody tr:hover {
-      background-color: rgba(41, 227, 193, 0.05);
+    .data-table tbody tr:hover td {
+      background-color: rgba(41, 227, 193, 0.04);
     }
+    .data-table td .client-meta-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+    .data-table td .client-name-cell {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .data-table td .client-gstin-cell {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Skeletons */
     .skeleton-line {
       height: 16px;
       background-color: var(--border);
@@ -234,14 +384,13 @@
     }
     .w-75 { width: 75%; }
     .w-50 { width: 50%; }
-
     @keyframes pulse {
       0% { opacity: 0.6; }
       50% { opacity: 1; }
       100% { opacity: 0.6; }
     }
 
-    /* Toast system styles matching console.js creation */
+    /* Toast notifications style */
     .toast-container {
       position: fixed;
       bottom: 24px;
@@ -272,7 +421,7 @@
       to { transform: translateY(0); opacity: 1; }
     }
 
-    /* Health visual bar */
+    /* Health visualizer bar */
     .health-visual-bar {
       display: flex;
       height: 8px;
@@ -287,6 +436,162 @@
     .health-bar-segment.healthy { background-color: var(--success); }
     .health-bar-segment.review { background-color: var(--warning); }
     .health-bar-segment.critical { background-color: var(--error); }
+
+    /* Action items (Overview & Client Dashboard) */
+    .action-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .action-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: var(--bg-app);
+      gap: 16px;
+    }
+    .action-item.border-error { border-left: 4px solid var(--error); }
+    .action-item.border-warning { border-left: 4px solid var(--warning); }
+    .action-item.border-primary { border-left: 4px solid var(--primary); }
+
+    .action-details {
+      display: flex;
+      flex-direction: column;
+    }
+    .action-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .action-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* WhatsApp activity feed stream */
+    .activity-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feed-item {
+      display: flex;
+      gap: 12px;
+      position: relative;
+    }
+    .feed-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 18px;
+      bottom: -22px;
+      width: 2px;
+      background-color: var(--border);
+    }
+    .feed-marker {
+      width: 14px;
+      height: 14px;
+      border-radius: 9999px;
+      margin-top: 4px;
+      flex-shrink: 0;
+      border: 2px solid var(--bg-card);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .feed-content {
+      display: flex;
+      flex-direction: column;
+    }
+    .feed-text {
+      font-size: 13.5px;
+      color: var(--text-primary);
+    }
+    .feed-time {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Settings User Row */
+    .user-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .user-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background-color: var(--bg-app);
+    }
+    .user-item-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-item-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Spotlight Command Bar results text contrast */
+    .command-result-group-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #8b9c9f;
+      padding: 8px 12px 4px 12px;
+      letter-spacing: 0.05em;
+    }
+    .command-result-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #f4fbfa;
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+    .command-result-item i, .command-result-item svg {
+      width: 16px;
+      height: 16px;
+      color: #8b9c9f;
+      flex-shrink: 0;
+    }
+    .command-result-item:hover, .command-result-item.selected {
+      background-color: rgba(41, 227, 193, 0.15);
+      color: #29e3c1;
+    }
+    .command-result-item:hover i, .command-result-item.selected i,
+    .command-result-item:hover svg, .command-result-item.selected svg {
+      color: #29e3c1;
+    }
+
+    body:not(.dark-theme) .command-result-item {
+      color: #111827;
+    }
+    body:not(.dark-theme) .command-result-item:hover, body:not(.dark-theme) .command-result-item.selected {
+      background-color: rgba(41, 227, 193, 0.1);
+      color: #14b8a6;
+    }
+
+    /* Helper Utilities */
+    .overflow-x {
+      overflow-x: auto;
+      width: 100%;
+    }
+    .form-input:focus, .form-select:focus {
+      border-color: rgba(41, 227, 193, 0.5) !important;
+      box-shadow: 0 0 0 2px rgba(41, 227, 193, 0.15) !important;
+    }
   </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 min-h-screen antialiased transition-colors duration-300">
@@ -340,7 +645,7 @@
       </form>
 
       <div class="auth-footer text-center mt-6 text-sm">
-        <span id="auth-switch-text" class="text-text-muted">Don't have a partner account?</span>
+        <span id="auth-switch-text" class="text-text-muted">Don't have a partner account-</span>
         <button id="btn-switch-auth" class="text-primary font-semibold hover:underline ml-1">Sign Up</button>
       </div>
     </div>
@@ -354,7 +659,7 @@
     <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 
     <!-- Left Sidebar -->
-    <aside class="app-sidebar w-64 border-r border-gray-200 dark:border-border-dark bg-white dark:bg-[#0a1114] flex flex-col h-screen transition-all duration-300 flex-shrink-0 z-40" id="app-sidebar">
+    <aside class="app-sidebar border-r border-gray-200 dark:border-border-dark bg-white dark:bg-[#0a1114] flex flex-col h-screen transition-all duration-300 flex-shrink-0 z-40" id="app-sidebar">
       <div class="sidebar-header flex items-center justify-between p-4 border-b border-gray-200 dark:border-border-dark h-16 flex-shrink-0">
         <div class="flex items-center space-x-2 brand-logo">
           <span class="material-icons text-primary">receipt_long</span>
@@ -572,7 +877,7 @@
                 <span class="text-xs font-bold tracking-wider text-text-muted uppercase kpi-label">Monthly Revenue</span>
                 <i data-lucide="credit-card" class="text-primary w-5 h-5 kpi-icon"></i>
               </div>
-              <div class="text-3xl font-bold text-gray-900 dark:text-white kpi-value" id="kpi-monthly-rev">â‚¹0</div>
+              <div class="text-3xl font-bold text-gray-900 dark:text-white kpi-value" id="kpi-monthly-rev">Rs. 0</div>
               <div class="text-xs font-semibold text-green-500 flex items-center space-x-1 mt-2 kpi-change">
                 <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> <span>+12.4% MoM</span>
               </div>
@@ -815,22 +1120,22 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-6 shadow-sm hover:border-primary/30 transition-colors">
               <div class="text-xs font-bold tracking-wider text-text-muted uppercase mb-1">Sales Revenue (Monthly)</div>
-              <div class="text-2xl font-bold text-primary" id="ws-kpi-sales">â‚¹0</div>
+              <div class="text-2xl font-bold text-primary" id="ws-kpi-sales">Rs. 0</div>
               <span class="text-xs text-green-500 flex items-center space-x-0.5 mt-1" id="ws-kpi-sales-change"><i data-lucide="trending-up" class="w-3 h-3"></i> <span>+18% vs last month</span></span>
             </div>
             <div class="bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-6 shadow-sm hover:border-primary/30 transition-colors">
               <div class="text-xs font-bold tracking-wider text-text-muted uppercase mb-1">Total Expenses (Monthly)</div>
-              <div class="text-2xl font-bold text-gray-500 dark:text-gray-400" id="ws-kpi-expenses">â‚¹0</div>
+              <div class="text-2xl font-bold text-gray-500 dark:text-gray-400" id="ws-kpi-expenses">Rs. 0</div>
               <span class="text-xs text-text-muted block mt-1">Auto-reconciled via OCR</span>
             </div>
             <div class="bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-6 shadow-sm hover:border-primary/30 transition-colors">
               <div class="text-xs font-bold tracking-wider text-text-muted uppercase mb-1">GST Payable (Net)</div>
-              <div class="text-2xl font-bold text-yellow-500" id="ws-kpi-gst-payable">â‚¹0</div>
+              <div class="text-2xl font-bold text-yellow-500" id="ws-kpi-gst-payable">Rs. 0</div>
               <span class="text-xs text-text-muted block mt-1">Based on sales transactions</span>
             </div>
             <div class="bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-6 shadow-sm hover:border-primary/30 transition-colors">
               <div class="text-xs font-bold tracking-wider text-text-muted uppercase mb-1">Input Tax Credit (ITC)</div>
-              <div class="text-2xl font-bold text-green-500" id="ws-kpi-itc">â‚¹0</div>
+              <div class="text-2xl font-bold text-green-500" id="ws-kpi-itc">Rs. 0</div>
               <span class="text-xs text-green-500 block mt-1" id="ws-kpi-itc-sub">Verified from GSTR-2B</span>
             </div>
           </div>
@@ -1027,7 +1332,7 @@
                     </p>
                     <ul class="list-disc pl-4 mt-2 text-xs text-text-muted space-y-1">
                       <li><em>"Check for anomalies or unverified items"</em></li>
-                      <li><em>"What is their GST liability and compliance status?"</em></li>
+                      <li><em>"What is their GST liability and compliance status-"</em></li>
                       <li><em>"Identify any duplicate entries"</em></li>
                     </ul>
                   </div>
@@ -1182,12 +1487,12 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-6 shadow-sm hover:border-primary/30 transition-colors">
               <div class="text-xs font-bold tracking-wider text-text-muted uppercase mb-1">GST Liability (Total)</div>
-              <div class="text-2xl font-bold text-yellow-500" id="gst-total-liability-metric">â‚¹0</div>
+              <div class="text-2xl font-bold text-yellow-500" id="gst-total-liability-metric">&#8377;0</div>
               <span class="text-xs text-text-muted mt-1 block">Accrued across active clients</span>
             </div>
             <div class="bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-6 shadow-sm hover:border-primary/30 transition-colors">
               <div class="text-xs font-bold tracking-wider text-text-muted uppercase mb-1">Input Tax Credit (Total)</div>
-              <div class="text-2xl font-bold text-green-500" id="gst-total-itc-metric">â‚¹0</div>
+              <div class="text-2xl font-bold text-green-500" id="gst-total-itc-metric">&#8377;0</div>
               <span class="text-xs text-text-muted mt-1 block">Matched from GSTR-2B logs</span>
             </div>
             <div class="bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-6 shadow-sm hover:border-primary/30 transition-colors">
@@ -1346,7 +1651,7 @@
 
                 <div class="billing-plan-info">
                   <div class="bg-primary/20 text-primary px-3 py-1.5 rounded text-xs font-semibold w-fit plan-hero-badge">Partner Premium Tiers</div>
-                  <h2 class="text-3xl font-bold text-gray-900 dark:text-white mt-4" id="billing-marginal-rate-display">â‚¹14,200 <span class="text-sm font-normal text-text-muted price-period">/ month</span></h2>
+                  <h2 class="text-3xl font-bold text-gray-900 dark:text-white mt-4" id="billing-marginal-rate-display">&#8377;14,200 <span class="text-sm font-normal text-text-muted price-period">/ month</span></h2>
                   <p class="text-xs text-text-muted mt-2 card-subtitle" id="billing-subtitle-count">Currently managing 142 clients on TaxBot Partner API.</p>
 
                   <div class="mt-6 space-y-2 billing-usage-progress">
@@ -1368,15 +1673,15 @@
                   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 reseller-tiers">
                     <div class="border border-gray-200 dark:border-border-dark rounded-xl p-4 bg-gray-50 dark:bg-[#0e1a1d] text-center reseller-tier-card" id="tier-1-card">
                       <span class="block text-xs font-bold text-text-muted uppercase tier-volume">1 - 9 Clients</span>
-                      <strong class="block text-sm font-bold text-gray-900 dark:text-white mt-2 tier-rate">â‚¹149 /mo per client</strong>
+                      <strong class="block text-sm font-bold text-gray-900 dark:text-white mt-2 tier-rate">&#8377;149 /mo per client</strong>
                     </div>
                     <div class="border border-gray-200 dark:border-border-dark rounded-xl p-4 bg-gray-50 dark:bg-[#0e1a1d] text-center reseller-tier-card" id="tier-2-card">
                       <span class="block text-xs font-bold text-text-muted uppercase tier-volume">10 - 49 Clients</span>
-                      <strong class="block text-sm font-bold text-gray-900 dark:text-white mt-2 tier-rate">â‚¹119 /mo per client</strong>
+                      <strong class="block text-sm font-bold text-gray-900 dark:text-white mt-2 tier-rate">&#8377;119 /mo per client</strong>
                     </div>
                     <div class="border border-gray-200 dark:border-border-dark rounded-xl p-4 bg-gray-50 dark:bg-[#0e1a1d] text-center reseller-tier-card" id="tier-3-card">
                       <span class="block text-xs font-bold text-text-muted uppercase tier-volume">50+ Clients</span>
-                      <strong class="block text-sm font-bold text-gray-900 dark:text-white mt-2 tier-rate">â‚¹99 /mo per client</strong>
+                      <strong class="block text-sm font-bold text-gray-900 dark:text-white mt-2 tier-rate">&#8377;99 /mo per client</strong>
                     </div>
                   </div>
                 </div>
@@ -1395,7 +1700,7 @@
                   <div class="flex items-center space-x-2 text-sm"><i data-lucide="check" class="text-primary w-4 h-4"></i> <span>24-hour SLA Support desk</span></div>
                 </div>
 
-                <button class="bg-primary text-background-dark font-semibold py-3 rounded-lg text-sm w-full mt-8 hover:opacity-90 transition-opacity" id="btn-upgrade-firm-plan">Upgrade to Enterprise (â‚¹25,000/mo)</button>
+                <button class="bg-primary text-background-dark font-semibold py-3 rounded-lg text-sm w-full mt-8 hover:opacity-90 transition-opacity" id="btn-upgrade-firm-plan">Upgrade to Enterprise (&#8377;25,000/mo)</button>
               </div>
             </div>
           </div>
@@ -1522,7 +1827,7 @@
         <!-- JS inserts suggestions -->
       </div>
       <div class="px-4 py-3 border-t border-border-dark bg-[#0e1a1d] text-xs text-text-muted flex justify-between items-center command-bar-footer">
-        <span>Use <kbd class="bg-[#1a2b30] border border-border-dark rounded px-1 py-0.5 font-mono">â†‘</kbd> <kbd class="bg-[#1a2b30] border border-border-dark rounded px-1 py-0.5 font-mono">â†“</kbd> to navigate, <kbd class="bg-[#1a2b30] border border-border-dark rounded px-1 py-0.5 font-mono">Enter</kbd> to execute, <kbd class="bg-[#1a2b30] border border-border-dark rounded px-1 py-0.5 font-mono">Esc</kbd> to close.</span>
+        <span>Use <kbd class="bg-[#1a2b30] border border-border-dark rounded px-1 py-0.5 font-mono">&uarr;</kbd> <kbd class="bg-[#1a2b30] border border-border-dark rounded px-1 py-0.5 font-mono">&darr;</kbd> to navigate, <kbd class="bg-[#1a2b30] border border-border-dark rounded px-1 py-0.5 font-mono">Enter</kbd> to execute, <kbd class="bg-[#1a2b30] border border-border-dark rounded px-1 py-0.5 font-mono">Esc</kbd> to close.</span>
         <span>Powered by TaxBot AI</span>
       </div>
     </div>
@@ -1558,11 +1863,11 @@
             <select id="new-client-plan" class="w-full bg-[#0e1a1d] border border-border-dark rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50 text-white form-select">
               <option value="trial">Trial Plan (14d)</option>
               <option value="starter">Starter Plan</option>
-              <option value="pro" selected>Pro Reseller Plan (â‚¹100/mo)</option>
+              <option value="pro" selected>Pro Reseller Plan (&#8377;100/mo)</option>
             </select>
           </div>
           <div>
-            <label for="new-client-gst-registered" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">GST Registered?</label>
+            <label for="new-client-gst-registered" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">GST Registered-</label>
             <select id="new-client-gst-registered" class="w-full bg-[#0e1a1d] border border-border-dark rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50 text-white form-select">
               <option value="true" selected>Yes</option>
               <option value="false">No</option>
