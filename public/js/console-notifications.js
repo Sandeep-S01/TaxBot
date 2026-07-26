@@ -63,16 +63,16 @@ function renderNotificationsList() {
 
   list.innerHTML = globalNotifications.map(n => {
     let icon = 'bell';
-    let iconClass = 'bg-primary-light text-primary';
-    if (n.title.includes('Mismatch')) {
+    let iconClass = 'notification-info';
+    if (n.type === 'critical' || n.title.includes('Mismatch')) {
       icon = 'alert-triangle';
-      iconClass = 'bg-danger-light text-error';
-    } else if (n.title.includes('Voice')) {
+      iconClass = 'notification-critical';
+    } else if (n.type === 'success' || n.title.includes('Voice')) {
       icon = 'mic';
-      iconClass = 'bg-success-light text-success';
-    } else if (n.title.includes('Ready')) {
+      iconClass = 'notification-success';
+    } else if (n.type === 'warning' || n.title.includes('Ready')) {
       icon = 'check-circle';
-      iconClass = 'bg-warning-light text-warning';
+      iconClass = 'notification-warning';
     }
 
     return `
@@ -106,17 +106,19 @@ function renderNotificationsList() {
 }
 
 function setupMockNotifications() {
-  const acme = globalClientsList.find(c => c.name.toLowerCase().includes('acme')) || globalClientsList[0];
-  const patel = globalClientsList.find(c => c.name.toLowerCase().includes('patel')) || globalClientsList[1] || globalClientsList[0];
-  const sharma = globalClientsList.find(c => c.name.toLowerCase().includes('sharma')) || globalClientsList[2] || globalClientsList[0];
+  const clientName = (c) => String(c?.name || c?.business_name || c?.clientName || '');
+  const acme = globalClientsList.find(c => clientName(c).toLowerCase().includes('acme')) || globalClientsList[0];
+  const patel = globalClientsList.find(c => clientName(c).toLowerCase().includes('patel')) || globalClientsList[1] || globalClientsList[0];
+  const sharma = globalClientsList.find(c => clientName(c).toLowerCase().includes('sharma')) || globalClientsList[2] || globalClientsList[0];
 
   globalNotifications = [
     {
       id: 'notif-1',
       title: 'GST ITC Mismatch Detected',
-      desc: `Mismatched GSTR-2B purchase invoices for ${acme ? acme.name : 'Acme Corp'} (INR 45,200).`,
+      desc: `Mismatched GSTR-2B purchase invoices for ${acme ? clientName(acme) : 'Acme Corp'} (INR 45,200).`,
       time: '10m ago',
       unread: true,
+      type: 'critical',
       action: () => {
         if (acme) {
           window.location.hash = `client/${acme.id}`;
@@ -128,9 +130,10 @@ function setupMockNotifications() {
     {
       id: 'notif-2',
       title: 'New Client Voice Note',
-      desc: `Voice note file processed for ${patel ? patel.name : 'Patel Kirana Store'}.`,
+      desc: `Voice note file processed for ${patel ? clientName(patel) : 'Patel Kirana Store'}.`,
       time: '1h ago',
       unread: true,
+      type: 'success',
       action: () => {
         if (patel) {
           activeClientId = patel.id;
@@ -147,9 +150,10 @@ function setupMockNotifications() {
     {
       id: 'notif-3',
       title: 'GSTR-1 Ready to File',
-      desc: `Ledger check 100% complete for ${sharma ? sharma.name : 'Sandeep Sharma'}.`,
+      desc: `Ledger check 100% complete for ${sharma ? clientName(sharma) : 'Sandeep Sharma'}.`,
       time: '3h ago',
       unread: false,
+      type: 'warning',
       action: () => {
         if (sharma) {
           window.location.hash = `client/${sharma.id}`;

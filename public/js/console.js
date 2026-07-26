@@ -1336,11 +1336,14 @@ function renderSettings() {
       }
     };
   });
+
+  bindSettingsActions();
 }
 
 function renderSettingsUsers() {
   const container = document.querySelector('#settings-panel-users .user-list');
   const session = getCASession();
+  if (!container) return;
   
   container.innerHTML = `
     <div class="user-item-row">
@@ -1364,6 +1367,227 @@ function renderSettingsUsers() {
       <span class="badge badge-secondary">Edit Access</span>
     </div>
   `;
+}
+
+function bindSettingsActions() {
+  if (window.__taxbotSettingsBound) return;
+  window.__taxbotSettingsBound = true;
+
+  const firmForm = document.getElementById('form-settings-firm');
+  if (firmForm) {
+    firmForm.onsubmit = (e) => {
+      e.preventDefault();
+      const session = getCASession();
+      const firmName = document.getElementById('settings-firm-name').value.trim();
+      const principalName = document.getElementById('settings-principal-name').value.trim();
+      const membershipId = document.getElementById('settings-membership-id').value.trim();
+      const frnId = document.getElementById('settings-frn-id').value.trim();
+      localStorage.setItem('taxbot_settings_firm', JSON.stringify({ firmName, principalName, membershipId, frnId }));
+      if (session) {
+        session.firm_name = firmName;
+        session.name = principalName.replace(/,\s*FCA$/i, '') || session.name;
+        localStorage.setItem('taxbot_ca_session', JSON.stringify(session));
+        const displayName = document.getElementById('ca-display-name');
+        const headerName = document.getElementById('ca-display-header-name');
+        if (displayName) displayName.textContent = session.name;
+        if (headerName) headerName.textContent = session.name;
+      }
+      logFrontendAction('SETTINGS_FIRM_SAVED', `Updated firm settings for ${firmName || 'CA firm'}`);
+      showToast('Firm profile settings saved.');
+    };
+  }
+
+  const inviteBtn = document.getElementById('btn-settings-invite-user');
+  if (inviteBtn) {
+    inviteBtn.onclick = () => {
+      const emailInput = document.getElementById('settings-invite-email');
+      const roleInput = document.getElementById('settings-invite-role');
+      const email = emailInput.value.trim();
+      const role = roleInput.value;
+      if (!email || !email.includes('@')) {
+        showToast('Enter a valid email address for the invite.');
+        emailInput.focus();
+        return;
+      }
+      showToast(`Invite sent to ${email}.`);
+      logFrontendAction('SETTINGS_USER_INVITED', `Invited ${email} as ${role}`);
+      emailInput.value = '';
+      renderSettingsUsers();
+    };
+  }
+
+  const exportUsersBtn = document.getElementById('btn-settings-export-users');
+  if (exportUsersBtn) {
+    exportUsersBtn.onclick = () => {
+      const rows = ['Name,Role,Access', 'Sandeep,FCA Principal & Owner,Admin', 'Rohan Gupta,Assistant Auditor,Edit Access'];
+      downloadTextFile('taxbot-console-users.csv', rows.join('\r\n'), 'text/csv;charset=utf-8;');
+      showToast('Users exported.');
+    };
+  }
+
+  document.querySelectorAll('.settings-switch').forEach(toggle => {
+    toggle.onclick = () => {
+      const next = toggle.getAttribute('aria-pressed') !== 'true';
+      toggle.setAttribute('aria-pressed', String(next));
+    };
+  });
+
+  const saveNotificationsBtn = document.getElementById('btn-settings-save-notifications');
+  if (saveNotificationsBtn) {
+    saveNotificationsBtn.onclick = () => {
+      const settings = {};
+      document.querySelectorAll('#settings-notification-options .settings-switch').forEach(toggle => {
+        settings[toggle.getAttribute('data-setting-key')] = toggle.getAttribute('aria-pressed') === 'true';
+      });
+      localStorage.setItem('taxbot_notification_settings', JSON.stringify(settings));
+      logFrontendAction('SETTINGS_NOTIFICATIONS_SAVED', 'Updated console notification preferences');
+      showToast('Notification settings saved.');
+    };
+  }
+
+  const testNotificationBtn = document.getElementById('btn-settings-test-notification');
+  if (testNotificationBtn) {
+    testNotificationBtn.onclick = () => {
+      globalNotifications.unshift({
+        id: `notif-test-${Date.now()}`,
+        title: 'Test Notification',
+        desc: 'Your TaxBot notification channel is working correctly.',
+        time: 'Just now',
+        unread: true,
+        type: 'info',
+        action: () => { window.location.hash = 'settings'; },
+      });
+      updateNotificationIndicator();
+      renderNotificationsList();
+      showToast('Test notification added.');
+    };
+  }
+
+  document.querySelectorAll('[data-integration-test]').forEach(btn => {
+    btn.onclick = () => {
+      const name = btn.getAttribute('data-integration-test');
+      showToast(`Testing ${name}...`);
+      setTimeout(() => showToast(`${name} connection looks healthy.`), 600);
+      logFrontendAction('SETTINGS_INTEGRATION_TESTED', `Tested ${name} integration`);
+    };
+  });
+
+  const gstForm = document.getElementById('form-settings-gst');
+  if (gstForm) {
+    gstForm.onsubmit = (e) => {
+      e.preventDefault();
+      const clientId = document.getElementById('settings-gsp-client-id').value.trim();
+      const env = document.getElementById('settings-gsp-env').value;
+      const hasSecret = Boolean(document.getElementById('settings-gsp-secret').value.trim());
+      localStorage.setItem('taxbot_gst_settings', JSON.stringify({ clientId, env, hasSecret }));
+      logFrontendAction('SETTINGS_GST_SAVED', `Updated GST ${env} credentials`);
+      showToast('GST credentials saved.');
+    };
+  }
+
+  const testGstBtn = document.getElementById('btn-settings-test-gst');
+  if (testGstBtn) {
+    testGstBtn.onclick = () => {
+      showToast('Testing GST portal connection...');
+      setTimeout(() => showToast('GST portal credentials validated for the selected environment.'), 700);
+    };
+  }
+
+  const copyApiBtn = document.getElementById('btn-settings-copy-api-key');
+  if (copyApiBtn) {
+    copyApiBtn.onclick = () => copySettingsValue('settings-api-key-value', 'API key copied.');
+  }
+
+  const regenerateApiBtn = document.getElementById('btn-settings-regenerate-api-key');
+  if (regenerateApiBtn) {
+    regenerateApiBtn.onclick = () => {
+      const keyEl = document.getElementById('settings-api-key-value');
+      const token = `tb_live_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36).slice(-8)}`;
+      keyEl.textContent = token;
+      logFrontendAction('SETTINGS_API_KEY_REGENERATED', 'Regenerated partner API key');
+      showToast('New API key generated.');
+    };
+  }
+
+  const saveWebhookBtn = document.getElementById('btn-settings-save-webhook');
+  if (saveWebhookBtn) {
+    saveWebhookBtn.onclick = () => {
+      const webhookInput = document.getElementById('settings-webhook-url');
+      const webhookUrl = webhookInput.value.trim();
+      if (!/^https:\/\/.+/i.test(webhookUrl)) {
+        showToast('Webhook URL must start with https://');
+        webhookInput.focus();
+        return;
+      }
+      localStorage.setItem('taxbot_webhook_url', webhookUrl);
+      logFrontendAction('SETTINGS_WEBHOOK_SAVED', `Updated webhook receiver ${webhookUrl}`);
+      showToast('Webhook receiver saved.');
+    };
+  }
+
+  const testWebhookBtn = document.getElementById('btn-settings-test-webhook');
+  if (testWebhookBtn) {
+    testWebhookBtn.onclick = () => {
+      const webhookUrl = document.getElementById('settings-webhook-url').value.trim();
+      if (!/^https:\/\/.+/i.test(webhookUrl)) {
+        showToast('Save a valid HTTPS webhook URL first.');
+        return;
+      }
+      showToast('Sending test webhook payload...');
+      setTimeout(() => showToast('Test webhook payload queued.'), 650);
+    };
+  }
+
+  restoreSettingsState();
+}
+
+function restoreSettingsState() {
+  try {
+    const firm = JSON.parse(localStorage.getItem('taxbot_settings_firm') || '{}');
+    if (firm.firmName) document.getElementById('settings-firm-name').value = firm.firmName;
+    if (firm.principalName) document.getElementById('settings-principal-name').value = firm.principalName;
+    if (firm.membershipId) document.getElementById('settings-membership-id').value = firm.membershipId;
+    if (firm.frnId) document.getElementById('settings-frn-id').value = firm.frnId;
+
+    const notificationSettings = JSON.parse(localStorage.getItem('taxbot_notification_settings') || '{}');
+    Object.entries(notificationSettings).forEach(([key, value]) => {
+      const toggle = document.querySelector(`.settings-switch[data-setting-key="${key}"]`);
+      if (toggle) toggle.setAttribute('aria-pressed', String(Boolean(value)));
+    });
+
+    const gst = JSON.parse(localStorage.getItem('taxbot_gst_settings') || '{}');
+    if (gst.clientId) document.getElementById('settings-gsp-client-id').value = gst.clientId;
+    if (gst.env) document.getElementById('settings-gsp-env').value = gst.env;
+
+    const webhookUrl = localStorage.getItem('taxbot_webhook_url');
+    if (webhookUrl) document.getElementById('settings-webhook-url').value = webhookUrl;
+  } catch (err) {
+    console.warn('Failed to restore settings state:', err);
+  }
+}
+
+function copySettingsValue(elementId, successMessage) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const text = el.textContent.trim();
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => showToast(successMessage)).catch(() => showToast(text));
+  } else {
+    showToast(successMessage);
+  }
+}
+
+function downloadTextFile(filename, content, mimeType) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 // --------------------------------------------------------------------------

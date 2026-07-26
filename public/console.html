@@ -503,6 +503,229 @@
       border-color: var(--border) !important;
     }
 
+    #notifications-dropdown-menu {
+      width: min(360px, calc(100vw - 32px)) !important;
+      border-radius: 12px !important;
+      overflow: hidden;
+    }
+
+    #notifications-list {
+      padding: 8px !important;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .notification-item {
+      display: grid;
+      grid-template-columns: 36px minmax(0, 1fr);
+      gap: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .notification-item:hover {
+      background-color: var(--bg-app);
+      border-color: var(--border);
+    }
+
+    .notification-item.unread {
+      background-color: var(--primary-light);
+      border-color: rgba(20, 184, 166, 0.24);
+    }
+
+    .notification-icon-wrap {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .notification-icon-wrap svg,
+    .notification-icon-wrap i {
+      width: 15px !important;
+      height: 15px !important;
+    }
+
+    .notification-content {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .notification-title {
+      color: var(--text-primary);
+      font-size: 13px;
+      line-height: 1.3;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .notification-desc {
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .notification-time {
+      color: var(--text-muted);
+      font-size: 11px;
+      line-height: 1.3;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .notification-critical {
+      background-color: rgba(220, 38, 38, 0.1);
+      color: #dc2626;
+    }
+
+    .notification-success {
+      background-color: rgba(21, 128, 61, 0.1);
+      color: #15803d;
+    }
+
+    .notification-warning {
+      background-color: rgba(180, 83, 9, 0.12);
+      color: #b45309;
+    }
+
+    .notification-info {
+      background-color: var(--primary-light);
+      color: var(--primary-hover);
+    }
+
+    .settings-action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .settings-field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .settings-option-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .settings-option-row:last-child {
+      border-bottom: 0;
+    }
+
+    .settings-option-title {
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .settings-option-desc {
+      color: var(--text-secondary);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .settings-switch {
+      width: 42px;
+      height: 24px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background-color: #cbd5e1;
+      position: relative;
+      flex-shrink: 0;
+      transition: background-color 0.15s ease;
+    }
+
+    .settings-switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      background-color: #ffffff;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.2);
+      transition: transform 0.15s ease;
+    }
+
+    .settings-switch[aria-pressed="true"] {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .settings-switch[aria-pressed="true"]::after {
+      transform: translateX(18px);
+    }
+
+    .settings-status-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background-color: var(--bg-app);
+    }
+
+    .settings-secondary-btn {
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      background-color: var(--bg-card);
+      font-weight: 700;
+      font-size: 13px;
+      padding: 10px 14px;
+      border-radius: 9px;
+    }
+
+    .settings-secondary-btn:hover {
+      color: var(--text-primary);
+      background-color: var(--bg-app);
+    }
+
+    .settings-primary-btn {
+      background-color: var(--primary);
+      color: #042f2e;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 10px 14px;
+      border-radius: 9px;
+    }
+
+    @media (max-width: 768px) {
+      .settings-field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .settings-option-row,
+      .settings-status-card {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
     body.dark-theme .sidebar-footer {
       background-color: #071113 !important;
       border-color: var(--border) !important;
@@ -2278,6 +2501,24 @@
               <div class="settings-panel" id="settings-panel-users">
                 <h3 class="font-bold text-gray-900 dark:text-white text-base">Users &amp; Permissions</h3>
                 <p class="text-xs text-text-muted mt-1 card-subtitle">Invite your assistants, auditors, and staff members.</p>
+                <div class="settings-field-grid mt-6">
+                  <div>
+                    <label for="settings-invite-email" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">Invite Email</label>
+                    <input type="email" id="settings-invite-email" placeholder="assistant@firm.com" class="w-full bg-gray-50 dark:bg-[#0e1a1d] border border-gray-200 dark:border-border-dark rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary/50 text-gray-900 dark:text-white form-input">
+                  </div>
+                  <div>
+                    <label for="settings-invite-role" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">Role</label>
+                    <select id="settings-invite-role" class="w-full bg-gray-50 dark:bg-[#0e1a1d] border border-gray-200 dark:border-border-dark rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary/50 text-gray-900 dark:text-white form-select">
+                      <option value="Assistant Auditor">Assistant Auditor</option>
+                      <option value="Billing Manager">Billing Manager</option>
+                      <option value="Read-only Reviewer">Read-only Reviewer</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="settings-action-row">
+                  <button type="button" class="settings-primary-btn" id="btn-settings-invite-user">Send Invite</button>
+                  <button type="button" class="settings-secondary-btn" id="btn-settings-export-users">Export Users</button>
+                </div>
                 <div class="user-list mt-6 space-y-4">
                   <!-- JS will dynamically populate user list -->
                 </div>
@@ -2287,24 +2528,115 @@
               <div class="settings-panel" id="settings-panel-notifications">
                 <h3 class="font-bold text-gray-900 dark:text-white text-base">Notifications Settings</h3>
                 <p class="text-xs text-text-muted mt-1 card-subtitle">Manage WhatsApp trigger alerts and document review notifications.</p>
+                <div class="mt-6" id="settings-notification-options">
+                  <div class="settings-option-row">
+                    <div>
+                      <div class="settings-option-title">GST mismatch alerts</div>
+                      <div class="settings-option-desc">Notify when GSTR-2B matching needs CA review.</div>
+                    </div>
+                    <button type="button" class="settings-switch" aria-pressed="true" data-setting-key="gstMismatch" aria-label="Toggle GST mismatch alerts"></button>
+                  </div>
+                  <div class="settings-option-row">
+                    <div>
+                      <div class="settings-option-title">New WhatsApp document alerts</div>
+                      <div class="settings-option-desc">Notify when clients send invoices, receipts, PDFs, or voice notes.</div>
+                    </div>
+                    <button type="button" class="settings-switch" aria-pressed="true" data-setting-key="documentAlerts" aria-label="Toggle document alerts"></button>
+                  </div>
+                  <div class="settings-option-row">
+                    <div>
+                      <div class="settings-option-title">Daily filing digest</div>
+                      <div class="settings-option-desc">Send a daily summary of pending filings and failed automations.</div>
+                    </div>
+                    <button type="button" class="settings-switch" aria-pressed="false" data-setting-key="dailyDigest" aria-label="Toggle daily digest"></button>
+                  </div>
+                </div>
+                <div class="settings-action-row">
+                  <button type="button" class="settings-primary-btn" id="btn-settings-save-notifications">Save Notification Settings</button>
+                  <button type="button" class="settings-secondary-btn" id="btn-settings-test-notification">Send Test Notification</button>
+                </div>
               </div>
 
               <!-- Tab Panel: Integrations -->
               <div class="settings-panel" id="settings-panel-integrations">
                 <h3 class="font-bold text-gray-900 dark:text-white text-base">System Integrations</h3>
                 <p class="text-xs text-text-muted mt-1 card-subtitle">Manage API integrations with bank feeds, Zoho Books, and GST Portal API.</p>
+                <div class="mt-6 space-y-3">
+                  <div class="settings-status-card">
+                    <div>
+                      <div class="settings-option-title">WhatsApp Business Capture</div>
+                      <div class="settings-option-desc">Connected to the TaxBot ingestion webhook.</div>
+                    </div>
+                    <button type="button" class="settings-secondary-btn" data-integration-test="WhatsApp Business Capture">Test</button>
+                  </div>
+                  <div class="settings-status-card">
+                    <div>
+                      <div class="settings-option-title">Zoho Books Export</div>
+                      <div class="settings-option-desc">Ready for CSV and journal package handoff.</div>
+                    </div>
+                    <button type="button" class="settings-secondary-btn" data-integration-test="Zoho Books Export">Test</button>
+                  </div>
+                  <div class="settings-status-card">
+                    <div>
+                      <div class="settings-option-title">Tally Prime XML</div>
+                      <div class="settings-option-desc">Available for client-level XML package generation.</div>
+                    </div>
+                    <button type="button" class="settings-secondary-btn" data-integration-test="Tally Prime XML">Test</button>
+                  </div>
+                </div>
               </div>
 
               <!-- Tab Panel: GST Settings -->
               <div class="settings-panel" id="settings-panel-gst-settings">
                 <h3 class="font-bold text-gray-900 dark:text-white text-base">GST Portal Credentials</h3>
                 <p class="text-xs text-text-muted mt-1 card-subtitle">Configure your ASP/GSP client IDs to query GSTR-2B data directly.</p>
+                <form class="settings-form mt-6 space-y-4" id="form-settings-gst">
+                  <div class="settings-field-grid">
+                    <div>
+                      <label for="settings-gsp-client-id" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">GSP Client ID</label>
+                      <input type="text" id="settings-gsp-client-id" placeholder="gsp_client_live_..." class="w-full bg-gray-50 dark:bg-[#0e1a1d] border border-gray-200 dark:border-border-dark rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary/50 text-gray-900 dark:text-white form-input">
+                    </div>
+                    <div>
+                      <label for="settings-gsp-env" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">Environment</label>
+                      <select id="settings-gsp-env" class="w-full bg-gray-50 dark:bg-[#0e1a1d] border border-gray-200 dark:border-border-dark rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary/50 text-gray-900 dark:text-white form-select">
+                        <option value="sandbox">Sandbox</option>
+                        <option value="production">Production</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="settings-gsp-secret" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">GSP Client Secret</label>
+                    <input type="password" id="settings-gsp-secret" placeholder="Stored securely on server" class="w-full bg-gray-50 dark:bg-[#0e1a1d] border border-gray-200 dark:border-border-dark rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary/50 text-gray-900 dark:text-white form-input">
+                  </div>
+                  <div class="settings-action-row">
+                    <button type="submit" class="settings-primary-btn">Save GST Credentials</button>
+                    <button type="button" class="settings-secondary-btn" id="btn-settings-test-gst">Test GST Connection</button>
+                  </div>
+                </form>
               </div>
 
               <!-- Tab Panel: API -->
               <div class="settings-panel" id="settings-panel-api">
                 <h3 class="font-bold text-gray-900 dark:text-white text-base">Developer API Keys</h3>
                 <p class="text-xs text-text-muted mt-1 card-subtitle">Create webhooks to consume auto-categorized bookkeeping transactions into your internal platforms.</p>
+                <div class="settings-status-card mt-6">
+                  <div class="min-w-0">
+                    <div class="settings-option-title">Partner API Key</div>
+                    <code class="text-xs text-text-muted block truncate mt-1" id="settings-api-key-value">tb_live_••••••••••••••••</code>
+                  </div>
+                  <div class="settings-action-row" style="margin-top:0;">
+                    <button type="button" class="settings-secondary-btn" id="btn-settings-copy-api-key">Copy</button>
+                    <button type="button" class="settings-secondary-btn" id="btn-settings-regenerate-api-key">Regenerate</button>
+                  </div>
+                </div>
+                <div class="mt-6">
+                  <label for="settings-webhook-url" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">Webhook Receiver URL</label>
+                  <input type="url" id="settings-webhook-url" placeholder="https://yourfirm.com/taxbot/webhook" class="w-full bg-gray-50 dark:bg-[#0e1a1d] border border-gray-200 dark:border-border-dark rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary/50 text-gray-900 dark:text-white form-input">
+                </div>
+                <div class="settings-action-row">
+                  <button type="button" class="settings-primary-btn" id="btn-settings-save-webhook">Save Webhook</button>
+                  <button type="button" class="settings-secondary-btn" id="btn-settings-test-webhook">Send Test Payload</button>
+                </div>
               </div>
 
               <!-- Tab Panel: Audit Trail -->
