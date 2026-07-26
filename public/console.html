@@ -403,7 +403,7 @@
     .app-header {
       min-height: 64px;
       height: 64px;
-      gap: 20px;
+      gap: 18px;
       padding: 0 24px;
       background-color: var(--bg-card) !important;
       border-color: var(--border) !important;
@@ -416,10 +416,11 @@
     }
 
     .header-right {
-      gap: 6px;
+      gap: 8px;
       margin-left: auto;
       flex-shrink: 0;
       justify-content: flex-end;
+      align-items: center;
     }
 
     .header-right > :not([hidden]) ~ :not([hidden]) {
@@ -429,12 +430,12 @@
     .command-bar-trigger {
       min-height: 40px;
       height: 40px;
-      border-radius: 10px;
+      border-radius: 11px;
       padding-inline: 16px !important;
-      background-color: #eef3f5 !important;
-      border-color: #d3dde3 !important;
+      background-color: #f3f7f8 !important;
+      border-color: #d7e0e5 !important;
       color: var(--text-secondary) !important;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
 
     .command-bar-trigger:hover,
@@ -446,33 +447,55 @@
 
     .header-btn,
     .profile-btn {
-      min-width: 36px;
-      min-height: 36px;
-      height: 36px;
-      border-radius: 9px;
+      min-width: 34px;
+      min-height: 34px;
+      height: 34px;
+      border-radius: 10px;
     }
 
     .header-btn {
-      width: 36px !important;
-      height: 36px !important;
+      width: 34px !important;
+      height: 34px !important;
       background-color: var(--bg-card) !important;
       border-color: var(--border) !important;
       color: var(--text-secondary) !important;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
     }
 
     .header-btn:hover,
     .profile-btn:hover {
-      background-color: var(--bg-app) !important;
+      background-color: #f4f7f8 !important;
       color: var(--primary-hover) !important;
     }
 
+    .header-btn svg,
+    .header-btn i {
+      width: 16px !important;
+      height: 16px !important;
+      stroke-width: 2;
+    }
+
     .whatsapp-btn {
-      background-color: #eaf8f1 !important;
-      border-color: #16a34a !important;
-      color: #15803d !important;
+      background-color: #ecfdf5 !important;
+      border-color: #22c55e !important;
+      color: #047857 !important;
       width: auto !important;
-      min-width: 78px;
-      padding-inline: 12px;
+      min-width: 76px;
+      padding-inline: 11px;
+      font-size: 12px !important;
+      letter-spacing: 0;
+      gap: 7px !important;
+    }
+
+    .whatsapp-btn svg,
+    .whatsapp-btn i {
+      width: 15px !important;
+      height: 15px !important;
+    }
+
+    .notification-dropdown {
+      display: flex;
+      align-items: center;
     }
 
     .profile-name {
@@ -481,19 +504,23 @@
 
     .profile-btn {
       min-width: auto;
-      padding: 0;
+      padding: 0 0 0 4px;
       gap: 8px;
+      color: var(--text-primary) !important;
+      background-color: transparent !important;
     }
 
     .profile-avatar {
       width: 34px !important;
       height: 34px !important;
-      border-radius: 9px !important;
+      border-radius: 10px !important;
     }
 
     .kbd-shortcut {
       font-size: 10px !important;
-      padding: 2px 8px !important;
+      padding: 2px 7px !important;
+      border-radius: 7px !important;
+      color: var(--text-secondary) !important;
     }
 
     .dropdown-menu {
