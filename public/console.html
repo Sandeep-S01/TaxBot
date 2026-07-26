@@ -312,6 +312,11 @@
       background-color: #eef3f5 !important;
     }
 
+    body.dark-theme .bg-gray-50,
+    body.dark-theme .bg-white {
+      background-color: var(--bg-card) !important;
+    }
+
     .bg-primary {
       background-color: var(--primary) !important;
     }
@@ -343,6 +348,38 @@
       border-color: rgba(20, 184, 166, 0.55) !important;
     }
 
+    .bg-card-dark,
+    .dark .dark\:bg-card-dark,
+    body.dark-theme .dark\:bg-card-dark {
+      background-color: var(--bg-card) !important;
+    }
+
+    .bg-background-dark,
+    .dark .dark\:bg-background-dark,
+    body.dark-theme .dark\:bg-background-dark {
+      background-color: var(--bg-app) !important;
+    }
+
+    .border-border-dark,
+    .dark .dark\:border-border-dark,
+    body.dark-theme .dark\:border-border-dark {
+      border-color: var(--border) !important;
+    }
+
+    .dark .dark\:text-gray-100,
+    .dark .dark\:text-white,
+    body.dark-theme .dark\:text-gray-100,
+    body.dark-theme .dark\:text-white {
+      color: var(--text-primary) !important;
+    }
+
+    .dark .dark\:text-gray-300,
+    .dark .dark\:text-gray-400,
+    body.dark-theme .dark\:text-gray-300,
+    body.dark-theme .dark\:text-gray-400 {
+      color: var(--text-secondary) !important;
+    }
+
     body:not(.dark-theme) .bg-white {
       background-color: var(--bg-card) !important;
     }
@@ -361,6 +398,320 @@
     .tracking-tighter,
     .tracking-tight {
       letter-spacing: 0 !important;
+    }
+
+    .app-header {
+      min-height: 72px;
+      gap: 24px;
+      padding: 0 28px;
+      background-color: var(--bg-card) !important;
+      border-color: var(--border) !important;
+    }
+
+    .header-left {
+      width: min(100%, 520px);
+      max-width: 520px;
+      flex: 1 1 420px;
+    }
+
+    .header-right {
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .command-bar-trigger {
+      min-height: 48px;
+      border-radius: 10px;
+      background-color: #eef3f5 !important;
+      border-color: #d3dde3 !important;
+      color: var(--text-secondary) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    }
+
+    .command-bar-trigger:hover,
+    .command-bar-trigger:focus-visible {
+      border-color: rgba(20, 184, 166, 0.65) !important;
+      box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
+      outline: none;
+    }
+
+    .header-btn,
+    .profile-btn {
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: 10px;
+    }
+
+    .header-btn {
+      background-color: var(--bg-card) !important;
+      border-color: var(--border) !important;
+      color: var(--text-secondary) !important;
+    }
+
+    .header-btn:hover,
+    .profile-btn:hover {
+      background-color: var(--bg-app) !important;
+      color: var(--primary-hover) !important;
+    }
+
+    .whatsapp-btn {
+      background-color: #eaf8f1 !important;
+      border-color: #16a34a !important;
+      color: #15803d !important;
+      padding-inline: 18px;
+    }
+
+    .profile-name {
+      color: var(--text-primary) !important;
+    }
+
+    .dropdown-menu {
+      background-color: var(--bg-card) !important;
+      border-color: var(--border) !important;
+      color: var(--text-primary) !important;
+    }
+
+    .dropdown-header {
+      background-color: var(--bg-app) !important;
+      border-color: var(--border) !important;
+    }
+
+    body.dark-theme .sidebar-footer {
+      background-color: #071113 !important;
+      border-color: var(--border) !important;
+    }
+
+    body.dark-theme .firm-name-text,
+    body.dark-theme .firm-role-text {
+      color: var(--text-primary) !important;
+    }
+
+    body.dark-theme .firm-role-text {
+      color: var(--text-secondary) !important;
+    }
+
+    .command-bar-backdrop {
+      background-color: rgba(7, 17, 31, 0.58) !important;
+      backdrop-filter: blur(10px);
+    }
+
+    .command-bar-dialog,
+    .modal-dialog-standard {
+      background-color: var(--bg-card) !important;
+      border: 1px solid var(--border) !important;
+      color: var(--text-primary) !important;
+      box-shadow: 0 24px 80px rgba(7, 17, 31, 0.28);
+    }
+
+    .command-bar-input-wrap,
+    .command-bar-footer,
+    .modal-dialog-header {
+      background-color: var(--bg-app) !important;
+      border-color: var(--border) !important;
+    }
+
+    #command-bar-search-input {
+      color: var(--text-primary) !important;
+    }
+
+    .command-bar-results {
+      background-color: var(--bg-card) !important;
+    }
+
+    .command-result-group-title {
+      color: var(--text-muted) !important;
+      letter-spacing: 0.08em;
+    }
+
+    .command-result-item {
+      color: var(--text-primary) !important;
+    }
+
+    .command-result-item i,
+    .command-result-item svg {
+      color: var(--text-muted) !important;
+    }
+
+    .command-result-item:hover,
+    .command-result-item.selected {
+      background-color: var(--primary-light) !important;
+      color: var(--primary-hover) !important;
+    }
+
+    .command-result-item:hover i,
+    .command-result-item.selected i,
+    .command-result-item:hover svg,
+    .command-result-item.selected svg {
+      color: var(--primary-hover) !important;
+    }
+
+    .modal-dialog-header h3 {
+      color: var(--text-primary) !important;
+    }
+
+    .modal-dialog-body,
+    .modal-actions {
+      background-color: var(--bg-card) !important;
+      border-color: var(--border) !important;
+    }
+
+    .modal-dialog-standard .form-input,
+    .modal-dialog-standard .form-select {
+      background-color: var(--bg-app) !important;
+      border-color: var(--border) !important;
+      color: var(--text-primary) !important;
+    }
+
+    .modal-close-btn {
+      color: var(--text-secondary) !important;
+    }
+
+    .modal-close-btn:hover {
+      color: var(--text-primary) !important;
+    }
+
+    button,
+    a.header-btn {
+      color: inherit;
+    }
+
+    button:disabled,
+    button[aria-disabled="true"],
+    .btn-disabled {
+      background-color: #e2e8f0 !important;
+      border-color: #cbd5e1 !important;
+      color: #475569 !important;
+      cursor: not-allowed;
+      opacity: 1;
+    }
+
+    .border-green-500.bg-green-50,
+    .border-yellow-500.bg-yellow-50,
+    .border-blue-500.bg-blue-50 {
+      background-color: var(--bg-card) !important;
+    }
+
+    .border-green-500.text-green-600 {
+      border-color: #16a34a !important;
+      color: #15803d !important;
+    }
+
+    .border-yellow-500.text-yellow-600 {
+      border-color: #ca8a04 !important;
+      color: #a16207 !important;
+    }
+
+    .border-blue-500.text-blue-600 {
+      border-color: #2563eb !important;
+      color: #1d4ed8 !important;
+    }
+
+    .border-green-500.text-green-600:hover {
+      background-color: #dcfce7 !important;
+    }
+
+    .border-yellow-500.text-yellow-600:hover {
+      background-color: #fef9c3 !important;
+    }
+
+    .border-blue-500.text-blue-600:hover {
+      background-color: #dbeafe !important;
+    }
+
+    body.dark-theme .command-bar-trigger {
+      background-color: #0e1a1d !important;
+      border-color: #2a3f45 !important;
+      color: var(--text-secondary) !important;
+      box-shadow: none;
+    }
+
+    body.dark-theme .header-btn {
+      background-color: rgba(19, 35, 38, 0.8) !important;
+    }
+
+    body.dark-theme .whatsapp-btn {
+      background-color: rgba(20, 83, 45, 0.28) !important;
+      border-color: #22c55e !important;
+      color: #86efac !important;
+    }
+
+    body.dark-theme .command-bar-backdrop {
+      background-color: rgba(0, 0, 0, 0.68) !important;
+    }
+
+    body.dark-theme .border-green-500.text-green-600,
+    body.dark-theme .border-green-500.text-green-400 {
+      color: #86efac !important;
+      border-color: #22c55e !important;
+      background-color: rgba(20, 83, 45, 0.18) !important;
+    }
+
+    body.dark-theme .border-yellow-500.text-yellow-600,
+    body.dark-theme .border-yellow-500.text-yellow-400 {
+      color: #fde68a !important;
+      border-color: #f59e0b !important;
+      background-color: rgba(120, 53, 15, 0.22) !important;
+    }
+
+    body.dark-theme .border-blue-500.text-blue-600,
+    body.dark-theme .border-blue-500.text-blue-400 {
+      color: #bfdbfe !important;
+      border-color: #60a5fa !important;
+      background-color: rgba(30, 64, 175, 0.2) !important;
+    }
+
+    body.dark-theme .data-table tbody td,
+    body.dark-theme .data-table tbody td.text-text-muted {
+      color: var(--text-secondary) !important;
+    }
+
+    body.dark-theme .data-table thead,
+    body.dark-theme .data-table th,
+    body.dark-theme .data-table-header,
+    body.dark-theme .table-header {
+      background-color: #0e1a1d !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border) !important;
+    }
+
+    body.dark-theme .data-table tbody tr,
+    body.dark-theme .data-table tbody {
+      background-color: var(--bg-card) !important;
+    }
+
+    @media (max-width: 1024px) {
+      .app-header {
+        padding: 0 18px;
+      }
+
+      .header-left {
+        max-width: none;
+      }
+
+      .whatsapp-btn .whatsapp-badge,
+      .kbd-shortcut {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .app-header {
+        min-height: auto;
+        height: auto;
+        padding: 12px 14px;
+        flex-wrap: wrap;
+      }
+
+      .header-left {
+        flex-basis: 100%;
+        order: 2;
+      }
+
+      .header-right {
+        width: 100%;
+        justify-content: flex-end;
+        order: 1;
+      }
     }
 
     /* Cards & CRM containers layout definitions */
@@ -939,7 +1290,7 @@
           <!-- User Profile Dropdown -->
           <div class="profile-dropdown flex items-center space-x-2">
             <button class="profile-btn flex items-center space-x-2 text-left" id="profile-menu-btn">
-              <div class="w-8 h-8 rounded-lg bg-primary text-background-dark flex items-center justify-center font-bold text-xs profile-avatar" id="ca-avatar-letter">S</div>
+              <div class="w-8 h-8 rounded-lg bg-primary text-background-dark flex items-center justify-center font-bold text-xs profile-avatar" id="ca-header-avatar-letter">S</div>
               <span class="profile-name text-sm font-semibold hidden md:inline text-gray-900 dark:text-white" id="ca-display-header-name">Sandeep Sharma</span>
             </button>
           </div>

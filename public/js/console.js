@@ -33,7 +33,10 @@ function checkAuth() {
       document.getElementById('ca-display-name').textContent = caSession.name;
       document.getElementById('ca-display-header-name').textContent = caSession.name;
       document.getElementById('ca-display-email').textContent = caSession.email || caSession.firm_name || 'Partner Account';
-      document.getElementById('ca-avatar-letter').textContent = caSession.name.charAt(0).toUpperCase();
+      const avatarLetter = caSession.name.charAt(0).toUpperCase();
+      document.getElementById('ca-avatar-letter').textContent = avatarLetter;
+      const headerAvatar = document.getElementById('ca-header-avatar-letter');
+      if (headerAvatar) headerAvatar.textContent = avatarLetter;
 
       // Initialize workspace
       initConsole();
@@ -956,11 +959,13 @@ function renderTransactions() {
   clientFilter.onchange = filterAndRender;
   channelFilter.onchange = filterAndRender;
 
-  document.getElementById('select-all-transactions').onchange = (e) => {
+  const selectAllTransactions = document.getElementById('select-all-transactions');
+  if (selectAllTransactions) selectAllTransactions.onchange = (e) => {
     document.querySelectorAll('.tx-checkbox').forEach(box => box.checked = e.target.checked);
   };
 
-  document.getElementById('btn-bulk-approve-transactions').onclick = () => {
+  const bulkApproveBtn = document.getElementById('btn-bulk-approve-transactions');
+  if (bulkApproveBtn) bulkApproveBtn.onclick = () => {
     const selected = document.querySelectorAll('.tx-checkbox:checked');
     if (selected.length === 0) {
       showToast('Select one or more transactions to approve.');
@@ -978,7 +983,8 @@ function renderTransactions() {
     filterAndRender();
   };
 
-  document.getElementById('btn-export-transactions').onclick = () => {
+  const exportTransactionsBtn = document.getElementById('btn-export-transactions');
+  if (exportTransactionsBtn) exportTransactionsBtn.onclick = () => {
     showToast('CSV ledger exported!');
   };
 
@@ -1194,7 +1200,7 @@ async function renderGSTCenter() {
       btn.onclick = () => {
         const cid = btn.getAttribute('data-client-id');
         const c = globalClientsList.find(cl => cl.id === cid);
-        if (c.filedStatus === 'Ready') {
+        if (c && c.filedStatus === 'Ready') {
           c.filedStatus = 'Filed';
           showToast(`GSTR-1 returns filed for ${c.name}!`);
           renderGSTCenter();
@@ -1203,6 +1209,23 @@ async function renderGSTCenter() {
         }
       };
     });
+  }
+
+  const gstBulkFileBtn = document.getElementById('btn-gst-bulk-file');
+  if (gstBulkFileBtn) {
+    gstBulkFileBtn.onclick = () => {
+      const readyClients = globalClientsList.filter(c => c.filedStatus === 'Ready');
+      if (readyClients.length === 0) {
+        showToast('No ready GST filings available for bulk filing.');
+        return;
+      }
+      readyClients.forEach(c => {
+        c.filedStatus = 'Filed';
+        logFrontendAction('GST_BULK_FILED', `Marked GSTR filing as filed for ${c.name || c.business_name || 'Client'}`, c.id);
+      });
+      showToast(`Bulk filed ${readyClients.length} GST returns.`);
+      renderGSTCenter();
+    };
   }
 
   picker.onchange = renderGSTCenter;
@@ -1357,9 +1380,14 @@ function initModals() {
   const closeBtn = document.getElementById('btn-close-add-client');
   const cancelBtn = document.getElementById('btn-cancel-add-client');
   const form = document.getElementById('form-add-client');
+  if (!addClientModal || !form) return;
 
   openTriggers.forEach(btn => {
-    if (btn) btn.onclick = () => addClientModal.classList.remove('hidden');
+    if (btn) btn.onclick = () => {
+      addClientModal.classList.remove('hidden');
+      const firstInput = document.getElementById('new-client-owner');
+      if (firstInput) firstInput.focus();
+    };
   });
 
   function closeClientModal() {
@@ -1367,8 +1395,18 @@ function initModals() {
     form.reset();
   }
 
-  closeBtn.onclick = closeClientModal;
-  cancelBtn.onclick = closeClientModal;
+  if (closeBtn) closeBtn.onclick = closeClientModal;
+  if (cancelBtn) cancelBtn.onclick = closeClientModal;
+
+  addClientModal.addEventListener('click', (e) => {
+    if (e.target === addClientModal) closeClientModal();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !addClientModal.classList.contains('hidden')) {
+      closeClientModal();
+    }
+  });
 
   // Add Client Form Submission to live API
   form.onsubmit = async (e) => {
@@ -1408,9 +1446,11 @@ function initModals() {
   // Sidebar toggle collapse
   const sidebar = document.getElementById('app-sidebar');
   const toggleBtn = document.getElementById('sidebar-toggle');
-  toggleBtn.onclick = () => {
-    sidebar.classList.toggle('collapsed');
-  };
+  if (sidebar && toggleBtn) {
+    toggleBtn.onclick = () => {
+      sidebar.classList.toggle('collapsed');
+    };
+  }
 
   // Mobile sidebar menu toggle handlers
   const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
@@ -1489,7 +1529,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
       // Dynamically update active Chart.js colors
-      updateChartsTheme();
+      if (typeof updateChartsTheme === 'function') updateChartsTheme();
     };
   }
 
@@ -1537,14 +1577,23 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Client workspace back btn
-  document.getElementById('btn-back-to-clients').onclick = () => {
-    window.location.hash = 'clients';
-  };
+  const backToClients = document.getElementById('btn-back-to-clients');
+  if (backToClients) {
+    backToClients.onclick = () => {
+      window.location.hash = 'clients';
+    };
+  }
 
   // Quick Action binds
-  document.getElementById('qa-upload-docs').onclick = () => { window.location.hash = 'documents'; };
-  document.getElementById('qa-gen-report').onclick = () => { window.location.hash = 'exports'; };
-  document.getElementById('qa-export-tally').onclick = () => { window.location.hash = 'exports'; };
+  const quickBindings = [
+    ['qa-upload-docs', 'documents'],
+    ['qa-gen-report', 'exports'],
+    ['qa-export-tally', 'exports'],
+  ];
+  quickBindings.forEach(([id, hash]) => {
+    const btn = document.getElementById(id);
+    if (btn) btn.onclick = () => { window.location.hash = hash; };
+  });
 });
 
 

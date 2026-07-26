@@ -6,27 +6,41 @@
 function renderExports() {
   const tallySelect = document.getElementById('export-tally-client');
   const csvSelect = document.getElementById('export-csv-client');
+  const tallyBtn = document.getElementById('btn-action-export-tally');
+  const csvBtn = document.getElementById('btn-action-export-csv');
+  const gstBtn = document.getElementById('btn-action-export-gst');
+  const pdfBtn = document.getElementById('btn-action-export-pdf');
+
+  if (!tallySelect || !csvSelect) return;
 
   const optHtml = globalClientsList.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name || c.business_name || 'Unnamed Client')}</option>`).join('');
   tallySelect.innerHTML = optHtml;
   csvSelect.innerHTML = optHtml;
+  const hasClients = globalClientsList.length > 0;
+  [tallySelect, csvSelect, tallyBtn, csvBtn].forEach(el => {
+    if (!el) return;
+    el.disabled = !hasClients;
+    el.classList.toggle('btn-disabled', !hasClients);
+    if (!hasClients) el.setAttribute('aria-disabled', 'true');
+    else el.removeAttribute('aria-disabled');
+  });
 
-  document.getElementById('btn-action-export-tally').onclick = () => {
+  if (tallyBtn) tallyBtn.onclick = () => {
     const cid = tallySelect.value;
     downloadClientFile(cid, 'xml');
   };
 
-  document.getElementById('btn-action-export-csv').onclick = () => {
+  if (csvBtn) csvBtn.onclick = () => {
     const cid = csvSelect.value;
     downloadClientFile(cid, 'csv');
   };
 
-  document.getElementById('btn-action-export-gst').onclick = () => {
+  if (gstBtn) gstBtn.onclick = () => {
     showToast('Compiling GSTR reports...');
     setTimeout(() => { showToast('Excel sheet downloaded!'); }, 1000);
   };
 
-  document.getElementById('btn-action-export-pdf').onclick = () => {
+  if (pdfBtn) pdfBtn.onclick = () => {
     showToast('Generating P&L and Balance Sheet PDF...');
     setTimeout(() => { showToast('Financial Statement downloaded!'); }, 1200);
   };
@@ -35,7 +49,10 @@ function renderExports() {
 function downloadClientFile(clientId, format, preloadedTx = null) {
   const period = new Date().toISOString().substring(0, 7);
   const clientObj = globalClientsList.find(c => c.id === clientId);
-  if (!clientObj) return;
+  if (!clientObj) {
+    showToast('Select a client before exporting.');
+    return;
+  }
 
   const txList = preloadedTx || globalTransactions.filter(t => t.clientId === clientId);
   let fileContent = '';

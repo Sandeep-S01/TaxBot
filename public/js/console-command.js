@@ -16,6 +16,8 @@ const commandSuggestions = [
 ];
 
 function initCommandBar() {
+  if (!commandModal || !commandTrigger || !commandInput || !commandResults) return;
+
   let selectedIndex = -1;
 
   window.addEventListener('keydown', (e) => {
@@ -89,9 +91,9 @@ function initCommandBar() {
 
     if (q.length > 0) {
       filteredClients = globalClientsList.filter(c =>
-        c.name.toLowerCase().includes(q) ||
-        c.gstin.toLowerCase().includes(q) ||
-        c.owner.toLowerCase().includes(q)
+        String(c.name || c.business_name || '').toLowerCase().includes(q) ||
+        String(c.gstin || '').toLowerCase().includes(q) ||
+        String(c.owner || c.owner_name || '').toLowerCase().includes(q)
       );
     }
 
@@ -120,7 +122,7 @@ function initCommandBar() {
         html += `
           <div class="command-result-item" data-item-id="${id}">
             <i data-lucide="user"></i>
-            <span>Open workspace for <strong>${escapeHtml(c.name)}</strong> (${escapeHtml(c.owner)})</span>
+            <span>Open workspace for <strong>${escapeHtml(c.name || c.business_name || 'Unnamed Client')}</strong> (${escapeHtml(c.owner || c.owner_name || 'Owner')})</span>
           </div>
         `;
       });
