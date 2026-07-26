@@ -416,10 +416,14 @@
     }
 
     .header-right {
-      gap: 12px;
+      gap: 6px;
       margin-left: auto;
       flex-shrink: 0;
       justify-content: flex-end;
+    }
+
+    .header-right > :not([hidden]) ~ :not([hidden]) {
+      margin-left: 0 !important;
     }
 
     .command-bar-trigger {
@@ -467,8 +471,8 @@
       border-color: #16a34a !important;
       color: #15803d !important;
       width: auto !important;
-      min-width: 86px;
-      padding-inline: 14px;
+      min-width: 78px;
+      padding-inline: 12px;
     }
 
     .profile-name {
@@ -478,7 +482,7 @@
     .profile-btn {
       min-width: auto;
       padding: 0;
-      gap: 10px;
+      gap: 8px;
     }
 
     .profile-avatar {
@@ -799,6 +803,19 @@
       color: var(--text-primary) !important;
     }
 
+    .modal-dialog-standard,
+    .modal-dialog-standard label,
+    .modal-dialog-standard h3,
+    .modal-dialog-standard .text-white,
+    .modal-dialog-standard .text-text-muted {
+      color: var(--text-primary) !important;
+    }
+
+    .modal-dialog-standard label,
+    .modal-dialog-standard .text-text-muted {
+      color: var(--text-secondary) !important;
+    }
+
     .modal-dialog-body,
     .modal-actions {
       background-color: var(--bg-card) !important;
@@ -807,9 +824,23 @@
 
     .modal-dialog-standard .form-input,
     .modal-dialog-standard .form-select {
-      background-color: var(--bg-app) !important;
+      background-color: #eef3f5 !important;
       border-color: var(--border) !important;
       color: var(--text-primary) !important;
+      caret-color: var(--text-primary);
+      -webkit-text-fill-color: var(--text-primary);
+    }
+
+    .modal-dialog-standard .form-input::placeholder,
+    .modal-dialog-standard .form-select::placeholder {
+      color: #64748b !important;
+      opacity: 1;
+      -webkit-text-fill-color: #64748b;
+    }
+
+    .modal-dialog-standard option {
+      background-color: var(--bg-card);
+      color: var(--text-primary);
     }
 
     .modal-close-btn {
@@ -883,6 +914,18 @@
       background-color: rgba(20, 83, 45, 0.28) !important;
       border-color: #22c55e !important;
       color: #86efac !important;
+    }
+
+    body.dark-theme .modal-dialog-standard .form-input,
+    body.dark-theme .modal-dialog-standard .form-select {
+      background-color: #0e1a1d !important;
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary);
+    }
+
+    body.dark-theme .modal-dialog-standard .text-white,
+    body.dark-theme .modal-dialog-standard h3 {
+      color: var(--text-primary) !important;
     }
 
     body.dark-theme .command-bar-backdrop {
