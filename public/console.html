@@ -10,14 +10,11 @@
   <!-- Premium Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
 
   <script>
       tailwind.config = {
@@ -25,16 +22,16 @@
           theme: {
               extend: {
                   colors: {
-                      primary: "#29e3c1",
-                      "background-light": "#f3f4f6",
+                      primary: "#14b8a6",
+                      "background-light": "#f4f7f8",
                       "background-dark": "#0a1519",
                       "card-dark": "#132326",
                       "border-dark": "#2a3f45",
-                      "text-muted": "#8b9c9f"
+                      "text-muted": "#52636b"
                   },
                   fontFamily: {
                       display: ["Space Grotesk", "sans-serif"],
-                      body: ["Space Grotesk", "sans-serif"],
+                      body: ["Inter", "sans-serif"],
                   },
                   borderRadius: {
                       DEFAULT: "0.5rem",
@@ -46,14 +43,29 @@
       };
   </script>
 
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+
   <style>
-    body { font-family: 'Space Grotesk', sans-serif; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+    }
 
     button,
     input,
     select,
     textarea {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    .brand-name {
+      font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+      letter-spacing: 0;
     }
 
     .material-icons {
@@ -73,39 +85,53 @@
 
     /* Dynamic active navigation overrides */
     .nav-link.active {
-      background-color: rgba(41, 227, 193, 0.15);
-      color: #29e3c1 !important;
+      background-color: rgba(20, 184, 166, 0.16);
+      color: #0f766e !important;
       font-weight: 600;
     }
 
     .settings-tab-link.active {
-      background-color: #29e3c1;
-      color: #0a1519 !important;
+      background-color: #14b8a6;
+      color: #042f2e !important;
       font-weight: 600;
     }
 
     .filter-tab.active {
-      background-color: #29e3c1;
-      color: #0a1519 !important;
+      background-color: #14b8a6;
+      color: #042f2e !important;
       font-weight: 600;
     }
 
     .tab-link.active {
-      border-bottom: 2px solid #29e3c1;
-      color: #29e3c1 !important;
+      border-bottom: 2px solid #14b8a6;
+      color: #0f766e !important;
       font-weight: 600;
     }
 
     .doc-sidebar-item.active {
-      background-color: rgba(41, 227, 193, 0.15);
-      color: #29e3c1 !important;
+      background-color: rgba(20, 184, 166, 0.16);
+      color: #0f766e !important;
       font-weight: 600;
     }
 
     .doc-folder-chip.active {
-      background-color: #29e3c1;
-      color: #0a1519 !important;
+      background-color: #14b8a6;
+      color: #042f2e !important;
       font-weight: 600;
+    }
+
+    body.dark-theme .nav-link.active,
+    body.dark-theme .tab-link.active,
+    body.dark-theme .doc-sidebar-item.active {
+      background-color: rgba(41, 227, 193, 0.15);
+      color: #5eead4 !important;
+    }
+
+    body.dark-theme .settings-tab-link.active,
+    body.dark-theme .filter-tab.active,
+    body.dark-theme .doc-folder-chip.active {
+      background-color: #29e3c1;
+      color: #042f2e !important;
     }
 
     /* Settings panel mapping */
@@ -188,23 +214,23 @@
 
     /* Keep CSS variables mapping so console-charts.js and dynamic widgets can fetch colors */
     :root {
-      --bg-app: #f3f4f6;
+      --bg-app: #f4f7f8;
       --bg-card: #ffffff;
-      --border: #e5e7eb;
-      --primary: #29e3c1;
-      --primary-hover: #14b8a6;
-      --primary-light: rgba(41, 227, 193, 0.1);
-      --success: #22c55e;
+      --border: #d5dee3;
+      --primary: #14b8a6;
+      --primary-hover: #0f766e;
+      --primary-light: rgba(20, 184, 166, 0.13);
+      --success: #15803d;
       --success-light: rgba(34, 197, 94, 0.1);
-      --warning: #eab308;
+      --warning: #b45309;
       --warning-light: rgba(234, 179, 8, 0.1);
-      --error: #ef4444;
+      --error: #dc2626;
       --error-light: rgba(239, 68, 68, 0.1);
-      --info: #3b82f6;
+      --info: #2563eb;
       --info-light: rgba(59, 130, 246, 0.1);
-      --text-primary: #111827;
-      --text-secondary: #4b5563;
-      --text-muted: #9ca3af;
+      --text-primary: #07111f;
+      --text-secondary: #334155;
+      --text-muted: #52636b;
       --text-light: #ffffff;
       --space-8: 8px;
       --space-16: 16px;
@@ -223,7 +249,7 @@
       --bg-card: #132326;
       --border: #2a3f45;
       --primary: #29e3c1;
-      --primary-hover: #14b8a6;
+      --primary-hover: #5eead4;
       --primary-light: rgba(41, 227, 193, 0.15);
       --success: #10b981;
       --success-light: rgba(16, 185, 129, 0.15);
@@ -234,8 +260,107 @@
       --info: #3b82f6;
       --info-light: rgba(59, 130, 246, 0.15);
       --text-primary: #f4fbfa;
-      --text-secondary: #8b9c9f;
-      --text-muted: #4e656a;
+      --text-secondary: #c3d2d5;
+      --text-muted: #a4b5ba;
+    }
+
+    .text-text-muted,
+    .text-gray-500,
+    .text-gray-600 {
+      color: var(--text-muted) !important;
+    }
+
+    .text-gray-700,
+    .card-subtitle,
+    .client-detail-label {
+      color: var(--text-secondary) !important;
+    }
+
+    .text-gray-900,
+    .client-detail-value,
+    .client-card-name,
+    .card-title {
+      color: var(--text-primary) !important;
+    }
+
+    .dark-theme .text-text-muted,
+    .dark-theme .text-gray-400,
+    .dark-theme .text-gray-500 {
+      color: var(--text-muted) !important;
+    }
+
+    .dark-theme .text-gray-300,
+    .dark-theme .text-gray-700 {
+      color: var(--text-secondary) !important;
+    }
+
+    .dark-theme .text-white,
+    .dark-theme .text-gray-900 {
+      color: var(--text-primary) !important;
+    }
+
+    .bg-background-light {
+      background-color: var(--bg-app) !important;
+    }
+
+    .border-gray-200,
+    .border-gray-100 {
+      border-color: var(--border) !important;
+    }
+
+    .bg-gray-50 {
+      background-color: #eef3f5 !important;
+    }
+
+    .bg-primary {
+      background-color: var(--primary) !important;
+    }
+
+    .bg-primary\/10,
+    .bg-primary\/20 {
+      background-color: var(--primary-light) !important;
+    }
+
+    .text-primary {
+      color: var(--primary) !important;
+    }
+
+    .text-background-dark {
+      color: #0a1519 !important;
+    }
+
+    .border-primary\/30 {
+      border-color: rgba(20, 184, 166, 0.35) !important;
+    }
+
+    .hover\:text-primary:hover {
+      color: var(--primary-hover) !important;
+    }
+
+    .hover\:border-primary\/30:hover,
+    .hover\:border-primary\/50:hover,
+    .focus\:border-primary\/50:focus {
+      border-color: rgba(20, 184, 166, 0.55) !important;
+    }
+
+    body:not(.dark-theme) .bg-white {
+      background-color: var(--bg-card) !important;
+    }
+
+    body:not(.dark-theme) .text-white {
+      color: #ffffff !important;
+    }
+
+    input::placeholder,
+    textarea::placeholder,
+    .placeholder-text-muted::placeholder {
+      color: #64748b;
+      opacity: 1;
+    }
+
+    .tracking-tighter,
+    .tracking-tight {
+      letter-spacing: 0 !important;
     }
 
     /* Cards & CRM containers layout definitions */
@@ -1884,7 +2009,7 @@
             </select>
           </div>
           <div>
-            <label for="new-client-gst-registered" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">GST Registered-</label>
+            <label for="new-client-gst-registered" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">GST Registered?</label>
             <select id="new-client-gst-registered" class="w-full bg-[#0e1a1d] border border-border-dark rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50 text-white form-select">
               <option value="true" selected>Yes</option>
               <option value="false">No</option>

@@ -13,8 +13,7 @@
       })();
   </script>
 
-  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
 
   <script>
@@ -23,16 +22,16 @@
           theme: {
               extend: {
                   colors: {
-                      primary: "#29e3c1",
-                      "background-light": "#f3f4f6",
+                      primary: "#14b8a6",
+                      "background-light": "#f4f7f8",
                       "background-dark": "#0a1519",
                       "card-dark": "#132326",
                       "border-dark": "#2a3f45",
-                      "text-muted": "#8b9c9f"
+                      "text-muted": "#52636b"
                   },
                   fontFamily: {
                       display: ["Space Grotesk", "sans-serif"],
-                      body: ["Space Grotesk", "sans-serif"],
+                      body: ["Inter", "sans-serif"],
                   },
                   borderRadius: {
                       DEFAULT: "0.5rem",
@@ -40,8 +39,8 @@
                       '2xl': "1.5rem"
                   },
                   letterSpacing: {
-                      tighter: '-0.05em',
-                      tight: '-0.025em',
+                      tighter: '0em',
+                      tight: '0em',
                       normal: '0em',
                       wide: '0.025em',
                       wider: '0.05em',
@@ -51,8 +50,52 @@
           },
       };
   </script>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
   <style>
-      body { font-family: 'Space Grotesk', sans-serif; }
+      :root {
+          --text-primary: #07111f;
+          --text-secondary: #334155;
+          --text-muted-strong: #52636b;
+          --surface-soft: #f4f7f8;
+          --surface-card: #ffffff;
+          --border-soft: #d5dee3;
+          --primary-strong: #14b8a6;
+          --primary-hover: #0f766e;
+      }
+
+      .dark {
+          --text-primary: #f4fbfa;
+          --text-secondary: #c3d2d5;
+          --text-muted-strong: #a4b5ba;
+          --surface-soft: #0a1519;
+          --surface-card: #132326;
+          --border-soft: #2a3f45;
+          --primary-strong: #29e3c1;
+          --primary-hover: #5eead4;
+      }
+
+      body {
+          font-family: 'Inter', system-ui, sans-serif;
+          background-color: var(--surface-soft);
+          color: var(--text-primary);
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+          font-family: 'Inter', system-ui, sans-serif;
+      }
+
+      h1,
+      h2,
+      h3,
+      .font-display {
+          font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+          letter-spacing: 0;
+      }
+
       .nav-links { display: none; }
       .nav-links.active { display: block; }
       #modal-security.active {
@@ -61,6 +104,60 @@
       }
       #modal-security.active > div {
           transform: scale(1);
+      }
+
+      .text-text-muted,
+      .text-gray-400,
+      .text-gray-500,
+      .text-gray-600 {
+          color: var(--text-muted-strong) !important;
+      }
+
+      .text-gray-700,
+      .dark .dark\:text-gray-300 {
+          color: var(--text-secondary) !important;
+      }
+
+      .text-gray-900,
+      .dark .dark\:text-white,
+      .dark .dark\:text-gray-100 {
+          color: var(--text-primary) !important;
+      }
+
+      .dark .dark\:text-gray-400,
+      .dark .text-text-muted {
+          color: var(--text-muted-strong) !important;
+      }
+
+      .bg-background-light {
+          background-color: var(--surface-soft) !important;
+      }
+
+      .bg-white {
+          background-color: var(--surface-card) !important;
+      }
+
+      .border-gray-200,
+      .border-gray-100,
+      .border-gray-300 {
+          border-color: var(--border-soft) !important;
+      }
+
+      .bg-primary {
+          background-color: var(--primary-strong) !important;
+      }
+
+      .text-primary {
+          color: var(--primary-strong) !important;
+      }
+
+      .hover\:text-primary:hover {
+          color: var(--primary-hover) !important;
+      }
+
+      .tracking-tighter,
+      .tracking-tight {
+          letter-spacing: 0 !important;
       }
   </style>
 </head>
