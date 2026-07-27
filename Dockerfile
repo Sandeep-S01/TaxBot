@@ -6,6 +6,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY tsconfig.json ./
+COPY tailwind.config.cjs ./
 COPY src/ ./src/
 COPY public/ ./public/
 
