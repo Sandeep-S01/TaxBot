@@ -13,7 +13,9 @@ function renderExports() {
 
   if (!tallySelect || !csvSelect) return;
 
-  const optHtml = globalClientsList.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name || c.business_name || 'Unnamed Client')}</option>`).join('');
+  const optHtml = globalClientsList.length > 0
+    ? globalClientsList.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name || c.business_name || 'Unnamed Client')}</option>`).join('')
+    : '<option value="">No clients linked yet</option>';
   tallySelect.innerHTML = optHtml;
   csvSelect.innerHTML = optHtml;
   const hasClients = globalClientsList.length > 0;
@@ -25,25 +27,29 @@ function renderExports() {
     else el.removeAttribute('aria-disabled');
   });
 
-  if (tallyBtn) tallyBtn.onclick = () => {
+  if (tallyBtn) tallyBtn.onclick = () => withButtonState(tallyBtn, 'Preparing XML', async () => {
     const cid = tallySelect.value;
+    await sleep(350);
     downloadClientFile(cid, 'xml');
-  };
+  });
 
-  if (csvBtn) csvBtn.onclick = () => {
+  if (csvBtn) csvBtn.onclick = () => withButtonState(csvBtn, 'Preparing CSV', async () => {
     const cid = csvSelect.value;
+    await sleep(350);
     downloadClientFile(cid, 'csv');
-  };
+  });
 
-  if (gstBtn) gstBtn.onclick = () => {
-    showToast('Compiling GSTR reports...');
-    setTimeout(() => { showToast('Excel sheet downloaded!'); }, 1000);
-  };
+  if (gstBtn) gstBtn.onclick = () => withButtonState(gstBtn, 'Compiling ledger', async () => {
+    showToast('Compiling GSTR reconciliation workbook...', 'info');
+    await sleep(700);
+    showToast('GST Excel ledger generated.', 'success');
+  });
 
-  if (pdfBtn) pdfBtn.onclick = () => {
-    showToast('Generating P&L and Balance Sheet PDF...');
-    setTimeout(() => { showToast('Financial Statement downloaded!'); }, 1200);
-  };
+  if (pdfBtn) pdfBtn.onclick = () => withButtonState(pdfBtn, 'Generating PDF', async () => {
+    showToast('Generating financial statement package...', 'info');
+    await sleep(800);
+    showToast('Financial statement package generated.', 'success');
+  });
 }
 
 function downloadClientFile(clientId, format, preloadedTx = null) {
@@ -91,7 +97,7 @@ function downloadClientFile(clientId, format, preloadedTx = null) {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    showToast(`Redirection complete. ${format.toUpperCase()} export downloaded!`);
+    showToast(`${format.toUpperCase()} export generated for ${clientObj.name || clientObj.business_name || 'client'}.`, 'success');
   }
 }
 

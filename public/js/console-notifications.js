@@ -11,44 +11,70 @@ function initNotifications() {
   const markAllReadBtn = document.getElementById('btn-mark-all-read');
 
   if (!btn || !menu) return;
+  if (btn.dataset.notificationsInitialized === 'true') return;
+  btn.dataset.notificationsInitialized = 'true';
 
-  btn.onclick = (e) => {
-    e.stopPropagation();
-    menu.classList.toggle('hidden');
-    renderNotificationsList();
+  const setMenuOpen = (open, restoreFocus = false) => {
+    menu.classList.toggle('hidden', !open);
+    btn.setAttribute('aria-expanded', String(open));
+    if (open) {
+      window.dispatchEvent(new CustomEvent('taxbot:shell-menu-open', {
+        detail: { source: 'notifications' }
+      }));
+      renderNotificationsList();
+    } else if (restoreFocus) {
+      btn.focus();
+    }
   };
 
-  document.addEventListener('click', (e) => {
-    if (!menu.classList.contains('hidden') && !menu.contains(e.target) && !btn.contains(e.target)) {
-      menu.classList.add('hidden');
+  btn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    setMenuOpen(menu.classList.contains('hidden'));
+  });
+
+  menu.addEventListener('click', (event) => event.stopPropagation());
+  document.addEventListener('click', () => setMenuOpen(false));
+  window.addEventListener('taxbot:shell-modal-open', () => setMenuOpen(false));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !menu.classList.contains('hidden')) {
+      setMenuOpen(false, true);
     }
   });
 
   if (markAllReadBtn) {
-    markAllReadBtn.onclick = (e) => {
-      e.stopPropagation();
-      globalNotifications.forEach(n => n.unread = false);
+    markAllReadBtn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      globalNotifications.forEach((notification) => {
+        notification.unread = false;
+      });
       renderNotificationsList();
       updateNotificationIndicator();
-    };
+    });
   }
 }
 
 function updateNotificationIndicator() {
-  const hasUnread = globalNotifications.some(n => n.unread);
+  const unreadCount = globalNotifications.filter(n => n.unread).length;
   const indicator = document.querySelector('#notification-btn .indicator-dot');
+  const button = document.getElementById('notification-btn');
   if (indicator) {
-    if (hasUnread) {
-      indicator.classList.remove('hidden');
-    } else {
-      indicator.classList.add('hidden');
-    }
+    indicator.classList.toggle('hidden', unreadCount === 0);
+  }
+  if (button) {
+    button.setAttribute('aria-label', unreadCount > 0
+      ? `Notifications, ${unreadCount} unread`
+      : 'Notifications, none unread');
   }
 }
 
 function renderNotificationsList() {
   const list = document.getElementById('notifications-list');
+  const markAllReadBtn = document.getElementById('btn-mark-all-read');
   if (!list) return;
+
+  if (markAllReadBtn) {
+    markAllReadBtn.disabled = !globalNotifications.some(notification => notification.unread);
+  }
 
   if (globalNotifications.length === 0) {
     list.innerHTML = `
@@ -61,45 +87,50 @@ function renderNotificationsList() {
     return;
   }
 
-  list.innerHTML = globalNotifications.map(n => {
+  list.innerHTML = globalNotifications.map((n) => {
     let icon = 'bell';
     let iconClass = 'notification-info';
-    if (n.type === 'critical' || n.title.includes('Mismatch')) {
+    if (n.type === 'critical' || String(n.title).includes('Mismatch')) {
       icon = 'alert-triangle';
       iconClass = 'notification-critical';
-    } else if (n.type === 'success' || n.title.includes('Voice')) {
+    } else if (n.type === 'success' || String(n.title).includes('Voice')) {
       icon = 'mic';
       iconClass = 'notification-success';
-    } else if (n.type === 'warning' || n.title.includes('Ready')) {
+    } else if (n.type === 'warning' || String(n.title).includes('Ready')) {
       icon = 'check-circle';
       iconClass = 'notification-warning';
     }
 
     return `
-      <div class="notification-item ${n.unread ? 'unread' : ''}" data-notif-id="${escapeHtml(n.id)}">
-        <div class="notification-icon-wrap ${iconClass}">
-          <i data-lucide="${icon}" style="width:14px;height:14px;"></i>
-        </div>
-        <div class="notification-content">
-          <span class="notification-title">${escapeHtml(n.title)}</span>
-          <span class="notification-desc">${escapeHtml(n.desc)}</span>
-          <span class="notification-time">${escapeHtml(n.time)}</span>
-        </div>
+      <div role="listitem">
+        <button type="button" class="notification-item ${n.unread ? 'unread' : ''}" data-notif-id="${escapeHtml(n.id)}">
+          <span class="notification-icon-wrap ${iconClass}">
+            <i data-lucide="${icon}" style="width:14px;height:14px;"></i>
+          </span>
+          <span class="notification-content">
+            <span class="notification-title">${escapeHtml(n.title)}</span>
+            <span class="notification-desc">${escapeHtml(n.desc)}</span>
+            <span class="notification-time">${escapeHtml(n.time)}</span>
+          </span>
+        </button>
       </div>
     `;
   }).join('');
 
-  list.querySelectorAll('.notification-item').forEach(el => {
-    el.onclick = () => {
+  list.querySelectorAll('.notification-item').forEach((el) => {
+    el.addEventListener('click', () => {
       const id = el.getAttribute('data-notif-id');
       const notif = globalNotifications.find(n => n.id === id);
       if (notif) {
         notif.unread = false;
         updateNotificationIndicator();
-        document.getElementById('notifications-dropdown-menu').classList.add('hidden');
-        notif.action();
+        const menu = document.getElementById('notifications-dropdown-menu');
+        const button = document.getElementById('notification-btn');
+        if (menu) menu.classList.add('hidden');
+        if (button) button.setAttribute('aria-expanded', 'false');
+        if (typeof notif.action === 'function') notif.action();
       }
-    };
+    });
   });
 
   initIcons();

@@ -1,6 +1,24 @@
 // TaxBot Frontend Application Logic
 
 document.addEventListener('DOMContentLoaded', () => {
+  const themeButtons = [
+    document.getElementById('theme-toggle-btn'),
+    document.getElementById('theme-toggle-btn-mobile'),
+  ];
+  const themeIcons = [
+    document.getElementById('theme-toggle-icon'),
+    document.getElementById('theme-toggle-icon-mobile'),
+  ];
+
+  if (window.TaxBotTheme) {
+    window.TaxBotTheme.bindToggle(themeButtons, (theme) => {
+      const iconName = theme === 'dark' ? 'light_mode' : 'dark_mode';
+      themeIcons.filter(Boolean).forEach((icon) => {
+        icon.textContent = iconName;
+      });
+    });
+  }
+
   // --- Landing Page Pricing Calculator ---
   const clientSlider = document.getElementById('client-slider');
   if (clientSlider) {

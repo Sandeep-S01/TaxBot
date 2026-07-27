@@ -4,11 +4,16 @@
   "description": "WhatsApp-first AI accounting platform for Indian SMBs",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "npm run build:css && tsx watch src/index.ts",
+    "dev:css": "tailwindcss -c tailwind.config.cjs -i ./public/css/tailwind-input.css -o ./public/css/tailwind.css --watch",
+    "build:css": "tailwindcss -c tailwind.config.cjs -i ./public/css/tailwind-input.css -o ./public/css/tailwind.css --minify",
     "lint": "tsc --noEmit",
-    "build": "tsc",
+    "build": "npm run build:css && tsc",
     "start": "node dist/index.js",
     "test": "vitest run",
+    "test:ui": "playwright test",
+    "test:ui:update": "playwright test --update-snapshots",
+    "test:ui:report": "playwright show-report",
     "check:env": "tsx scripts/check_env.ts",
     "check:mojibake": "tsx scripts/check_mojibake.ts",
     "check:frontend-safety": "tsx scripts/check_frontend_safety.ts",
@@ -36,6 +41,9 @@
     "pdfkit": "^0.19.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.0",
+    "@tailwindcss/forms": "0.5.10",
+    "@tailwindcss/typography": "0.5.16",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6",
@@ -44,6 +52,7 @@
     "@types/node-cron": "^3.0.11",
     "@types/pdf-parse": "^1.1.4",
     "@types/pdfkit": "^0.17.6",
+    "tailwindcss": "3.4.17",
     "tsx": "^4.15.2",
     "typescript": "^5.4.5",
     "vitest": "^4.1.10"

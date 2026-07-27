@@ -33,6 +33,10 @@ function checkAuth() {
       document.getElementById('ca-display-name').textContent = caSession.name;
       document.getElementById('ca-display-header-name').textContent = caSession.name;
       document.getElementById('ca-display-email').textContent = caSession.email || caSession.firm_name || 'Partner Account';
+      const profileMenuName = document.getElementById('profile-menu-display-name');
+      const profileMenuEmail = document.getElementById('profile-menu-display-email');
+      if (profileMenuName) profileMenuName.textContent = caSession.name;
+      if (profileMenuEmail) profileMenuEmail.textContent = caSession.email || caSession.firm_name || 'Partner Account';
       const avatarLetter = caSession.name.charAt(0).toUpperCase();
       document.getElementById('ca-avatar-letter').textContent = avatarLetter;
       const headerAvatar = document.getElementById('ca-header-avatar-letter');
@@ -1166,8 +1170,12 @@ async function renderGSTCenter() {
   if (report.clientBreakdown.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 30px;">
-          No client filing records available for this month.
+        <td colspan="6">
+          <div class="empty-state gst-empty-state">
+            <i data-lucide="file-check-2" style="width:40px;height:40px;color:var(--text-secondary);margin-bottom:12px;"></i>
+            <strong>No filing records for ${escapeHtml(picker.value)}</strong>
+            <p>Link GST-registered clients or change the return period to review filing status.</p>
+          </div>
         </td>
       </tr>`;
   } else {
@@ -1197,35 +1205,39 @@ async function renderGSTCenter() {
     }).join('');
 
     document.querySelectorAll('.btn-gst-file-action').forEach(btn => {
-      btn.onclick = () => {
+      btn.onclick = () => withButtonState(btn, 'Working', async () => {
         const cid = btn.getAttribute('data-client-id');
         const c = globalClientsList.find(cl => cl.id === cid);
         if (c && c.filedStatus === 'Ready') {
+          await sleep(450);
           c.filedStatus = 'Filed';
-          showToast(`GSTR-1 returns filed for ${c.name}!`);
+          logFrontendAction('GST_FILED', `Marked GSTR filing as filed for ${c.name || c.business_name || 'Client'}`, c.id);
+          showToast(`GSTR-1 filed for ${c.name || c.business_name || 'client'}.`, 'success');
           renderGSTCenter();
         } else {
+          showToast('Opening AI insights to verify filing blockers.', 'info');
           window.location.hash = 'insights';
         }
-      };
+      });
     });
   }
 
   const gstBulkFileBtn = document.getElementById('btn-gst-bulk-file');
   if (gstBulkFileBtn) {
-    gstBulkFileBtn.onclick = () => {
+    gstBulkFileBtn.onclick = () => withButtonState(gstBulkFileBtn, 'Bulk filing', async () => {
       const readyClients = globalClientsList.filter(c => c.filedStatus === 'Ready');
       if (readyClients.length === 0) {
-        showToast('No ready GST filings available for bulk filing.');
+        showToast('No ready GST filings available for bulk filing.', 'warning');
         return;
       }
+      await sleep(600);
       readyClients.forEach(c => {
         c.filedStatus = 'Filed';
         logFrontendAction('GST_BULK_FILED', `Marked GSTR filing as filed for ${c.name || c.business_name || 'Client'}`, c.id);
       });
-      showToast(`Bulk filed ${readyClients.length} GST returns.`);
+      showToast(`Bulk filed ${readyClients.length} GST returns.`, 'success');
       renderGSTCenter();
-    };
+    });
   }
 
   picker.onchange = renderGSTCenter;
@@ -1377,11 +1389,20 @@ function bindSettingsActions() {
   if (firmForm) {
     firmForm.onsubmit = (e) => {
       e.preventDefault();
+      const submitBtn = firmForm.querySelector('button[type="submit"]');
+      withButtonState(submitBtn, 'Saving', async () => {
       const session = getCASession();
       const firmName = document.getElementById('settings-firm-name').value.trim();
       const principalName = document.getElementById('settings-principal-name').value.trim();
       const membershipId = document.getElementById('settings-membership-id').value.trim();
       const frnId = document.getElementById('settings-frn-id').value.trim();
+      if (!firmName || !principalName) {
+        setFieldStatus(document.getElementById(!firmName ? 'settings-firm-name' : 'settings-principal-name'), 'This field is required.');
+        showToast('Complete the required firm profile fields.', 'error');
+        return;
+      }
+      ['settings-firm-name', 'settings-principal-name'].forEach(id => setFieldStatus(document.getElementById(id), '', 'success'));
+      await sleep(250);
       localStorage.setItem('taxbot_settings_firm', JSON.stringify({ firmName, principalName, membershipId, frnId }));
       if (session) {
         session.firm_name = firmName;
@@ -1393,36 +1414,41 @@ function bindSettingsActions() {
         if (headerName) headerName.textContent = session.name;
       }
       logFrontendAction('SETTINGS_FIRM_SAVED', `Updated firm settings for ${firmName || 'CA firm'}`);
-      showToast('Firm profile settings saved.');
+      showToast('Firm profile settings saved.', 'success');
+      });
     };
   }
 
   const inviteBtn = document.getElementById('btn-settings-invite-user');
   if (inviteBtn) {
-    inviteBtn.onclick = () => {
+    inviteBtn.onclick = () => withButtonState(inviteBtn, 'Sending invite', async () => {
       const emailInput = document.getElementById('settings-invite-email');
       const roleInput = document.getElementById('settings-invite-role');
       const email = emailInput.value.trim();
       const role = roleInput.value;
-      if (!email || !email.includes('@')) {
-        showToast('Enter a valid email address for the invite.');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setFieldStatus(emailInput, 'Enter a valid email address.');
+        showToast('Enter a valid email address for the invite.', 'error');
         emailInput.focus();
         return;
       }
-      showToast(`Invite sent to ${email}.`);
+      setFieldStatus(emailInput, '', 'success');
+      await sleep(350);
+      showToast(`Invite sent to ${email}.`, 'success');
       logFrontendAction('SETTINGS_USER_INVITED', `Invited ${email} as ${role}`);
       emailInput.value = '';
       renderSettingsUsers();
-    };
+    });
   }
 
   const exportUsersBtn = document.getElementById('btn-settings-export-users');
   if (exportUsersBtn) {
-    exportUsersBtn.onclick = () => {
+    exportUsersBtn.onclick = () => withButtonState(exportUsersBtn, 'Exporting', async () => {
+      await sleep(250);
       const rows = ['Name,Role,Access', 'Sandeep,FCA Principal & Owner,Admin', 'Rohan Gupta,Assistant Auditor,Edit Access'];
       downloadTextFile('taxbot-console-users.csv', rows.join('\r\n'), 'text/csv;charset=utf-8;');
-      showToast('Users exported.');
-    };
+      showToast('Users exported.', 'success');
+    });
   }
 
   document.querySelectorAll('.settings-switch').forEach(toggle => {
@@ -1434,20 +1460,22 @@ function bindSettingsActions() {
 
   const saveNotificationsBtn = document.getElementById('btn-settings-save-notifications');
   if (saveNotificationsBtn) {
-    saveNotificationsBtn.onclick = () => {
+    saveNotificationsBtn.onclick = () => withButtonState(saveNotificationsBtn, 'Saving', async () => {
       const settings = {};
       document.querySelectorAll('#settings-notification-options .settings-switch').forEach(toggle => {
         settings[toggle.getAttribute('data-setting-key')] = toggle.getAttribute('aria-pressed') === 'true';
       });
+      await sleep(250);
       localStorage.setItem('taxbot_notification_settings', JSON.stringify(settings));
       logFrontendAction('SETTINGS_NOTIFICATIONS_SAVED', 'Updated console notification preferences');
-      showToast('Notification settings saved.');
-    };
+      showToast('Notification settings saved.', 'success');
+    });
   }
 
   const testNotificationBtn = document.getElementById('btn-settings-test-notification');
   if (testNotificationBtn) {
-    testNotificationBtn.onclick = () => {
+    testNotificationBtn.onclick = () => withButtonState(testNotificationBtn, 'Sending test', async () => {
+      await sleep(250);
       globalNotifications.unshift({
         id: `notif-test-${Date.now()}`,
         title: 'Test Notification',
@@ -1459,38 +1487,50 @@ function bindSettingsActions() {
       });
       updateNotificationIndicator();
       renderNotificationsList();
-      showToast('Test notification added.');
-    };
+      showToast('Test notification added.', 'success');
+    });
   }
 
   document.querySelectorAll('[data-integration-test]').forEach(btn => {
-    btn.onclick = () => {
+    btn.onclick = () => withButtonState(btn, 'Testing', async () => {
       const name = btn.getAttribute('data-integration-test');
       showToast(`Testing ${name}...`);
-      setTimeout(() => showToast(`${name} connection looks healthy.`), 600);
+      await sleep(600);
+      showToast(`${name} connection looks healthy.`, 'success');
       logFrontendAction('SETTINGS_INTEGRATION_TESTED', `Tested ${name} integration`);
-    };
+    });
   });
 
   const gstForm = document.getElementById('form-settings-gst');
   if (gstForm) {
     gstForm.onsubmit = (e) => {
       e.preventDefault();
+      const submitBtn = gstForm.querySelector('button[type="submit"]');
+      withButtonState(submitBtn, 'Saving', async () => {
       const clientId = document.getElementById('settings-gsp-client-id').value.trim();
       const env = document.getElementById('settings-gsp-env').value;
       const hasSecret = Boolean(document.getElementById('settings-gsp-secret').value.trim());
+      if (!clientId) {
+        setFieldStatus(document.getElementById('settings-gsp-client-id'), 'Enter the GSP client ID.');
+        showToast('GSP client ID is required.', 'error');
+        return;
+      }
+      setFieldStatus(document.getElementById('settings-gsp-client-id'), '', 'success');
+      await sleep(250);
       localStorage.setItem('taxbot_gst_settings', JSON.stringify({ clientId, env, hasSecret }));
       logFrontendAction('SETTINGS_GST_SAVED', `Updated GST ${env} credentials`);
-      showToast('GST credentials saved.');
+      showToast('GST credentials saved.', 'success');
+      });
     };
   }
 
   const testGstBtn = document.getElementById('btn-settings-test-gst');
   if (testGstBtn) {
-    testGstBtn.onclick = () => {
+    testGstBtn.onclick = () => withButtonState(testGstBtn, 'Testing GST', async () => {
       showToast('Testing GST portal connection...');
-      setTimeout(() => showToast('GST portal credentials validated for the selected environment.'), 700);
-    };
+      await sleep(700);
+      showToast('GST portal credentials validated for the selected environment.', 'success');
+    });
   }
 
   const copyApiBtn = document.getElementById('btn-settings-copy-api-key');
@@ -1500,42 +1540,47 @@ function bindSettingsActions() {
 
   const regenerateApiBtn = document.getElementById('btn-settings-regenerate-api-key');
   if (regenerateApiBtn) {
-    regenerateApiBtn.onclick = () => {
+    regenerateApiBtn.onclick = () => withButtonState(regenerateApiBtn, 'Regenerating', async () => {
+      await sleep(350);
       const keyEl = document.getElementById('settings-api-key-value');
       const token = `tb_live_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36).slice(-8)}`;
       keyEl.textContent = token;
       logFrontendAction('SETTINGS_API_KEY_REGENERATED', 'Regenerated partner API key');
-      showToast('New API key generated.');
-    };
+      showToast('New API key generated.', 'success');
+    });
   }
 
   const saveWebhookBtn = document.getElementById('btn-settings-save-webhook');
   if (saveWebhookBtn) {
-    saveWebhookBtn.onclick = () => {
+    saveWebhookBtn.onclick = () => withButtonState(saveWebhookBtn, 'Saving webhook', async () => {
       const webhookInput = document.getElementById('settings-webhook-url');
       const webhookUrl = webhookInput.value.trim();
       if (!/^https:\/\/.+/i.test(webhookUrl)) {
-        showToast('Webhook URL must start with https://');
+        setFieldStatus(webhookInput, 'Use a valid HTTPS endpoint.');
+        showToast('Webhook URL must start with https://', 'error');
         webhookInput.focus();
         return;
       }
+      setFieldStatus(webhookInput, '', 'success');
+      await sleep(250);
       localStorage.setItem('taxbot_webhook_url', webhookUrl);
       logFrontendAction('SETTINGS_WEBHOOK_SAVED', `Updated webhook receiver ${webhookUrl}`);
-      showToast('Webhook receiver saved.');
-    };
+      showToast('Webhook receiver saved.', 'success');
+    });
   }
 
   const testWebhookBtn = document.getElementById('btn-settings-test-webhook');
   if (testWebhookBtn) {
-    testWebhookBtn.onclick = () => {
+    testWebhookBtn.onclick = () => withButtonState(testWebhookBtn, 'Sending test', async () => {
       const webhookUrl = document.getElementById('settings-webhook-url').value.trim();
       if (!/^https:\/\/.+/i.test(webhookUrl)) {
-        showToast('Save a valid HTTPS webhook URL first.');
+        showToast('Save a valid HTTPS webhook URL first.', 'error');
         return;
       }
       showToast('Sending test webhook payload...');
-      setTimeout(() => showToast('Test webhook payload queued.'), 650);
-    };
+      await sleep(650);
+      showToast('Test webhook payload queued.', 'success');
+    });
   }
 
   restoreSettingsState();
@@ -1667,49 +1712,26 @@ function initModals() {
     }
   };
 
-  // Sidebar toggle collapse
-  const sidebar = document.getElementById('app-sidebar');
-  const toggleBtn = document.getElementById('sidebar-toggle');
-  if (sidebar && toggleBtn) {
-    toggleBtn.onclick = () => {
-      sidebar.classList.toggle('collapsed');
-    };
-  }
-
-  // Mobile sidebar menu toggle handlers
-  const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-  const sidebarBackdrop = document.getElementById('sidebar-backdrop');
-  
-  if (mobileMenuToggle && sidebarBackdrop) {
-    mobileMenuToggle.onclick = () => {
-      sidebar.classList.add('drawer-open');
-      sidebarBackdrop.classList.add('active');
-    };
-    
-    sidebarBackdrop.onclick = () => {
-      sidebar.classList.remove('drawer-open');
-      sidebarBackdrop.classList.remove('active');
-    };
-
-    // Auto-close drawer when clicking links in mobile view
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', () => {
-        sidebar.classList.remove('drawer-open');
-        sidebarBackdrop.classList.remove('active');
-      });
-    });
-  }
 }
 
 // --------------------------------------------------------------------------
 // 8. Interactive Toast & App Bindings
 // --------------------------------------------------------------------------
-function showToast(message) {
+function showToast(message, type = 'info') {
   const root = document.getElementById('toast-root');
   const toast = document.createElement('div');
-  toast.className = 'toast';
+  const normalizedType = ['success', 'warning', 'error', 'info'].includes(type) ? type : 'info';
+  toast.className = `toast toast-${normalizedType}`;
+  toast.setAttribute('role', 'status');
+  toast.setAttribute('aria-live', normalizedType === 'error' ? 'assertive' : 'polite');
   const icon = document.createElement('i');
-  icon.setAttribute('data-lucide', 'info');
+  const iconMap = {
+    success: 'check-circle',
+    warning: 'alert-triangle',
+    error: 'x-circle',
+    info: 'info',
+  };
+  icon.setAttribute('data-lucide', iconMap[normalizedType]);
   icon.style.width = '16px';
   icon.style.height = '16px';
   const label = document.createElement('span');
@@ -1726,35 +1748,18 @@ function showToast(message) {
 
 // Initialization bootstrap
 document.addEventListener('DOMContentLoaded', () => {
-  // Theme toggle initialization & check
   const themeToggleBtn = document.getElementById('theme-toggle-btn');
   const themeToggleIcon = document.getElementById('theme-toggle-icon');
-  const savedTheme = localStorage.getItem('taxbot_theme');
-  if (savedTheme === 'dark') {
-    document.body.classList.add('dark-theme');
-    document.documentElement.classList.add('dark');
-    if (themeToggleIcon) {
-      themeToggleIcon.setAttribute('data-lucide', 'sun');
-    }
-  } else {
-    document.body.classList.remove('dark-theme');
-    document.documentElement.classList.remove('dark');
-  }
-
-  if (themeToggleBtn) {
-    themeToggleBtn.onclick = () => {
-      const isDark = document.body.classList.toggle('dark-theme');
-      document.documentElement.classList.toggle('dark', isDark);
-      localStorage.setItem('taxbot_theme', isDark ? 'dark' : 'light');
+  if (window.TaxBotTheme) {
+    window.TaxBotTheme.bindToggle([themeToggleBtn], (theme) => {
       if (themeToggleIcon) {
-        themeToggleIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+        themeToggleIcon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
         if (typeof lucide !== 'undefined') {
           lucide.createIcons();
         }
       }
-      // Dynamically update active Chart.js colors
       if (typeof updateChartsTheme === 'function') updateChartsTheme();
-    };
+    });
   }
 
   setupAuthHandlers();

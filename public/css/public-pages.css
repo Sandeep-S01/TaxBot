@@ -1,0 +1,352 @@
+/* TaxBot public/auth polish: landing, login, and registration parity layer. */
+
+body {
+  text-rendering: optimizeLegibility;
+}
+
+body,
+#main,
+#auth-layout {
+  min-width: 0;
+}
+
+body :is(a, button, input, select, textarea):focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring) !important;
+}
+
+body :is(a, button) {
+  touch-action: manipulation;
+}
+
+body :is(.bg-primary, .primary-cta, a[href*="wa.me"].bg-primary) {
+  background: var(--primary) !important;
+  color: rgb(var(--color-night-950)) !important;
+  border-color: var(--primary) !important;
+  border-radius: var(--radius-8) !important;
+  font-weight: 750 !important;
+}
+
+body :is(.bg-primary, .primary-cta, a[href*="wa.me"].bg-primary):hover {
+  background: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+  opacity: 1 !important;
+}
+
+body :is(.text-primary, .material-icons.text-primary) {
+  color: var(--primary-hover) !important;
+}
+
+body.dark-theme :is(.text-primary, .material-icons.text-primary),
+:root.dark body :is(.text-primary, .material-icons.text-primary) {
+  color: var(--primary) !important;
+}
+
+body :is(.text-text-muted, .text-gray-400, .text-gray-500, .text-gray-600) {
+  color: var(--text-secondary) !important;
+}
+
+body :is(.text-gray-700, .dark\:text-gray-300) {
+  color: var(--text-secondary) !important;
+}
+
+body :is(.text-green-500, .text-green-600, .text-green-400) {
+  color: var(--success) !important;
+}
+
+body :is(.text-yellow-500, .text-yellow-600, .text-yellow-400) {
+  color: var(--warning) !important;
+}
+
+body :is(.text-red-500, .text-red-600, .text-red-400) {
+  color: var(--error) !important;
+}
+
+body :is(.text-blue-500, .text-blue-600, .text-blue-400) {
+  color: var(--info) !important;
+}
+
+body :is(.bg-white, .dark\:bg-card-dark) {
+  background: var(--bg-card) !important;
+}
+
+body :is(.bg-gray-50, .dark\:bg-\[\#0a1114\], .dark\:bg-background-dark) {
+  background: var(--bg-app) !important;
+}
+
+body :is(.border-gray-100, .border-gray-200, .border-gray-300, .dark\:border-border-dark) {
+  border-color: var(--border) !important;
+}
+
+#main :is(section, footer) {
+  overflow-x: clip;
+}
+
+#main :is(h1, h2) {
+  color: var(--text-primary) !important;
+  letter-spacing: 0 !important;
+}
+
+#main :is(h3, h4, summary) {
+  color: var(--text-primary) !important;
+}
+
+#main p,
+footer p,
+footer a {
+  color: var(--text-secondary) !important;
+}
+
+#main :is(.rounded-2xl, .rounded-xl),
+#modal-security :is(.rounded-2xl, .rounded-xl),
+#auth-layout :is(.rounded-2xl, .rounded-xl) {
+  border-radius: var(--radius-8) !important;
+}
+
+#main :is(.shadow-2xl, .shadow-xl, .shadow-sm),
+#auth-layout :is(.shadow-2xl, .shadow-xl, .shadow-sm) {
+  box-shadow: var(--shadow-sm) !important;
+}
+
+#main nav {
+  background: rgb(var(--color-surface-card-rgb) / 0.92) !important;
+  border-color: var(--border) !important;
+}
+
+#main nav a,
+nav a,
+nav button {
+  min-height: 38px;
+  border-radius: var(--radius-8) !important;
+}
+
+#mobile-nav-links {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow-overlay) !important;
+}
+
+#main :is(a, button) {
+  min-height: 38px;
+}
+
+#main :is(a.border, button.border) {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+}
+
+#main :is(a.border, button.border):hover {
+  background: var(--bg-app) !important;
+  border-color: rgb(var(--color-accent-rgb) / 0.52) !important;
+}
+
+#product,
+#workflow,
+#main section.bg-\[\#111c1f\] {
+  background: rgb(var(--color-night-950)) !important;
+  color: rgb(var(--color-white)) !important;
+}
+
+#product :is(h2, h3, h4, p, span, div),
+#workflow :is(h2, h3, h4, p, span, div),
+#main section.bg-\[\#111c1f\] :is(h2, h3, h4, p, span, div) {
+  color: inherit;
+}
+
+#product :is(.text-text-muted, .text-gray-400),
+#workflow :is(.text-text-muted, .text-gray-400),
+#main section.bg-\[\#111c1f\] :is(.text-text-muted, .text-gray-400) {
+  color: rgb(195 210 213) !important;
+}
+
+#main :is(.bg-card-dark, .dark\:bg-card-dark, .bg-\[\#0e1a1d\], .bg-\[\#1f2f33\]) {
+  background: rgb(var(--color-night-900)) !important;
+}
+
+#main :is(.border-border-dark, .dark\:border-border-dark) {
+  border-color: rgb(var(--color-night-700)) !important;
+}
+
+#modal-security {
+  background: rgb(7 17 31 / 0.62) !important;
+  visibility: hidden;
+}
+
+#modal-security.active {
+  visibility: visible;
+}
+
+#modal-security > div {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius-8) !important;
+}
+
+#modal-security :is(h3, strong) {
+  color: var(--text-primary) !important;
+}
+
+#modal-security :is(p, li, #sec-modal-body) {
+  color: var(--text-secondary) !important;
+}
+
+#modal-security pre {
+  background: var(--bg-app) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+  white-space: pre-wrap;
+}
+
+#auth-layout {
+  min-height: 100dvh !important;
+  padding: clamp(20px, 5vh, 40px) 16px !important;
+  background:
+    radial-gradient(circle at top left, rgb(var(--color-accent-rgb) / 0.09), transparent 32rem),
+    var(--bg-app) !important;
+}
+
+#auth-layout > div {
+  max-width: 430px !important;
+  padding: 32px !important;
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius-8) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+#auth-layout .auth-header {
+  margin-bottom: 24px;
+}
+
+#auth-layout .brand-logo {
+  gap: 10px !important;
+  margin-bottom: 18px !important;
+}
+
+#auth-layout .brand-badge {
+  background: var(--primary-light) !important;
+  color: var(--primary-hover) !important;
+  border-radius: var(--radius-6) !important;
+}
+
+#auth-layout #auth-title {
+  color: var(--text-primary) !important;
+  font-size: 24px !important;
+  line-height: 1.25 !important;
+}
+
+#auth-layout #auth-subtitle,
+#auth-layout #auth-switch-text {
+  color: var(--text-secondary) !important;
+}
+
+#auth-layout .auth-form {
+  margin-top: 24px !important;
+}
+
+#auth-layout .auth-form > div,
+#auth-layout .auth-form .form-group {
+  margin-top: 0 !important;
+}
+
+#auth-layout .auth-form > * + * {
+  margin-top: 16px !important;
+}
+
+#auth-layout .auth-form label {
+  color: var(--text-secondary) !important;
+  letter-spacing: 0.04em !important;
+}
+
+#auth-layout .auth-form input {
+  min-height: 44px;
+  height: 44px;
+  background: var(--bg-app) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius-8) !important;
+  caret-color: var(--text-primary);
+  -webkit-text-fill-color: var(--text-primary);
+}
+
+#auth-layout .auth-form input::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 1;
+  -webkit-text-fill-color: var(--text-muted);
+}
+
+#auth-layout .auth-form input:focus {
+  border-color: rgb(var(--color-accent-rgb) / 0.72) !important;
+  box-shadow: var(--focus-ring) !important;
+}
+
+#auth-layout .auth-form button[type="submit"] {
+  min-height: 44px;
+  margin-top: 24px !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--primary) !important;
+  color: rgb(var(--color-night-950)) !important;
+  font-weight: 750 !important;
+}
+
+#auth-layout #btn-switch-auth {
+  min-height: 32px;
+  color: var(--primary-hover) !important;
+  border-radius: var(--radius-6) !important;
+}
+
+body.dark-theme #auth-layout #btn-switch-auth,
+:root.dark body #auth-layout #btn-switch-auth {
+  color: var(--primary) !important;
+}
+
+@media (max-width: 768px) {
+  #main section {
+    padding-top: 72px !important;
+    padding-bottom: 72px !important;
+  }
+
+  #main section:first-child {
+    padding-top: 112px !important;
+  }
+
+  #main h1 {
+    font-size: 42px !important;
+    line-height: 1.12 !important;
+  }
+
+  #main h2 {
+    font-size: 34px !important;
+    line-height: 1.16 !important;
+  }
+
+  #main :is(.p-10, .p-8) {
+    padding: 24px !important;
+  }
+
+  #main :is(.grid, .flex) {
+    min-width: 0;
+  }
+
+  #auth-layout > div {
+    padding: 24px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  #main h1 {
+    font-size: 36px !important;
+  }
+
+  #main h2 {
+    font-size: 30px !important;
+  }
+
+  #main :is(a, button) {
+    width: auto;
+    max-width: 100%;
+  }
+}

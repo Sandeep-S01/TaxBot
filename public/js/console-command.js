@@ -17,6 +17,8 @@ const commandSuggestions = [
 
 function initCommandBar() {
   if (!commandModal || !commandTrigger || !commandInput || !commandResults) return;
+  if (commandModal.dataset.commandInitialized === 'true') return;
+  commandModal.dataset.commandInitialized = 'true';
 
   let selectedIndex = -1;
 
@@ -30,23 +32,31 @@ function initCommandBar() {
   commandTrigger.onclick = openBar;
 
   function openBar() {
+    window.dispatchEvent(new CustomEvent('taxbot:shell-modal-open', {
+      detail: { source: 'command-bar' }
+    }));
     commandModal.classList.remove('hidden');
+    commandTrigger.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('shell-modal-open');
     commandInput.focus();
     renderList('');
   }
 
-  function closeBar() {
+  function closeBar(restoreFocus = false) {
     commandModal.classList.add('hidden');
+    commandTrigger.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('shell-modal-open');
     commandInput.value = '';
     selectedIndex = -1;
+    if (restoreFocus) commandTrigger.focus();
   }
 
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeBar();
+    if (e.key === 'Escape' && !commandModal.classList.contains('hidden')) closeBar(true);
   });
 
   commandModal.onclick = (e) => {
-    if (e.target === commandModal) closeBar();
+    if (e.target === commandModal) closeBar(true);
   };
 
   commandInput.oninput = (e) => {

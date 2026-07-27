@@ -6,6 +6,7 @@
   <title>TaxBot Partner Console | AI-First CA Platform</title>
   <meta name="description" content="TaxBot Partner Console provides Chartered Accountants with automated bookkeeping, real-time GST reconciliation, AI client insights, and seamless WhatsApp document capture.">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2329e3c1' stroke-width='2'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E">
+  <script src="js/theme.js"></script>
 
   <!-- Premium Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,35 +17,8 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <script>
-      tailwind.config = {
-          darkMode: ["class", ".dark-theme"],
-          theme: {
-              extend: {
-                  colors: {
-                      primary: "#14b8a6",
-                      "background-light": "#f4f7f8",
-                      "background-dark": "#0a1519",
-                      "card-dark": "#132326",
-                      "border-dark": "#2a3f45",
-                      "text-muted": "#52636b"
-                  },
-                  fontFamily: {
-                      display: ["Space Grotesk", "sans-serif"],
-                      body: ["Inter", "sans-serif"],
-                  },
-                  borderRadius: {
-                      DEFAULT: "0.5rem",
-                      'xl': "1rem",
-                      '2xl': "1.5rem"
-                  }
-              },
-          },
-      };
-  </script>
-
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <link href="css/tailwind.css" rel="stylesheet">
+  <link href="css/tokens.css" rel="stylesheet">
 
   <style>
     body {
@@ -210,58 +184,6 @@
         opacity: 1;
         pointer-events: auto;
       }
-    }
-
-    /* Keep CSS variables mapping so console-charts.js and dynamic widgets can fetch colors */
-    :root {
-      --bg-app: #f4f7f8;
-      --bg-card: #ffffff;
-      --border: #d5dee3;
-      --primary: #14b8a6;
-      --primary-hover: #0f766e;
-      --primary-light: rgba(20, 184, 166, 0.13);
-      --success: #15803d;
-      --success-light: rgba(34, 197, 94, 0.1);
-      --warning: #b45309;
-      --warning-light: rgba(234, 179, 8, 0.1);
-      --error: #dc2626;
-      --error-light: rgba(239, 68, 68, 0.1);
-      --info: #2563eb;
-      --info-light: rgba(59, 130, 246, 0.1);
-      --text-primary: #07111f;
-      --text-secondary: #334155;
-      --text-muted: #52636b;
-      --text-light: #ffffff;
-      --space-8: 8px;
-      --space-16: 16px;
-      --space-20: 16px;
-      --space-24: 24px;
-      --space-12: 12px;
-      --space-32: 32px;
-      --radius-8: 8px;
-      --radius-12: 12px;
-      --radius-6: 6px;
-      --radius-4: 4px;
-    }
-
-    body.dark-theme {
-      --bg-app: #0a1519;
-      --bg-card: #132326;
-      --border: #2a3f45;
-      --primary: #29e3c1;
-      --primary-hover: #5eead4;
-      --primary-light: rgba(41, 227, 193, 0.15);
-      --success: #10b981;
-      --success-light: rgba(16, 185, 129, 0.15);
-      --warning: #f59e0b;
-      --warning-light: rgba(245, 158, 11, 0.15);
-      --error: #ef4444;
-      --error-light: rgba(239, 68, 68, 0.15);
-      --info: #3b82f6;
-      --info-light: rgba(59, 130, 246, 0.15);
-      --text-primary: #f4fbfa;
-      --text-secondary: #c3d2d5;
-      --text-muted: #a4b5ba;
     }
 
     .text-text-muted,
@@ -1406,6 +1328,8 @@
       box-shadow: 0 0 0 2px rgba(41, 227, 193, 0.15) !important;
     }
   </style>
+  <link href="css/public-pages.css" rel="stylesheet">
+  <link href="css/console-shell.css" rel="stylesheet">
 </head>
 <body class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 min-h-screen antialiased transition-colors duration-300">
 
@@ -1472,13 +1396,13 @@
     <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 
     <!-- Left Sidebar -->
-    <aside class="app-sidebar border-r border-gray-200 dark:border-border-dark bg-white dark:bg-[#0a1114] flex flex-col h-screen transition-all duration-300 flex-shrink-0 z-40" id="app-sidebar">
+    <aside class="app-sidebar border-r border-gray-200 dark:border-border-dark bg-white dark:bg-[#0a1114] flex flex-col h-screen transition-all duration-300 flex-shrink-0 z-40" id="app-sidebar" aria-label="Primary navigation">
       <div class="sidebar-header flex items-center justify-between p-4 border-b border-gray-200 dark:border-border-dark h-16 flex-shrink-0">
         <div class="flex items-center space-x-2 brand-logo">
           <span class="material-icons text-primary">receipt_long</span>
           <span class="font-bold text-lg tracking-tighter text-gray-900 dark:text-white brand-name">TaxBot <span class="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded font-semibold ml-1 brand-badge">Partner</span></span>
         </div>
-        <button class="text-text-muted hover:text-primary transition-colors p-1 border border-gray-200 dark:border-border-dark rounded bg-white dark:bg-card-dark/50 sidebar-collapse-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <button type="button" class="text-text-muted hover:text-primary transition-colors p-1 border border-gray-200 dark:border-border-dark rounded bg-white dark:bg-card-dark/50 sidebar-collapse-btn" id="sidebar-toggle" aria-label="Collapse sidebar" aria-pressed="false">
           <i data-lucide="chevron-left" class="w-4 h-4"></i>
         </button>
       </div>
@@ -1568,10 +1492,10 @@
       <!-- Top Header Navigation -->
       <header class="app-header h-16 bg-white dark:bg-card-dark border-b border-gray-200 dark:border-border-dark flex items-center justify-between px-6 flex-shrink-0 z-30">
         <div class="header-left flex items-center w-full max-w-md gap-4">
-          <button class="mobile-menu-btn md:hidden text-text-muted hover:text-primary transition-colors p-2" id="mobile-menu-toggle" aria-label="Toggle Menu">
+          <button type="button" class="mobile-menu-btn md:hidden text-text-muted hover:text-primary transition-colors p-2" id="mobile-menu-toggle" aria-label="Open navigation menu" aria-controls="app-sidebar" aria-expanded="false">
             <i data-lucide="menu" class="w-5 h-5"></i>
           </button>
-          <button class="command-bar-trigger w-full flex items-center space-x-3 px-4 py-2 border border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-[#0e1a1d] rounded-lg text-text-muted hover:border-primary/50 transition-colors text-sm" id="global-command-trigger">
+          <button type="button" class="command-bar-trigger w-full flex items-center space-x-3 px-4 py-2 border border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-[#0e1a1d] rounded-lg text-text-muted hover:border-primary/50 transition-colors text-sm" id="global-command-trigger" aria-haspopup="dialog" aria-controls="global-command-modal" aria-expanded="false">
             <i data-lucide="search" class="w-4 h-4 search-icon"></i>
             <span class="trigger-placeholder flex-grow text-left">Ask TaxBot anything...</span>
             <kbd class="kbd-shortcut bg-white dark:bg-[#1a2b30] border border-gray-200 dark:border-border-dark rounded px-1.5 py-0.5 text-[10px]">Ctrl K</kbd>
@@ -1580,22 +1504,22 @@
 
         <div class="header-right flex items-center space-x-4">
           <!-- Theme Toggle -->
-          <button class="header-btn w-9 h-9 flex items-center justify-center border border-gray-200 dark:border-border-dark rounded-lg text-text-muted hover:text-primary transition-colors bg-white dark:bg-card-dark/50" id="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
+          <button type="button" class="header-btn w-9 h-9 flex items-center justify-center border border-gray-200 dark:border-border-dark rounded-lg text-text-muted hover:text-primary transition-colors bg-white dark:bg-card-dark/50" id="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
             <i data-lucide="moon" id="theme-toggle-icon" class="w-4 h-4"></i>
           </button>
 
           <!-- Notifications -->
           <div class="notification-dropdown relative">
-            <button class="header-btn w-9 h-9 flex items-center justify-center border border-gray-200 dark:border-border-dark rounded-lg text-text-muted hover:text-primary transition-colors bg-white dark:bg-card-dark/50" id="notification-btn" aria-label="Notifications">
+            <button type="button" class="header-btn w-9 h-9 flex items-center justify-center border border-gray-200 dark:border-border-dark rounded-lg text-text-muted hover:text-primary transition-colors bg-white dark:bg-card-dark/50" id="notification-btn" aria-label="Notifications" aria-haspopup="true" aria-controls="notifications-dropdown-menu" aria-expanded="false">
               <i data-lucide="bell" class="w-4 h-4"></i>
               <span class="indicator-dot absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-card-dark"></span>
             </button>
-            <div class="dropdown-menu hidden absolute right-0 mt-2 w-80 bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-xl shadow-2xl z-50 overflow-hidden" id="notifications-dropdown-menu">
+            <div class="dropdown-menu hidden absolute right-0 mt-2 w-80 bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-xl shadow-2xl z-50 overflow-hidden" id="notifications-dropdown-menu" aria-label="Notifications">
               <div class="dropdown-header flex justify-between items-center px-4 py-3 border-b border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-[#0e1a1d]">
                 <span class="font-bold text-gray-900 dark:text-white text-sm">Notifications</span>
-                <button class="text-xs text-primary font-semibold hover:underline btn-text" id="btn-mark-all-read">Mark all read</button>
+                <button type="button" class="text-xs text-primary font-semibold hover:underline btn-text" id="btn-mark-all-read">Mark all read</button>
               </div>
-              <div class="dropdown-body max-h-80 overflow-y-auto p-2 space-y-1" id="notifications-list">
+              <div class="dropdown-body max-h-80 overflow-y-auto p-2 space-y-1" id="notifications-list" role="list">
                 <!-- Dynamic notification items -->
               </div>
             </div>
@@ -1609,10 +1533,26 @@
 
           <!-- User Profile Dropdown -->
           <div class="profile-dropdown flex items-center space-x-2">
-            <button class="profile-btn flex items-center space-x-2 text-left" id="profile-menu-btn">
+            <button type="button" class="profile-btn flex items-center space-x-2 text-left" id="profile-menu-btn" aria-haspopup="menu" aria-controls="profile-menu" aria-expanded="false">
               <div class="w-8 h-8 rounded-lg bg-primary text-background-dark flex items-center justify-center font-bold text-xs profile-avatar" id="ca-header-avatar-letter">S</div>
               <span class="profile-name text-sm font-semibold hidden md:inline text-gray-900 dark:text-white" id="ca-display-header-name">Sandeep Sharma</span>
             </button>
+            <div class="shell-menu" id="profile-menu" role="menu" hidden>
+              <div class="profile-menu-summary">
+                <span class="profile-menu-name" id="profile-menu-display-name">Sandeep Sharma</span>
+                <span class="profile-menu-email" id="profile-menu-display-email">ca@taxbot.in</span>
+              </div>
+              <div class="profile-menu-actions">
+                <button type="button" class="profile-menu-item" id="profile-menu-settings" role="menuitem">
+                  <i data-lucide="settings"></i>
+                  <span>Console settings</span>
+                </button>
+                <button type="button" class="profile-menu-item danger" id="profile-menu-logout" role="menuitem">
+                  <i data-lucide="log-out"></i>
+                  <span>Sign out</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -2738,7 +2678,7 @@
   </div>
 
   <!-- GLOBAL AI COMMAND BAR (RAYCAST / SPOTLIGHT STYLE MODAL) -->
-  <div class="command-bar-backdrop fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/60 backdrop-blur-sm hidden" id="global-command-modal">
+  <div class="command-bar-backdrop fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/60 backdrop-blur-sm hidden" id="global-command-modal" role="dialog" aria-modal="true" aria-label="Ask TaxBot">
     <div class="bg-card-dark border border-border-dark rounded-2xl max-w-2xl w-full mt-24 overflow-hidden shadow-2xl flex flex-col command-bar-dialog">
       <div class="flex items-center px-4 py-3 border-b border-border-dark bg-[#0e1a1d] command-bar-input-wrap">
         <i data-lucide="sparkles" class="text-primary w-5 h-5 mr-3 ai-sparkles-icon"></i>
@@ -2813,6 +2753,7 @@
   <script src="js/console-utils.js"></script>
   <script src="js/console-api.js"></script>
   <script src="js/console-auth.js"></script>
+  <script src="js/console-shell.js"></script>
   <script src="js/console-command.js"></script>
   <script src="js/console-exports.js"></script>
   <script src="js/console-audit.js"></script>

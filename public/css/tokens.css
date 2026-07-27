@@ -1,0 +1,158 @@
+/*
+ * TaxBot design tokens
+ * Primitive values -> semantic roles -> compatibility/component aliases.
+ * Components should consume semantic or compatibility tokens, not raw colors.
+ */
+
+:root {
+  /* Primitive palette */
+  --color-ink-950: 7 17 31;
+  --color-ink-700: 51 65 85;
+  --color-ink-600: 82 99 107;
+  --color-white: 255 255 255;
+  --color-mist-50: 244 247 248;
+  --color-mist-200: 213 222 227;
+  --color-teal-300: 94 234 212;
+  --color-teal-400: 41 227 193;
+  --color-teal-500: 20 184 166;
+  --color-teal-700: 15 118 110;
+  --color-night-950: 10 21 25;
+  --color-night-900: 19 35 38;
+  --color-night-700: 42 63 69;
+  --color-green-600: 21 128 61;
+  --color-green-500: 16 185 129;
+  --color-amber-700: 180 83 9;
+  --color-amber-500: 245 158 11;
+  --color-red-600: 220 38 38;
+  --color-red-500: 239 68 68;
+  --color-blue-600: 37 99 235;
+  --color-blue-500: 59 130 246;
+
+  /* Foundations */
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-heading: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-size-caption: 12px;
+  --font-size-small: 14px;
+  --font-size-body: 16px;
+  --font-size-heading-3: 20px;
+  --font-size-heading-2: 24px;
+  --font-size-heading-1: 32px;
+  --line-height-tight: 1.2;
+  --line-height-body: 1.5;
+  --line-height-relaxed: 1.65;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --radius-4: 4px;
+  --radius-6: 6px;
+  --radius-8: 8px;
+  --radius-12: 12px;
+  --radius-16: 16px;
+  --radius-sm: var(--radius-4);
+  --radius-md: var(--radius-8);
+  --radius-lg: var(--radius-12);
+  --radius-round: 999px;
+  --shadow-sm: 0 1px 2px rgb(7 17 31 / 0.06);
+  --shadow-md: 0 8px 24px rgb(7 17 31 / 0.1);
+  --shadow-lg: 0 20px 48px rgb(7 17 31 / 0.16);
+  --shadow-overlay: 0 24px 64px rgb(7 17 31 / 0.24);
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  --z-header: 30;
+  --z-dropdown: 40;
+  --z-drawer: 50;
+  --z-modal: 60;
+  --z-toast: 70;
+  --z-command: 80;
+
+  /* Application shell */
+  --shell-sidebar-expanded: 248px;
+  --shell-sidebar-collapsed: 72px;
+  --shell-header-height: 64px;
+  --shell-action-size: 36px;
+  --shell-content-gutter: 24px;
+
+  /* Semantic light theme */
+  --color-surface-app-rgb: var(--color-mist-50);
+  --color-surface-card-rgb: var(--color-white);
+  --color-surface-elevated-rgb: var(--color-white);
+  --color-border-rgb: var(--color-mist-200);
+  --color-text-primary-rgb: var(--color-ink-950);
+  --color-text-secondary-rgb: var(--color-ink-700);
+  --color-text-muted-rgb: var(--color-ink-600);
+  --color-accent-rgb: var(--color-teal-500);
+  --color-accent-hover-rgb: var(--color-teal-700);
+  --color-success-rgb: 4 120 87;
+  --color-warning-rgb: var(--color-amber-700);
+  --color-error-rgb: var(--color-red-600);
+  --color-info-rgb: var(--color-blue-600);
+  --color-focus-rgb: var(--color-teal-700);
+  --color-disabled-rgb: 148 163 184;
+  --focus-ring: 0 0 0 3px rgb(var(--color-focus-rgb) / 0.24);
+
+  /* Existing component API */
+  --bg-app: rgb(var(--color-surface-app-rgb));
+  --bg-card: rgb(var(--color-surface-card-rgb));
+  --border: rgb(var(--color-border-rgb));
+  --primary: rgb(var(--color-accent-rgb));
+  --primary-hover: rgb(var(--color-accent-hover-rgb));
+  --primary-light: rgb(var(--color-accent-rgb) / 0.13);
+  --success: rgb(var(--color-success-rgb));
+  --success-light: rgb(var(--color-success-rgb) / 0.1);
+  --warning: rgb(var(--color-warning-rgb));
+  --warning-light: rgb(var(--color-warning-rgb) / 0.1);
+  --error: rgb(var(--color-error-rgb));
+  --error-light: rgb(var(--color-error-rgb) / 0.1);
+  --info: rgb(var(--color-info-rgb));
+  --info-light: rgb(var(--color-info-rgb) / 0.1);
+  --text-primary: rgb(var(--color-text-primary-rgb));
+  --text-secondary: rgb(var(--color-text-secondary-rgb));
+  --text-muted: rgb(var(--color-text-muted-rgb));
+  --text-muted-strong: rgb(var(--color-text-muted-rgb));
+  --text-light: rgb(var(--color-white));
+  --surface-soft: rgb(var(--color-surface-app-rgb));
+  --surface-card: rgb(var(--color-surface-card-rgb));
+  --border-soft: rgb(var(--color-border-rgb));
+  --primary-strong: rgb(var(--color-accent-rgb));
+}
+
+:root.dark {
+  --color-surface-app-rgb: var(--color-night-950);
+  --color-surface-card-rgb: var(--color-night-900);
+  --color-surface-elevated-rgb: 24 43 47;
+  --color-border-rgb: var(--color-night-700);
+  --color-text-primary-rgb: 244 251 250;
+  --color-text-secondary-rgb: 195 210 213;
+  --color-text-muted-rgb: 164 181 186;
+  --color-accent-rgb: var(--color-teal-400);
+  --color-accent-hover-rgb: var(--color-teal-300);
+  --color-success-rgb: var(--color-green-500);
+  --color-warning-rgb: var(--color-amber-500);
+  --color-error-rgb: var(--color-red-500);
+  --color-info-rgb: 96 165 250;
+  --color-focus-rgb: var(--color-teal-300);
+  --color-disabled-rgb: 100 116 124;
+  --primary-light: rgb(var(--color-accent-rgb) / 0.15);
+  --success-light: rgb(var(--color-success-rgb) / 0.15);
+  --warning-light: rgb(var(--color-warning-rgb) / 0.15);
+  --error-light: rgb(var(--color-error-rgb) / 0.15);
+  --info-light: rgb(var(--color-info-rgb) / 0.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 1ms linear;
+    --transition-normal: 1ms linear;
+  }
+}

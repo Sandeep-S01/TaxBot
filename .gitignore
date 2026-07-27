@@ -8,3 +8,6 @@ yarn-debug.log*
 yarn-error.log*
 .eslintcache
 .DS_Store
+.codex/
+playwright-report/
+test-results/

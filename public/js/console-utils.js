@@ -38,6 +38,57 @@ function safeExportFilename(value, fallback = 'TaxBot_Export') {
   return cleaned || fallback;
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function withButtonState(button, busyLabel, action) {
+  if (!button || button.disabled) return undefined;
+  const previous = {
+    html: button.innerHTML,
+    disabled: button.disabled,
+    ariaBusy: button.getAttribute('aria-busy'),
+  };
+
+  button.disabled = true;
+  button.setAttribute('aria-busy', 'true');
+  button.classList.add('is-loading');
+  if (busyLabel) {
+    button.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span><span>${escapeHtml(busyLabel)}</span>`;
+  }
+
+  try {
+    return await action();
+  } finally {
+    button.innerHTML = previous.html;
+    button.disabled = previous.disabled;
+    if (previous.ariaBusy === null) {
+      button.removeAttribute('aria-busy');
+    } else {
+      button.setAttribute('aria-busy', previous.ariaBusy);
+    }
+    button.classList.remove('is-loading');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }
+}
+
+function setFieldStatus(input, message, type = 'error') {
+  if (!input) return;
+  const fieldWrap = input.closest('div') || input.parentElement;
+  if (!fieldWrap) return;
+
+  fieldWrap.querySelectorAll('.field-feedback').forEach(el => el.remove());
+  input.classList.toggle('field-invalid', type === 'error');
+  input.setAttribute('aria-invalid', String(type === 'error'));
+
+  if (message) {
+    const feedback = document.createElement('p');
+    feedback.className = `field-feedback field-feedback-${type}`;
+    feedback.textContent = message;
+    fieldWrap.appendChild(feedback);
+  }
+}
+
 function parseMarkdown(text) {
   if (!text) return '';
   let html = String(text)

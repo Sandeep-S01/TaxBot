@@ -5,76 +5,15 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>TaxBot - Accounting on Autopilot</title>
   <meta name="description" content="TaxBot converts WhatsApp receipts, invoices, PDFs, text, and voice notes into reviewable ledger entries, regular-GST summaries, and Tally-ready exports."/>
-
-  <script>
-      (function() {
-          const savedTheme = localStorage.getItem('taxbot_theme');
-          if (savedTheme !== 'light') document.documentElement.classList.add('dark');
-      })();
-  </script>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2329e3c1' stroke-width='2'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E">
+  <script src="js/theme.js"></script>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
 
-  <script>
-      tailwind.config = {
-          darkMode: "class",
-          theme: {
-              extend: {
-                  colors: {
-                      primary: "#14b8a6",
-                      "background-light": "#f4f7f8",
-                      "background-dark": "#0a1519",
-                      "card-dark": "#132326",
-                      "border-dark": "#2a3f45",
-                      "text-muted": "#52636b"
-                  },
-                  fontFamily: {
-                      display: ["Space Grotesk", "sans-serif"],
-                      body: ["Inter", "sans-serif"],
-                  },
-                  borderRadius: {
-                      DEFAULT: "0.5rem",
-                      'xl': "1rem",
-                      '2xl': "1.5rem"
-                  },
-                  letterSpacing: {
-                      tighter: '0em',
-                      tight: '0em',
-                      normal: '0em',
-                      wide: '0.025em',
-                      wider: '0.05em',
-                      widest: '0.1em',
-                  }
-              },
-          },
-      };
-  </script>
-
-  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <link href="css/tailwind.css" rel="stylesheet"/>
+  <link href="css/tokens.css" rel="stylesheet"/>
   <style>
-      :root {
-          --text-primary: #07111f;
-          --text-secondary: #334155;
-          --text-muted-strong: #52636b;
-          --surface-soft: #f4f7f8;
-          --surface-card: #ffffff;
-          --border-soft: #d5dee3;
-          --primary-strong: #14b8a6;
-          --primary-hover: #0f766e;
-      }
-
-      .dark {
-          --text-primary: #f4fbfa;
-          --text-secondary: #c3d2d5;
-          --text-muted-strong: #a4b5ba;
-          --surface-soft: #0a1519;
-          --surface-card: #132326;
-          --border-soft: #2a3f45;
-          --primary-strong: #29e3c1;
-          --primary-hover: #5eead4;
-      }
-
       body {
           font-family: 'Inter', system-ui, sans-serif;
           background-color: var(--surface-soft);
@@ -160,6 +99,7 @@
           letter-spacing: 0 !important;
       }
   </style>
+  <link href="css/public-pages.css" rel="stylesheet"/>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 min-h-screen antialiased transition-colors duration-300 tracking-tight">
   <a class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary text-background-dark px-4 py-2 rounded-lg font-semibold z-[100]" href="#main">Skip to content</a>
@@ -709,30 +649,5 @@
   </div>
 
   <script src="js/app.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const themeBtn = document.getElementById('theme-toggle-btn');
-      const themeBtnMobile = document.getElementById('theme-toggle-btn-mobile');
-      const themeIcon = document.getElementById('theme-toggle-icon');
-      const themeIconMobile = document.getElementById('theme-toggle-icon-mobile');
-
-      function updateToggleIcons(isDark) {
-        const iconText = isDark ? 'light_mode' : 'dark_mode';
-        if (themeIcon) themeIcon.textContent = iconText;
-        if (themeIconMobile) themeIconMobile.textContent = iconText;
-      }
-
-      updateToggleIcons(document.documentElement.classList.contains('dark'));
-
-      function toggleTheme() {
-        const currentlyDark = document.documentElement.classList.toggle('dark');
-        localStorage.setItem('taxbot_theme', currentlyDark ? 'dark' : 'light');
-        updateToggleIcons(currentlyDark);
-      }
-
-      if (themeBtn) themeBtn.onclick = toggleTheme;
-      if (themeBtnMobile) themeBtnMobile.onclick = toggleTheme;
-    });
-  </script>
 </body>
 </html>
