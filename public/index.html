@@ -1,653 +1,399 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>TaxBot - Accounting on Autopilot</title>
-  <meta name="description" content="TaxBot converts WhatsApp receipts, invoices, PDFs, text, and voice notes into reviewable ledger entries, regular-GST summaries, and Tally-ready exports."/>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2329e3c1' stroke-width='2'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E">
-  <script src="js/theme.js"></script>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
-
-  <link href="css/tailwind.css" rel="stylesheet"/>
-  <link href="css/tokens.css" rel="stylesheet"/>
-  <style>
-      body {
-          font-family: 'Inter', system-ui, sans-serif;
-          background-color: var(--surface-soft);
-          color: var(--text-primary);
-      }
-
-      button,
-      input,
-      select,
-      textarea {
-          font-family: 'Inter', system-ui, sans-serif;
-      }
-
-      h1,
-      h2,
-      h3,
-      .font-display {
-          font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
-          letter-spacing: 0;
-      }
-
-      .nav-links { display: none; }
-      .nav-links.active { display: block; }
-      #modal-security.active {
-          opacity: 1;
-          pointer-events: auto;
-      }
-      #modal-security.active > div {
-          transform: scale(1);
-      }
-
-      .text-text-muted,
-      .text-gray-400,
-      .text-gray-500,
-      .text-gray-600 {
-          color: var(--text-muted-strong) !important;
-      }
-
-      .text-gray-700,
-      .dark .dark\:text-gray-300 {
-          color: var(--text-secondary) !important;
-      }
-
-      .text-gray-900,
-      .dark .dark\:text-white,
-      .dark .dark\:text-gray-100 {
-          color: var(--text-primary) !important;
-      }
-
-      .dark .dark\:text-gray-400,
-      .dark .text-text-muted {
-          color: var(--text-muted-strong) !important;
-      }
-
-      .bg-background-light {
-          background-color: var(--surface-soft) !important;
-      }
-
-      .bg-white {
-          background-color: var(--surface-card) !important;
-      }
-
-      .border-gray-200,
-      .border-gray-100,
-      .border-gray-300 {
-          border-color: var(--border-soft) !important;
-      }
-
-      .bg-primary {
-          background-color: var(--primary-strong) !important;
-      }
-
-      .text-primary {
-          color: var(--primary-strong) !important;
-      }
-
-      .hover\:text-primary:hover {
-          color: var(--primary-hover) !important;
-      }
-
-      .tracking-tighter,
-      .tracking-tight {
-          letter-spacing: 0 !important;
-      }
-  </style>
-  <link href="css/public-pages.css" rel="stylesheet"/>
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>TaxBot - Accounting on Autopilot</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='%23B23A2E' stroke-width='2'%3E%3Crect x='1' y='1' width='26' height='26' rx='5'/%3E%3Cpath d='M8 14.5L12 18L20 9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link href="css/tailwind.css" rel="stylesheet">
+<link href="css/public-pages.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background: #F3EEDF; color: #232A24; }
+        h1, h2, h3, .font-display { font-family: 'Bricolage Grotesque', sans-serif; }
+        .wrap { max-width: 68rem; margin-inline: auto; padding-inline: 1.5rem; }
+        @media (min-width: 640px) { .wrap { padding-inline: 2rem; } }
+        .section-pad { padding-block: 4.5rem; }
+        @media (min-width: 768px) { .section-pad { padding-block: 6.5rem; } }
+        .anchor-offset { scroll-margin-top: 96px; }
+        .btn-interact { transition: all .2s cubic-bezier(.4,0,.2,1); }
+        .btn-interact:hover { transform: translateY(-1px); }
+        .btn-interact:active { transform: translateY(0); opacity: .92; }
+        .card-hover { transition: all .25s ease; }
+        .card-hover:hover { border-color: #232A24; transform: translateY(-2px); }
+        .stamp { transform: rotate(-7deg); mix-blend-mode: multiply; }
+        .ledger-row + .ledger-row { border-top: 1px solid #CBBFA0; }
+        [data-state="success"]::after {
+            content: 'done'; font-family: 'Material Icons'; font-size: 13px;
+            margin-left: 6px; color: #4B6350; animation: fadeIn .3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 min-h-screen antialiased transition-colors duration-300 tracking-tight">
-  <a class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary text-background-dark px-4 py-2 rounded-lg font-semibold z-[100]" href="#main">Skip to content</a>
+<body class="antialiased">
+<a class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-ink text-paper px-4 py-2 rounded font-semibold z-[100]" href="#main">Skip to content</a>
+<nav class="fixed w-full z-50 bg-paper/95 backdrop-blur-md border-b border-rule">
+<div class="wrap">
+<div class="flex justify-between items-center h-16">
+<div class="flex items-center space-x-2 group cursor-pointer">
+<svg class="text-stamp" width="26" height="26" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<rect x="1" y="1" width="26" height="26" rx="5" stroke="currentColor" stroke-width="1.5"></rect>
+<path d="M8 14.5L12 18L20 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="font-display font-bold text-xl tracking-tight">TaxBot</span>
+</div>
+<div class="hidden md:flex space-x-8 font-mono text-xs uppercase tracking-wider">
+<a class="hover:text-stamp transition-colors text-ink-soft" href="#workflow">Workflow</a>
+<a class="hover:text-stamp transition-colors text-ink-soft" href="#product">Product</a>
+<a class="hover:text-stamp transition-colors text-ink-soft" href="#trust">Trust</a>
+<a class="hover:text-stamp transition-colors text-ink-soft" href="#pricing">Pricing</a>
+<a class="hover:text-stamp transition-colors text-ink-soft" href="#cas">For CAs</a>
+</div>
+<div class="flex items-center space-x-4">
+<a class="btn-interact hidden sm:block text-sm font-medium text-ink-soft hover:text-stamp transition-colors" href="console.html">Login</a>
+<a class="btn-interact bg-ink text-paper text-sm font-semibold px-4 py-2 rounded hover:bg-stamp transition-colors" href="https://wa.me/919876543210" target="_blank" rel="noopener">Start on WhatsApp</a>
+<button class="md:hidden text-ink p-2" id="mobile-menu-button" aria-label="Open menu">
+<span class="material-icons">menu</span>
+</button>
+</div>
+</div>
+</div>
+</nav>
 
-  <nav class="fixed w-full z-50 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-gray-200 dark:border-border-dark">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-16">
-        <div class="flex items-center space-x-2">
-          <span class="material-icons text-primary">receipt_long</span>
-          <span class="font-bold text-xl tracking-tighter text-gray-900 dark:text-white">TaxBot</span>
-        </div>
-        <div class="hidden md:flex space-x-8">
-          <a class="text-sm font-medium hover:text-primary transition-colors text-text-muted dark:text-gray-300" href="#workflow">Workflow</a>
-          <a class="text-sm font-medium hover:text-primary transition-colors text-text-muted dark:text-gray-300" href="#product">Product</a>
-          <a class="text-sm font-medium hover:text-primary transition-colors text-text-muted dark:text-gray-300" href="#features">Capabilities</a>
-          <a class="text-sm font-medium hover:text-primary transition-colors text-text-muted dark:text-gray-300" href="#trust">Trust</a>
-          <a class="text-sm font-medium hover:text-primary transition-colors text-text-muted dark:text-gray-300" href="#pricing">Pricing</a>
-          <a class="text-sm font-medium hover:text-primary transition-colors text-text-muted dark:text-gray-300" href="#cas">For CAs</a>
-        </div>
-        <div class="flex items-center space-x-4">
-          <!-- Theme toggle button -->
-          <button id="theme-toggle-btn" class="text-text-muted hover:text-primary transition-colors p-2 flex items-center justify-center rounded-lg border border-gray-200 dark:border-border-dark bg-white/50 dark:bg-card-dark/50" aria-label="Toggle theme">
-            <span class="material-icons" id="theme-toggle-icon">light_mode</span>
-          </button>
-          <a class="hidden sm:inline-block text-sm font-medium text-text-muted hover:text-primary transition-colors" href="console.html">Open Console</a>
-          <a class="bg-primary text-background-dark text-sm font-semibold px-4 py-2 rounded transition-opacity hover:opacity-90" href="https://wa.me/919876543210" target="_blank" rel="noopener">Start on WhatsApp</a>
-          <!-- Mobile menu toggle button -->
-          <button class="md:hidden text-text-muted hover:text-primary transition-colors p-2" id="mobile-nav-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-nav-links">
-            <span class="material-icons">menu</span>
-          </button>
-        </div>
-      </div>
-    </div>
-    <!-- Mobile Links container -->
-    <div class="nav-links md:hidden fixed top-16 left-4 right-4 z-40 bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-6 shadow-2xl space-y-4" id="mobile-nav-links">
-      <a class="block text-sm font-medium hover:text-primary transition-colors text-text-muted dark:text-gray-300" href="#workflow">Workflow</a>
-      <a class="block text-sm font-medium hover:text-primary transition-colors text-text-muted dark:text-gray-300" href="#product">Product</a>
-      <a class="block text-sm font-medium hover:text-primary transition-colors text-text-muted dark:text-gray-300" href="#features">Capabilities</a>
-      <a class="block text-sm font-medium hover:text-primary transition-colors text-text-muted dark:text-gray-300" href="#trust">Trust</a>
-      <a class="block text-sm font-medium hover:text-primary transition-colors text-text-muted dark:text-gray-300" href="#pricing">Pricing</a>
-      <a class="block text-sm font-medium hover:text-primary transition-colors text-text-muted dark:text-gray-300" href="#cas">For CAs</a>
-      <hr class="border-gray-200 dark:border-border-dark" />
-      <div class="flex items-center justify-between">
-        <button id="theme-toggle-btn-mobile" class="flex items-center space-x-2 text-text-muted hover:text-primary transition-colors py-2 px-3 border border-gray-200 dark:border-border-dark rounded bg-white/50 dark:bg-card-dark/50" aria-label="Toggle theme">
-          <span class="material-icons" id="theme-toggle-icon-mobile">light_mode</span>
-          <span>Theme</span>
-        </button>
-        <a class="text-sm font-medium text-text-muted hover:text-primary transition-colors py-2 px-3 border border-gray-200 dark:border-border-dark rounded bg-white/50 dark:bg-card-dark/50" href="console.html">Open Console</a>
-      </div>
-      <a class="block w-full text-center bg-primary text-background-dark text-sm font-semibold py-3 rounded transition-opacity hover:opacity-90" href="https://wa.me/919876543210" target="_blank" rel="noopener">Start on WhatsApp</a>
-    </div>
-  </nav>
+<div class="fixed inset-0 z-[60] bg-paper hidden transform translate-x-full transition-transform duration-300" id="mobile-menu">
+<div class="flex justify-end p-6">
+<button class="text-ink" id="mobile-menu-close" aria-label="Close menu">
+<span class="material-icons text-3xl">close</span>
+</button>
+</div>
+<div class="flex flex-col items-center space-y-8 pt-10 px-6 font-display">
+<a class="text-2xl font-bold hover:text-stamp transition-colors" href="#workflow">Workflow</a>
+<a class="text-2xl font-bold hover:text-stamp transition-colors" href="#product">Product</a>
+<a class="text-2xl font-bold hover:text-stamp transition-colors" href="#trust">Trust</a>
+<a class="text-2xl font-bold hover:text-stamp transition-colors" href="#pricing">Pricing</a>
+<a class="text-2xl font-bold hover:text-stamp transition-colors" href="#cas">For CAs</a>
+<div class="pt-10 w-full flex flex-col gap-4 font-body">
+<a class="w-full text-center bg-ink text-paper font-semibold py-4 rounded" href="https://wa.me/919876543210" target="_blank" rel="noopener">Start on WhatsApp</a>
+<a class="w-full text-center border border-rule py-4 rounded block" href="console.html">Login</a>
+</div>
+</div>
+</div>
 
-  <main id="main">
-    <section class="pt-40 pb-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
-      <div class="flex items-center justify-center space-x-2 mb-6">
-        <div class="w-2 h-2 rounded-full bg-primary"></div>
-        <span class="text-xs font-semibold uppercase tracking-widest text-primary">Accounting on Autopilot</span>
-      </div>
-      <h1 class="text-5xl sm:text-7xl font-bold leading-tight mb-6 tracking-tighter text-gray-900 dark:text-white">
-        Your WhatsApp is now your Ledger.
-      </h1>
-      <p class="text-lg text-text-muted dark:text-gray-400 mb-10 max-w-2xl mx-auto">
-        TaxBot converts WhatsApp receipts, invoices, PDFs, text, and voice notes into reviewable ledger entries, regular-GST summaries, and Tally-ready exports.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-        <a class="bg-primary text-background-dark font-semibold px-8 py-4 rounded-lg flex items-center justify-center space-x-2 hover:opacity-90 transition-opacity" href="https://wa.me/919876543210" target="_blank" rel="noopener">
-          <span>Send your first bill</span>
-          <span class="material-icons text-sm">arrow_forward</span>
-        </a>
-        <a class="border border-gray-300 dark:border-border-dark font-semibold px-8 py-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-100 dark:hover:bg-card-dark transition-colors" href="#workflow">
-          <span>See the workflow</span>
-          <span class="material-icons text-sm">arrow_downward</span>
-        </a>
-      </div>
+<main id="main">
+<section class="pt-36 pb-16 wrap">
+<div class="max-w-3xl">
+<div class="flex items-center gap-2 mb-6">
+<div class="w-2 h-2 rounded-full bg-sage animate-pulse"></div>
+<span class="font-mono text-xs uppercase tracking-widest text-sage">Accounting on autopilot</span>
+</div>
+<h1 class="text-[clamp(2.5rem,6vw,4.75rem)] font-display font-bold leading-[1.05] tracking-tight mb-6">
+Your WhatsApp is now your ledger.
+</h1>
+<p class="text-lg sm:text-xl text-ink-soft mb-10 max-w-xl">
+TaxBot converts WhatsApp receipts, invoices, PDFs, text, and voice notes into reviewable ledger entries, regular-GST summaries, and Tally-ready exports.
+</p>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="btn-interact bg-stamp text-paper font-semibold px-8 py-4 rounded flex items-center justify-center gap-2" href="https://wa.me/919876543210" target="_blank" rel="noopener">
+<span>Send your first bill</span>
+<span class="material-icons text-sm" aria-hidden="true">arrow_forward</span>
+</a>
+<a class="btn-interact border border-ink font-semibold px-8 py-4 rounded flex items-center justify-center gap-2 hover:bg-paper-dim transition-colors" href="#workflow">
+<span>See the workflow</span>
+<span class="material-icons text-sm" aria-hidden="true">arrow_downward</span>
+</a>
+</div>
+</div>
+</section>
 
-      <div id="product" class="bg-card-dark rounded-2xl border border-border-dark overflow-hidden shadow-2xl relative max-w-4xl mx-auto text-left">
-        <div class="flex items-center justify-between px-4 py-3 border-b border-border-dark bg-[#0e1a1d]">
-          <span class="text-sm font-semibold tracking-wide text-white">Live capture workflow</span>
-          <div class="flex items-center space-x-2">
-            <div class="w-2 h-2 rounded-full bg-primary"></div>
-            <span class="text-xs text-text-muted">Review-safe draft</span>
-          </div>
-        </div>
-        <div class="p-6 grid md:grid-cols-2 gap-8">
-          <div class="space-y-4">
-            <div class="bg-[#0e1a1d] p-2 rounded-lg border border-border-dark inline-block">
-              <img alt="Receipt scan" class="rounded h-32 w-auto object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqy7EJkE97ohMSwaXG2M2SWBkha7kxw8uvCQdvJ4FQv4AVbiMgxkfAT7NWRfe53uScKVNS0LpFeXGTUmJLYN_LeoPmjQiw_qFfRRtBEzeKQinjXx74eQ8ZOqt-YFrrwRGN0vaq6m_zFyKTcCX77nuBziwY5jYgVfbW-CH9Egs9B9v8mIb7mkvk331b6NEDBf5ofu9wyKipKbc3pLsWkbSYlLyOHDXCUR0i9trt8bEfo9No4jQ3iSrDhg"/>
-            </div>
-            <div>
-              <div class="bg-primary/20 text-primary px-3 py-2 rounded-lg rounded-tl-none inline-block text-sm max-w-[80%] border border-primary/30">
-                Petrol bill for delivery vehicle.
-              </div>
-            </div>
-            <div class="flex">
-              <div class="bg-[#1f2f33] px-3 py-2 rounded-lg rounded-tr-none inline-block text-sm max-w-[90%] border border-border-dark ml-auto text-white">
-                Draft entry created. I found vendor, amount, category, and GST review status.
-              </div>
-            </div>
-            <div class="mt-8 flex items-center bg-[#0e1a1d] rounded-full px-4 py-2 border border-border-dark">
-              <span class="material-icons text-text-muted text-sm mr-2">add</span>
-              <span class="text-sm text-text-muted flex-grow">Message TaxBot...</span>
-              <span class="material-icons text-text-muted text-sm ml-2">mic</span>
-            </div>
-          </div>
-          <div class="border-t md:border-t-0 md:border-l border-border-dark pt-6 md:pt-0 md:pl-8 text-white">
-            <div class="flex items-center space-x-2 mb-4">
-              <div class="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
-              <span class="text-xs font-bold tracking-widest text-blue-400 uppercase">Structured Output</span>
-            </div>
-            <h3 class="text-2xl font-bold mb-6 leading-tight tracking-tight">A ledger row your CA can verify before filing.</h3>
-            <div class="space-y-4">
-              <div class="flex justify-between border-b border-border-dark pb-3">
-                <span class="text-sm text-text-muted">Source</span>
-                <span class="text-sm font-semibold">WhatsApp image</span>
-              </div>
-              <div class="flex justify-between border-b border-border-dark pb-3">
-                <span class="text-sm text-text-muted">Vendor</span>
-                <span class="text-sm font-semibold text-right">Indian Oil Fuel Center</span>
-              </div>
-              <div class="flex justify-between border-b border-border-dark pb-3">
-                <span class="text-sm text-text-muted">Amount</span>
-                <span class="text-sm font-semibold">Rs. 1,500.00</span>
-              </div>
-              <div class="flex justify-between border-b border-border-dark pb-3">
-                <span class="text-sm text-text-muted">Status</span>
-                <span class="text-sm font-semibold text-yellow-500">Needs CA review</span>
-              </div>
-            </div>
-            <div class="mt-8 bg-[#0e1a1d] p-4 rounded-lg text-sm text-text-muted flex items-start space-x-3 border border-border-dark">
-              <span class="material-icons text-base mt-0.5 text-primary">verified_user</span>
-              <p>TaxBot assists bookkeeping and GST preparation. Uncertain entries stay visible for review instead of being treated as filing-ready.</p>
-            </div>
-          </div>
-        </div>
-      </div>
+<section class="wrap pb-24 anchor-offset" id="product">
+<div class="bg-white rounded-lg border border-rule shadow-sm overflow-hidden">
+<div class="flex items-center justify-between px-5 py-3 border-b border-rule bg-paper-dim">
+<span class="font-mono text-xs uppercase tracking-widest text-ink-soft">Live capture workflow</span>
+<span class="font-mono text-xs text-ink-soft">Review-safe draft</span>
+</div>
+<div class="p-6 sm:p-8 grid md:grid-cols-2 gap-10">
+<div class="space-y-4">
+<div class="bg-paper-dim p-2 rounded border border-rule inline-block">
+<img alt="Receipt scan" class="rounded h-28 w-auto object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqy7EJkE97ohMSwaXG2M2SWBkha7kxw8uvCQdvJ4FQv4AVbiMgxkfAT7NWRfe53uScKVNS0LpFeXGTUmJLYN_LeoPmjQiw_qFfRRtBEzeKQinjXx74eQ8ZOqt-YFrrwRGN0vaq6m_zFyKTcCX77nuBziwY5jYgVfbW-CH9Egs9B9v8mIb7mkvk331b6NEDBf5ofu9wyKipKbc3pLsWkbSYlLyOHDXCUR0i9trt8bEfo9No4jQ3iSrDhg">
+</div>
+<div class="bg-sage/10 text-sage px-3 py-2 rounded rounded-tl-none inline-block text-sm max-w-[85%] border border-sage/25">
+Petrol bill for delivery vehicle.
+</div>
+<div class="bg-paper-dim px-3 py-2 rounded rounded-tr-none inline-block text-sm max-w-[90%] border border-rule ml-auto block text-ink-soft">
+Draft entry created. I found vendor, amount, category, and GST review status.
+</div>
+<div class="mt-6 flex items-center bg-white rounded-full px-4 py-2 border border-rule">
+<span class="material-icons text-ink-soft text-sm mr-2" aria-hidden="true">add</span>
+<span class="text-sm text-ink-soft flex-grow">Message TaxBot...</span>
+<span class="material-icons text-ink-soft text-sm ml-2" aria-hidden="true">mic</span>
+</div>
+</div>
+<div class="border-t md:border-t-0 md:border-l border-rule pt-6 md:pt-0 md:pl-10">
+<span class="font-mono text-xs uppercase tracking-widest text-ink-soft">Structured output</span>
+<h3 class="text-2xl font-display font-bold mb-6 mt-2 leading-tight">A ledger row your CA can verify before filing.</h3>
+<div class="font-mono text-sm">
+<div class="ledger-row flex justify-between py-3 group/field cursor-pointer hover:bg-paper-dim transition-colors" onclick="this.setAttribute('data-state','success'); setTimeout(()=&gt;this.removeAttribute('data-state'),2000)">
+<span class="text-ink-soft">Source</span>
+<span class="font-medium">WhatsApp image</span>
+</div>
+<div class="ledger-row flex justify-between py-3 group/field cursor-pointer hover:bg-paper-dim transition-colors" onclick="this.setAttribute('data-state','success'); setTimeout(()=&gt;this.removeAttribute('data-state'),2000)">
+<span class="text-ink-soft">Vendor</span>
+<span class="font-medium">Indian Oil Fuel Center</span>
+</div>
+<div class="ledger-row flex justify-between py-3 group/field cursor-pointer hover:bg-paper-dim transition-colors" onclick="this.setAttribute('data-state','success'); setTimeout(()=&gt;this.removeAttribute('data-state'),2000)">
+<span class="text-ink-soft">Amount</span>
+<span class="font-medium">₹1,500</span>
+</div>
+<div class="ledger-row flex justify-between items-center py-3">
+<span class="text-ink-soft">Status</span>
+<div class="stamp inline-flex items-center justify-center w-16 h-16 rounded-full border-2 border-dashed border-stamp text-stamp shrink-0">
+<span class="text-[8px] font-bold uppercase tracking-wider text-center leading-tight">Needs<br>review</span>
+</div>
+</div>
+</div>
+<div class="mt-8 bg-paper-dim p-4 rounded text-sm text-ink-soft flex items-start gap-3 border border-rule anchor-offset" id="trust">
+<span class="material-icons text-base mt-0.5 text-sage" aria-hidden="true">verified_user</span>
+<p>TaxBot assists bookkeeping and GST preparation. Uncertain entries stay visible for review instead of being treated as filing-ready.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-14">
+<div>
+<h4 class="font-mono text-xs uppercase tracking-widest text-ink-soft mb-2">Capture</h4>
+<p class="font-medium text-sm">WhatsApp image, PDF, text, and voice</p>
+</div>
+<div>
+<h4 class="font-mono text-xs uppercase tracking-widest text-ink-soft mb-2">Review</h4>
+<p class="font-medium text-sm">Draft, confirmed, rejected, needs review</p>
+</div>
+<div>
+<h4 class="font-mono text-xs uppercase tracking-widest text-ink-soft mb-2">GST</h4>
+<p class="font-medium text-sm">Regular-GST summary preparation</p>
+</div>
+<div>
+<h4 class="font-mono text-xs uppercase tracking-widest text-ink-soft mb-2">Export</h4>
+<p class="font-medium text-sm">CSV, PDF, and Tally-ready XML</p>
+</div>
+</div>
+</section>
 
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20 max-w-4xl mx-auto text-left">
-        <div>
-          <h4 class="text-xs font-bold text-text-muted uppercase mb-2 tracking-widest">Capture</h4>
-          <p class="font-semibold text-sm text-gray-700 dark:text-gray-300">WhatsApp image, PDF, text, and voice</p>
-        </div>
-        <div>
-          <h4 class="text-xs font-bold text-text-muted uppercase mb-2 tracking-widest">Review</h4>
-          <p class="font-semibold text-sm text-gray-700 dark:text-gray-300">Draft, confirmed, rejected, needs review</p>
-        </div>
-        <div>
-          <h4 class="text-xs font-bold text-text-muted uppercase mb-2 tracking-widest">GST</h4>
-          <p class="font-semibold text-sm text-gray-700 dark:text-gray-300">Regular-GST summary preparation</p>
-        </div>
-        <div>
-          <h4 class="text-xs font-bold text-text-muted uppercase mb-2 tracking-widest">Export</h4>
-          <p class="font-semibold text-sm text-gray-700 dark:text-gray-300">CSV, PDF, and Tally-ready XML</p>
-        </div>
-      </div>
-    </section>
+<section class="section-pad border-t border-rule bg-paper-dim">
+<div class="wrap">
+<h2 class="text-[clamp(1.75rem,4vw,2.75rem)] font-display font-bold leading-tight mb-6 max-w-2xl">
+Stop waiting for month-end summaries.
+</h2>
+<p class="text-lg text-ink-soft mb-16 max-w-2xl">
+Accounting evidence is created in the field, but reviewed at month end. TaxBot closes the gap by processing documents where they naturally arrive.
+</p>
+<div class="grid md:grid-cols-3 gap-10">
+<div class="border-t-2 border-ink pt-5">
+<h3 class="text-xl font-display font-bold mb-3">Owners send proof late.</h3>
+<p class="text-ink-soft">Paper bills and WhatsApp photos pile up until the GST deadline is already close.</p>
+</div>
+<div class="border-t-2 border-ink pt-5">
+<h3 class="text-xl font-display font-bold mb-3">Staff retypes what AI can extract.</h3>
+<p class="text-ink-soft">Vendor, date, amount, tax split, and category become manual entry work instead of review work.</p>
+</div>
+<div class="border-t-2 border-ink pt-5 anchor-offset" id="cas">
+<h3 class="text-xl font-display font-bold mb-3">CAs need context, not blind automation.</h3>
+<p class="text-ink-soft">TaxBot keeps the original source and review state attached to the accounting record.</p>
+</div>
+</div>
+</div>
+</section>
 
-    <section class="py-24 border-t border-gray-200 dark:border-border-dark bg-white dark:bg-[#0a1114]">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div class="flex items-center justify-center space-x-2 mb-6">
-          <div class="w-2 h-2 rounded-full bg-primary"></div>
-          <span class="text-xs font-semibold uppercase tracking-widest text-primary">Scale without the Overhead</span>
-        </div>
-        <h2 class="text-4xl sm:text-5xl font-bold leading-tight mb-8 text-gray-900 dark:text-white tracking-tighter">
-          Stop waiting for month-end summaries.
-        </h2>
-        <p class="text-xl text-text-muted dark:text-gray-400 mb-16 max-w-2xl mx-auto">
-          Accounting evidence is created in the field, but reviewed at month end. TaxBot closes the gap by processing documents where they naturally arrive.
-        </p>
-        <div class="grid md:grid-cols-3 gap-12 text-left">
-          <div>
-            <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Owners send proof late.</h3>
-            <p class="text-text-muted dark:text-gray-400">Paper bills and WhatsApp photos pile up until the GST deadline is already close.</p>
-          </div>
-          <div>
-            <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Staff retypes what AI can extract.</h3>
-            <p class="text-text-muted dark:text-gray-400">Vendor, date, amount, tax split, and category become manual entry work instead of review work.</p>
-          </div>
-          <div>
-            <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">CAs need context, not blind automation.</h3>
-            <p class="text-text-muted dark:text-gray-400">TaxBot keeps the original source and review state attached to the accounting record.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+<section class="section-pad border-t border-rule anchor-offset" id="workflow">
+<div class="wrap max-w-3xl">
+<h2 class="text-[clamp(1.75rem,4vw,2.75rem)] font-display font-bold leading-tight mb-16 text-center">
+Five steps to usable books.
+</h2>
+<div class="space-y-0">
+<div class="flex gap-6 py-6 border-t border-rule">
+<span class="font-mono text-sm text-stamp shrink-0 pt-1 w-14">No. 01</span>
+<div>
+<h3 class="text-xl font-display font-bold mb-2">Send receipt, invoice, PDF, text, or audio.</h3>
+<p class="text-ink-soft">The user works inside WhatsApp instead of learning a new capture tool.</p>
+</div>
+</div>
+<div class="flex gap-6 py-6 border-t border-rule">
+<span class="font-mono text-sm text-stamp shrink-0 pt-1 w-14">No. 02</span>
+<div>
+<h3 class="text-xl font-display font-bold mb-2">AI extracts financial fields.</h3>
+<p class="text-ink-soft">TaxBot parses party, date, amount, category, invoice details, and tax context where available.</p>
+</div>
+</div>
+<div class="flex gap-6 py-6 border-t border-rule">
+<span class="font-mono text-sm text-stamp shrink-0 pt-1 w-14">No. 03</span>
+<div>
+<h3 class="text-xl font-display font-bold mb-2">Uncertain entries stay visible.</h3>
+<p class="text-ink-soft">Low-confidence and duplicate-looking records are review-needed, not silently accepted.</p>
+</div>
+</div>
+<div class="flex gap-6 py-6 border-t border-rule">
+<span class="font-mono text-sm text-stamp shrink-0 pt-1 w-14">No. 04</span>
+<div>
+<h3 class="text-xl font-display font-bold mb-2">GST and ledger summaries are organised.</h3>
+<p class="text-ink-soft">Regular-GST summaries, transaction records, and financial views are prepared for review.</p>
+</div>
+</div>
+<div class="flex gap-6 py-6 border-t border-b border-rule">
+<span class="font-mono text-sm text-stamp shrink-0 pt-1 w-14">No. 05</span>
+<div>
+<h3 class="text-xl font-display font-bold mb-2">Export to accounting workflows.</h3>
+<p class="text-ink-soft">CSV, PDF, and Tally Prime-oriented outputs support downstream accounting and CA work.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
 
-    <section class="py-32 bg-[#111c1f] text-white" id="workflow">
-      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-20 text-white">
-          <div class="flex items-center justify-center space-x-2 mb-6">
-            <div class="w-2 h-2 rounded-full bg-primary"></div>
-            <span class="text-xs font-semibold uppercase tracking-widest text-primary">Workflow</span>
-          </div>
-          <h2 class="text-4xl sm:text-5xl font-bold leading-tight mb-6 tracking-tighter">
-            Five steps to usable books.
-          </h2>
-        </div>
-        <div class="space-y-12 text-white">
-          <div class="flex flex-col md:flex-row md:items-start space-y-4 md:space-y-0 md:space-x-8 pb-12 border-b border-border-dark">
-            <div class="text-3xl font-bold text-text-muted w-16 flex-shrink-0">01</div>
-            <div>
-              <h3 class="text-2xl font-bold mb-2">Send receipt, invoice, PDF, text, or audio.</h3>
-              <p class="text-lg text-text-muted">The user works inside WhatsApp instead of learning a new capture tool.</p>
-            </div>
-          </div>
-          <div class="flex flex-col md:flex-row md:items-start space-y-4 md:space-y-0 md:space-x-8 pb-12 border-b border-border-dark">
-            <div class="text-3xl font-bold text-text-muted w-16 flex-shrink-0">02</div>
-            <div>
-              <h3 class="text-2xl font-bold mb-2">AI extracts financial fields.</h3>
-              <p class="text-lg text-text-muted">TaxBot parses party, date, amount, category, invoice details, and tax context where available.</p>
-            </div>
-          </div>
-          <div class="flex flex-col md:flex-row md:items-start space-y-4 md:space-y-0 md:space-x-8 pb-12 border-b border-border-dark">
-            <div class="text-3xl font-bold text-text-muted w-16 flex-shrink-0">03</div>
-            <div>
-              <h3 class="text-2xl font-bold mb-2">Uncertain entries stay visible.</h3>
-              <p class="text-lg text-text-muted">Low-confidence and duplicate-looking records are review-needed, not silently accepted.</p>
-            </div>
-          </div>
-          <div class="flex flex-col md:flex-row md:items-start space-y-4 md:space-y-0 md:space-x-8 pb-12 border-b border-border-dark">
-            <div class="text-3xl font-bold text-text-muted w-16 flex-shrink-0">04</div>
-            <div>
-              <h3 class="text-2xl font-bold mb-2">GST and ledger summaries are organised.</h3>
-              <p class="text-lg text-text-muted">Regular-GST summaries, transaction records, and financial views are prepared for review.</p>
-            </div>
-          </div>
-          <div class="flex flex-col md:flex-row md:items-start space-y-4 md:space-y-0 md:space-x-8">
-            <div class="text-3xl font-bold text-text-muted w-16 flex-shrink-0">05</div>
-            <div>
-              <h3 class="text-2xl font-bold mb-2">Export to accounting workflows.</h3>
-              <p class="text-lg text-text-muted">CSV, PDF, and Tally Prime-oriented outputs support downstream accounting and CA work.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+<section class="section-pad border-t border-rule bg-paper-dim anchor-offset" id="pricing">
+<div class="wrap">
+<span class="font-mono text-xs uppercase tracking-widest text-ink-soft">Pricing</span>
+<h2 class="text-[clamp(1.75rem,4vw,2.75rem)] font-display font-bold leading-tight mb-16 mt-3 max-w-xl">
+Simple plans for trying, then scaling.
+</h2>
+<div class="grid md:grid-cols-2 gap-8 mb-24">
+<div class="card-hover bg-white border border-rule rounded-lg p-8 sm:p-10 flex flex-col">
+<h3 class="text-2xl font-display font-bold mb-2">Starter</h3>
+<p class="text-ink-soft mb-8">For owners testing WhatsApp capture with light volume.</p>
+<div class="flex items-baseline mb-8 font-mono">
+<span class="text-4xl font-semibold mr-2">₹0</span>
+<span class="text-ink-soft">/month</span>
+</div>
+<ul class="space-y-4 mb-10 flex-grow">
+<li class="flex items-center gap-3"><span class="material-icons text-sage text-lg" aria-hidden="true">check</span><span>Up to 50 receipts/month</span></li>
+<li class="flex items-center gap-3"><span class="material-icons text-sage text-lg" aria-hidden="true">check</span><span>Basic WhatsApp chatbot</span></li>
+<li class="flex items-center gap-3"><span class="material-icons text-sage text-lg" aria-hidden="true">check</span><span>Standard CSV export</span></li>
+</ul>
+<a class="btn-interact w-full block text-center border border-ink font-semibold py-4 rounded hover:bg-paper-dim transition-colors" href="https://wa.me/919876543210" target="_blank" rel="noopener">Get started free</a>
+</div>
+<div class="card-hover bg-white border-2 border-ink rounded-lg p-8 sm:p-10 flex flex-col relative md:scale-105">
+<div class="stamp absolute -top-5 right-8 inline-flex items-center justify-center w-16 h-16 rounded-full border-2 border-dashed border-stamp text-stamp">
+<span class="text-[8px] font-bold uppercase tracking-wider text-center leading-tight">Recom-<br>mended</span>
+</div>
+<h3 class="text-2xl font-display font-bold mb-2">Growth Assistant</h3>
+<p class="text-ink-soft mb-8">For growing businesses that need review, GST summaries, and exports.</p>
+<div class="flex items-baseline mb-8 font-mono">
+<span class="text-4xl font-semibold mr-2">₹999</span>
+<span class="text-ink-soft">/month</span>
+</div>
+<ul class="space-y-4 mb-10 flex-grow">
+<li class="flex items-center gap-3"><span class="material-icons text-sage text-lg" aria-hidden="true">check</span><span class="font-medium">Unlimited AI extraction</span></li>
+<li class="flex items-center gap-3"><span class="material-icons text-sage text-lg" aria-hidden="true">check</span><span class="font-medium">Tally-ready CSV/XML exports</span></li>
+<li class="flex items-center gap-3"><span class="material-icons text-sage text-lg" aria-hidden="true">check</span><span>Voice logging and multilingual input</span></li>
+<li class="flex items-center gap-3"><span class="material-icons text-sage text-lg" aria-hidden="true">check</span><span>Regular-GST summaries</span></li>
+</ul>
+<a class="btn-interact w-full block text-center bg-ink text-paper font-semibold py-4 rounded hover:bg-stamp transition-colors" href="https://wa.me/919876543210" target="_blank" rel="noopener">Start on WhatsApp</a>
+</div>
+</div>
+<div class="max-w-2xl">
+<h2 class="text-[clamp(1.75rem,4vw,2.75rem)] font-display font-bold leading-tight mb-6">
+Send one bill. See the accounting surface TaxBot creates.
+</h2>
+<p class="text-lg text-ink-soft mb-10">
+No migration project. No staff training. Start with WhatsApp capture and review the structured output.
+</p>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="btn-interact bg-stamp text-paper font-semibold px-10 py-4 rounded text-center" href="https://wa.me/919876543210" target="_blank" rel="noopener">Start on WhatsApp</a>
+<a class="btn-interact border border-ink font-semibold px-10 py-4 rounded text-center hover:bg-white transition-colors" href="console.html">Login</a>
+</div>
+</div>
+</div>
+</section>
 
-    <section class="py-24 bg-white dark:bg-background-dark border-t border-gray-200 dark:border-border-dark" id="features">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <div class="flex items-center justify-center space-x-2 mb-6">
-            <div class="w-2 h-2 rounded-full bg-primary"></div>
-            <span class="text-xs font-semibold uppercase tracking-widest text-primary">Capabilities</span>
-          </div>
-          <h2 class="text-4xl sm:text-5xl font-bold leading-tight tracking-tighter text-gray-900 dark:text-white">
-            Built for the messy edge of small-business accounting.
-          </h2>
-        </div>
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div class="bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-8 hover:border-primary/50 transition-colors">
-            <span class="material-icons text-primary text-3xl mb-4">document_scanner</span>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Receipt &amp; invoice processing</h3>
-            <p class="text-text-muted text-sm leading-relaxed">Images and PDFs become structured draft records with source context.</p>
-          </div>
-          <div class="bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-8 hover:border-primary/50 transition-colors">
-            <span class="material-icons text-primary text-3xl mb-4">mic</span>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Voice &amp; text input</h3>
-            <p class="text-text-muted text-sm leading-relaxed">Business owners can speak or type daily expenses naturally.</p>
-          </div>
-          <div class="bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-8 hover:border-primary/50 transition-colors">
-            <span class="material-icons text-primary text-3xl mb-4">badge</span>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">GSTIN verification</h3>
-            <p class="text-text-muted text-sm leading-relaxed">GSTIN details can be validated when Sandbox.co.in credentials are configured.</p>
-          </div>
-          <div class="bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-8 hover:border-primary/50 transition-colors">
-            <span class="material-icons text-primary text-3xl mb-4">percent</span>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">GST summaries</h3>
-            <p class="text-text-muted text-sm leading-relaxed">Regular-GST preparation includes sales, purchases, tax splits, and ITC context.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+</main>
+<footer class="border-t border-rule pt-14 pb-8">
+<div class="wrap">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-12">
+<div class="md:col-span-4 space-y-4">
+<div class="flex items-center gap-2">
+<svg class="text-stamp" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<rect x="1" y="1" width="26" height="26" rx="5" stroke="currentColor" stroke-width="1.5"></rect>
+<path d="M8 14.5L12 18L20 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="font-display font-bold text-xl">TaxBot</span>
+</div>
+<p class="text-sm text-ink-soft leading-relaxed max-w-xs">
+The intelligent ledger for modern businesses. Automate your bookkeeping directly from WhatsApp with AI-powered extraction and CA-ready workflows.
+</p>
+<div class="flex gap-4 pt-1">
+<a href="#" class="text-ink-soft hover:text-stamp transition-colors" aria-label="Website"><span class="material-icons text-xl">public</span></a>
+<a href="#" class="text-ink-soft hover:text-stamp transition-colors" aria-label="Email"><span class="material-icons text-xl">alternate_email</span></a>
+</div>
+</div>
+<div class="md:col-span-2">
+<h4 class="font-mono text-xs uppercase tracking-widest mb-5">Product</h4>
+<ul class="space-y-3 text-sm text-ink-soft">
+<li><a href="#product" class="hover:text-stamp transition-colors">Features</a></li>
+<li><a href="#" class="hover:text-stamp transition-colors">Integrations</a></li>
+<li><a href="#pricing" class="hover:text-stamp transition-colors">Pricing</a></li>
+<li><a href="#trust" class="hover:text-stamp transition-colors">Security</a></li>
+</ul>
+</div>
+<div class="md:col-span-2">
+<h4 class="font-mono text-xs uppercase tracking-widest mb-5">Workflow</h4>
+<ul class="space-y-3 text-sm text-ink-soft">
+<li><a href="#product" class="hover:text-stamp transition-colors">Live capture</a></li>
+<li><a href="#workflow" class="hover:text-stamp transition-colors">GST summaries</a></li>
+<li><a href="#workflow" class="hover:text-stamp transition-colors">Tally export</a></li>
+<li><a href="#cas" class="hover:text-stamp transition-colors">For CAs</a></li>
+</ul>
+</div>
+<div class="md:col-span-2">
+<h4 class="font-mono text-xs uppercase tracking-widest mb-5">Company</h4>
+<ul class="space-y-3 text-sm text-ink-soft">
+<li><a href="#" class="hover:text-stamp transition-colors">About us</a></li>
+<li><a href="#" class="hover:text-stamp transition-colors">Careers</a></li>
+<li><a href="#" class="hover:text-stamp transition-colors">Blog</a></li>
+<li><a href="#" class="hover:text-stamp transition-colors">Contact</a></li>
+</ul>
+</div>
+<div class="md:col-span-2">
+<h4 class="font-mono text-xs uppercase tracking-widest mb-5">Support</h4>
+<ul class="space-y-3 text-sm text-ink-soft">
+<li><a href="#" class="hover:text-stamp transition-colors">Help center</a></li>
+<li><a href="#" class="hover:text-stamp transition-colors">Documentation</a></li>
+<li><a href="#" class="hover:text-stamp transition-colors">Terms</a></li>
+<li><a href="#" class="hover:text-stamp transition-colors">Privacy</a></li>
+</ul>
+</div>
+</div>
+<div class="border-t border-rule flex flex-col md:flex-row justify-between items-center gap-4 pt-6">
+<p class="font-mono text-xs text-ink-soft">© <span id="copyright-year"></span> TaxBot. All rights reserved.</p>
+<div class="flex gap-8 font-mono text-xs uppercase tracking-wider text-ink-soft">
+<a href="#" class="hover:text-stamp transition-colors">Terms</a>
+<a href="#" class="hover:text-stamp transition-colors">Privacy</a>
+<a href="#" class="hover:text-stamp transition-colors">Cookies</a>
+</div>
+</div>
+</div>
+</footer>
 
-    <section class="py-24 bg-gray-50 dark:bg-[#0a1114] border-t border-gray-200 dark:border-border-dark" id="trust">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <div class="flex items-center justify-center space-x-2 mb-6">
-            <div class="w-2 h-2 rounded-full bg-primary"></div>
-            <span class="text-xs font-semibold uppercase tracking-widest text-primary">Trust</span>
-          </div>
-          <h2 class="text-4xl sm:text-5xl font-bold leading-tight tracking-tighter text-gray-900 dark:text-white mb-6">
-            Professional controls without exaggerated claims.
-          </h2>
-          <p class="text-lg text-text-muted max-w-2xl mx-auto dark:text-gray-400">
-            No invented logos, certifications, or customer counts. The trust story stays grounded in implemented product capabilities.
-          </p>
-        </div>
-        <div class="grid md:grid-cols-3 gap-8">
-          <button type="button" id="card-sec-encryption" class="text-left bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-8 hover:border-primary/50 hover:-translate-y-1 transition-all focus:outline-none focus:ring-2 focus:ring-primary shadow-sm">
-            <span class="material-icons text-primary text-3xl mb-4">lock</span>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Authenticated CA access</h3>
-            <p class="text-text-muted text-sm leading-relaxed">Authenticated sessions, scoped route checks, CSRF protection, and signed links support sensitive workflows.</p>
-          </button>
-          <button type="button" id="card-sec-residency" class="text-left bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-8 hover:border-primary/50 hover:-translate-y-1 transition-all focus:outline-none focus:ring-2 focus:ring-primary shadow-sm">
-            <span class="material-icons text-primary text-3xl mb-4">manage_search</span>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Audit trail visibility</h3>
-            <p class="text-text-muted text-sm leading-relaxed">Important actions can be associated with actor, client, event type, description, and timestamp.</p>
-          </button>
-          <button type="button" id="card-sec-compliance" class="text-left bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-8 hover:border-primary/50 hover:-translate-y-1 transition-all focus:outline-none focus:ring-2 focus:ring-primary shadow-sm">
-            <span class="material-icons text-primary text-3xl mb-4">rule</span>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Review before filing</h3>
-            <p class="text-text-muted text-sm leading-relaxed">AI-assisted entries remain reviewable. CA review is recommended before statutory filing.</p>
-          </button>
-        </div>
-      </div>
-    </section>
+<script>
+document.getElementById('copyright-year').textContent = new Date().getFullYear();
 
-    <section class="py-32 bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-border-dark text-center" id="pricing">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="max-w-3xl mx-auto mb-20">
-          <div class="flex items-center justify-center space-x-2 mb-6">
-            <div class="w-2 h-2 rounded-full bg-primary"></div>
-            <span class="text-xs font-semibold uppercase tracking-widest text-primary">Pricing</span>
-          </div>
-          <h2 class="text-4xl sm:text-5xl font-bold leading-tight mb-6 tracking-tighter text-gray-900 dark:text-white">
-            Simple plans for trying, then scaling.
-          </h2>
-        </div>
-        <div class="grid md:grid-cols-2 gap-8 mb-24 max-w-5xl mx-auto text-left">
-          <div class="bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-10 flex flex-col relative">
-            <div class="absolute top-8 right-8 text-xs font-semibold bg-gray-100 dark:bg-[#1a2b30] px-3 py-1.5 rounded tracking-wide text-gray-900 dark:text-primary">Try first</div>
-            <h3 class="text-3xl font-bold mb-3 text-gray-900 dark:text-white">Starter</h3>
-            <p class="text-base text-text-muted mb-10">For owners testing WhatsApp capture with light volume.</p>
-            <div class="flex items-baseline mb-10 text-gray-900 dark:text-white">
-              <span class="text-5xl font-bold mr-2 tracking-tighter">Rs. 0</span>
-              <span class="text-base text-text-muted">/month</span>
-            </div>
-            <ul class="space-y-5 mb-12 flex-grow text-gray-700 dark:text-gray-300">
-              <li class="flex items-center space-x-4">
-                <span class="material-icons text-primary text-lg">check</span>
-                <span class="text-base">Up to 50 receipts/month</span>
-              </li>
-              <li class="flex items-center space-x-4">
-                <span class="material-icons text-primary text-lg">check</span>
-                <span class="text-base">Basic WhatsApp chatbot</span>
-              </li>
-              <li class="flex items-center space-x-4">
-                <span class="material-icons text-primary text-lg">check</span>
-                <span class="text-base">Standard CSV export</span>
-              </li>
-            </ul>
-            <a class="w-full block text-center border border-gray-300 dark:border-border-dark font-semibold py-4 rounded-lg hover:bg-gray-50 dark:hover:bg-[#1a2b30] transition-colors text-gray-900 dark:text-white" href="https://wa.me/919876543210" target="_blank" rel="noopener">
-              Get started free
-            </a>
-          </div>
-          <div class="bg-white dark:bg-card-dark border-2 border-primary/50 dark:border-primary/50 rounded-2xl p-10 flex flex-col relative shadow-[0_0_30px_rgba(41,227,193,0.1)]">
-            <div class="absolute top-8 right-8 text-xs font-semibold bg-primary/20 text-primary px-3 py-1.5 rounded tracking-wide">Recommended</div>
-            <h3 class="text-3xl font-bold mb-3 text-gray-900 dark:text-white">Growth Assistant</h3>
-            <p class="text-base text-text-muted mb-10">For growing businesses that need review, GST summaries, and exports.</p>
-            <div class="flex items-baseline mb-10 text-gray-900 dark:text-white">
-              <span class="text-5xl font-bold mr-2 tracking-tighter">Rs. 999</span>
-              <span class="text-base text-text-muted">/month</span>
-            </div>
-            <ul class="space-y-5 mb-12 flex-grow text-gray-700 dark:text-gray-300">
-              <li class="flex items-center space-x-4">
-                <span class="material-icons text-primary text-lg">check</span>
-                <span class="text-base">Unlimited AI extraction</span>
-              </li>
-              <li class="flex items-center space-x-4">
-                <span class="material-icons text-primary text-lg">check</span>
-                <span class="text-base">Tally-ready CSV/XML exports</span>
-              </li>
-              <li class="flex items-center space-x-4">
-                <span class="material-icons text-primary text-lg">check</span>
-                <span class="text-base">Voice logging and multilingual input</span>
-              </li>
-              <li class="flex items-center space-x-4">
-                <span class="material-icons text-primary text-lg">check</span>
-                <span class="text-base">Regular-GST summaries</span>
-              </li>
-            </ul>
-            <a class="w-full block text-center bg-primary text-background-dark font-semibold py-4 rounded-lg hover:opacity-90 transition-opacity" href="https://wa.me/919876543210" target="_blank" rel="noopener">
-              Start on WhatsApp
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
+const menuBtn = document.getElementById('mobile-menu-button');
+const closeBtn = document.getElementById('mobile-menu-close');
+const menu = document.getElementById('mobile-menu');
 
-    <section class="py-24 bg-white dark:bg-[#0a1114] border-t border-gray-200 dark:border-border-dark" id="cas">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <div class="flex items-center justify-center space-x-2 mb-6">
-            <div class="w-2 h-2 rounded-full bg-primary"></div>
-            <span class="text-xs font-semibold uppercase tracking-widest text-primary">For CAs</span>
-          </div>
-          <h2 class="text-4xl sm:text-5xl font-bold leading-tight mb-4 text-gray-900 dark:text-white tracking-tighter">
-            Client volume pricing for review-first accounting teams.
-          </h2>
-          <p class="text-lg text-text-muted dark:text-gray-400 max-w-2xl mx-auto">
-            Manage client evidence, review AI-inferred entries, and export ledgers from one CA workflow.
-          </p>
-        </div>
-
-        <div class="bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-2xl p-8 max-w-2xl mx-auto shadow-xl">
-          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">CA volume license calculator</h3>
-          <p class="text-sm text-text-muted mb-6">Pricing changes at 10 and 50 linked clients.</p>
-
-          <div class="space-y-6">
-            <div class="flex justify-between items-center">
-              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Linked clients: <span id="client-count-display" class="text-primary font-bold">10</span></span>
-              <span class="text-xs font-semibold bg-[#1a2b30] text-primary px-2.5 py-1 rounded" id="reseller-tier-badge">Starter Tier</span>
-            </div>
-
-            <input id="client-slider" type="range" min="1" max="150" value="10" class="w-full h-2 bg-gray-200 dark:bg-border-dark rounded-lg appearance-none cursor-pointer accent-primary"/>
-
-            <div class="grid grid-cols-2 gap-4 mt-8">
-              <div class="bg-gray-50 dark:bg-[#0e1a1d] border border-gray-100 dark:border-border-dark rounded-xl p-4 text-center">
-                <p class="text-xs text-text-muted uppercase tracking-wider mb-1">Price per client</p>
-                <strong id="price-per-client" class="text-2xl font-bold text-gray-900 dark:text-white">Rs. 119</strong>
-                <p class="text-xs text-text-muted mt-1">per client / month</p>
-              </div>
-              <div class="bg-gray-50 dark:bg-[#0e1a1d] border border-gray-100 dark:border-border-dark rounded-xl p-4 text-center">
-                <p class="text-xs text-text-muted uppercase tracking-wider mb-1">Total reseller bill</p>
-                <strong id="total-monthly-price" class="text-2xl font-bold text-gray-900 dark:text-white">Rs. 1,190</strong>
-                <p id="savings-display" class="text-xs text-text-muted mt-1">Save 20% compared to base plan</p>
-              </div>
-            </div>
-
-            <a class="mt-6 w-full text-center bg-primary text-background-dark font-semibold py-3.5 rounded-lg hover:opacity-90 transition-opacity inline-block" href="console.html?action=register">
-              Register as CA partner
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="py-24 bg-gray-50 dark:bg-[#0a1114] border-t border-gray-200 dark:border-border-dark" id="faq">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <div class="flex items-center justify-center space-x-2 mb-6">
-            <div class="w-2 h-2 rounded-full bg-primary"></div>
-            <span class="text-xs font-semibold uppercase tracking-widest text-primary">FAQ</span>
-          </div>
-          <h2 class="text-4xl sm:text-5xl font-bold leading-tight tracking-tighter text-gray-900 dark:text-white">
-            Questions before you try TaxBot?
-          </h2>
-        </div>
-
-        <div class="space-y-4 max-w-3xl mx-auto">
-          <details class="group bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-xl p-6 [&_summary::-webkit-details-marker]:hidden cursor-pointer transition-colors hover:border-primary/30">
-            <summary class="flex justify-between items-center font-bold text-gray-900 dark:text-white text-lg">
-              <span>Does TaxBot replace my CA?</span>
-              <span class="material-icons text-text-muted group-open:rotate-45 transition-transform">add</span>
-            </summary>
-            <p class="mt-4 text-text-muted dark:text-gray-400 text-sm leading-relaxed">
-              No. TaxBot assists with capture, extraction, summaries, and exports. CA review is recommended before filing or statutory submission.
-            </p>
-          </details>
-          <details class="group bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-xl p-6 [&_summary::-webkit-details-marker]:hidden cursor-pointer transition-colors hover:border-primary/30">
-            <summary class="flex justify-between items-center font-bold text-gray-900 dark:text-white text-lg">
-              <span>What GST flows are supported in v1?</span>
-              <span class="material-icons text-text-muted group-open:rotate-45 transition-transform">add</span>
-            </summary>
-            <p class="mt-4 text-text-muted dark:text-gray-400 text-sm leading-relaxed">
-              V1 focuses on regular GST: B2B/B2C, CGST/SGST/IGST splits where state codes are available, exempt/nil-rated entries, and basic ITC from purchases and expenses.
-            </p>
-          </details>
-          <details class="group bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-xl p-6 [&_summary::-webkit-details-marker]:hidden cursor-pointer transition-colors hover:border-primary/30">
-            <summary class="flex justify-between items-center font-bold text-gray-900 dark:text-white text-lg">
-              <span>What happens when AI is unsure?</span>
-              <span class="material-icons text-text-muted group-open:rotate-45 transition-transform">add</span>
-            </summary>
-            <p class="mt-4 text-text-muted dark:text-gray-400 text-sm leading-relaxed">
-              Low-confidence or duplicate-looking entries are marked as review-needed so the ledger does not silently treat uncertain data as clean.
-            </p>
-          </details>
-        </div>
-      </div>
-    </section>
-
-    <section class="py-32 bg-[#111c1f] dark:bg-[#111c1f] text-center border-t border-border-dark">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-center space-x-2 mb-6">
-          <div class="w-2 h-2 rounded-full bg-primary"></div>
-          <span class="text-xs font-semibold uppercase tracking-widest text-primary text-white">Get Started</span>
-        </div>
-        <h2 class="text-4xl sm:text-5xl font-bold leading-tight mb-6 text-white tracking-tighter">
-          Send one bill. See the accounting surface TaxBot creates.
-        </h2>
-        <p class="text-xl text-text-muted mb-10 max-w-2xl mx-auto">
-          No migration project. No staff training. Start with WhatsApp capture and review the structured output.
-        </p>
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-          <a class="bg-primary text-background-dark font-semibold px-8 py-4 rounded-lg hover:opacity-90 transition-opacity" href="https://wa.me/919876543210" target="_blank" rel="noopener">
-            Start on WhatsApp
-          </a>
-          <a class="border border-border-dark text-white font-semibold px-8 py-4 rounded-lg hover:bg-[#1a2b30] transition-colors" href="console.html">
-            Open Console
-          </a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="bg-white dark:bg-background-dark border-t border-gray-200 dark:border-border-dark py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-5 gap-12 text-left">
-      <div class="md:col-span-2 space-y-4">
-        <a class="flex items-center space-x-2 text-gray-900 dark:text-white" href="/">
-          <span class="material-icons text-primary">receipt_long</span>
-          <span class="font-bold text-xl tracking-tighter">TaxBot</span>
-        </a>
-        <p class="text-text-muted dark:text-gray-400 text-sm max-w-xs leading-relaxed">
-          AI-assisted bookkeeping directly from WhatsApp for Indian SMBs and accounting teams.
-        </p>
-        <p class="text-xs text-text-muted dark:text-gray-400 pt-4">
-          &copy; 2026 TaxBot India. GST support for regular-GST workflows.
-        </p>
-      </div>
-      <div>
-        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-900 dark:text-white mb-4">Product</h3>
-        <div class="flex flex-col space-y-3 text-sm text-text-muted dark:text-gray-400">
-          <a href="#product" class="hover:text-primary transition-colors">Product</a>
-          <a href="#features" class="hover:text-primary transition-colors">Capabilities</a>
-          <a href="#pricing" class="hover:text-primary transition-colors">Pricing</a>
-        </div>
-      </div>
-      <div>
-        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-900 dark:text-white mb-4">Workflow</h3>
-        <div class="flex flex-col space-y-3 text-sm text-text-muted dark:text-gray-400">
-          <a href="#workflow" class="hover:text-primary transition-colors">Workflow</a>
-          <a href="#trust" class="hover:text-primary transition-colors">Trust</a>
-          <a href="#faq" class="hover:text-primary transition-colors">FAQ</a>
-        </div>
-      </div>
-      <div>
-        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-900 dark:text-white mb-4">Support</h3>
-        <div class="flex flex-col space-y-3 text-sm text-text-muted dark:text-gray-400">
-          <a href="https://wa.me/919876543210" target="_blank" rel="noopener" class="hover:text-primary transition-colors">WhatsApp</a>
-          <a href="mailto:info@theanantastore.in" class="hover:text-primary transition-colors">Email</a>
-          <a href="console.html" class="hover:text-primary transition-colors">Console Login</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <div id="modal-security" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300" role="dialog" aria-modal="true" aria-labelledby="sec-modal-title">
-    <div class="bg-card-dark border border-border-dark rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl transform scale-95 transition-all duration-300">
-      <div class="flex items-center justify-between px-6 py-4 border-b border-border-dark bg-[#0e1a1d]">
-        <h3 class="font-bold text-lg text-white" id="sec-modal-title">Security verification</h3>
-        <button class="text-text-muted hover:text-white transition-colors" id="btn-close-sec-modal" aria-label="Close security details">
-          <span class="material-icons">close</span>
-        </button>
-      </div>
-      <div id="sec-modal-body" class="p-6 text-text-muted text-sm leading-relaxed overflow-x-hidden"></div>
-    </div>
-  </div>
-
-  <script src="js/app.js"></script>
-</body>
-</html>
+function toggleMenu() {
+    if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+        setTimeout(() => menu.classList.remove('translate-x-full'), 10);
+    } else {
+        menu.classList.add('translate-x-full');
+        setTimeout(() => menu.classList.add('hidden'), 300);
+    }
+}
+menuBtn.addEventListener('click', toggleMenu);
+closeBtn.addEventListener('click', toggleMenu);
+menu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        menu.classList.add('translate-x-full');
+        setTimeout(() => menu.classList.add('hidden'), 300);
+    });
+});
+</script>
+</body></html>

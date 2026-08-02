@@ -28,16 +28,15 @@ async function fetchAndRenderAuditTrail() {
 
   const caSession = getCASession();
   if (!caSession) {
-    tbody.innerHTML = `<tr><td colspan="3" class="text-secondary" style="text-align:center; padding: 24px;">Please login to view audit trail.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3"><div class="dashboard-empty-state">Sign in to view audit trail events.</div></td></tr>`;
     return;
   }
 
-  tbody.innerHTML = `<tr><td colspan="3" class="text-secondary" style="text-align:center; padding: 24px;">
-    <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-      <div class="spinner" style="width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--primary); border-radius: 50%;"></div>
-      Loading audit trail...
-    </div>
-  </td></tr>`;
+  tbody.innerHTML = Array.from({ length: 4 }, () => `
+    <tr>
+      <td colspan="3"><div class="skeleton-row"></div></td>
+    </tr>
+  `).join('');
 
   try {
     const response = await fetch('/api/ca/audit/logs', {
@@ -52,35 +51,35 @@ async function fetchAndRenderAuditTrail() {
     const logs = await response.json();
 
     if (!logs || logs.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="3" class="text-secondary" style="text-align:center; padding: 24px;">No audit trail events found.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="3"><div class="dashboard-empty-state">No audit trail events yet. Administrative activity will appear here.</div></td></tr>`;
       return;
     }
 
     tbody.innerHTML = logs.map(log => {
       const dateStr = log.created_at ? new Date(log.created_at).toLocaleString('en-IN') : 'N/A';
-      let actionBadgeClass = 'badge-secondary';
+      let actionBadgeClass = 'draft';
       if (log.action_type === 'LOGIN' || log.action_type === 'REGISTER') {
-        actionBadgeClass = 'badge-success';
+        actionBadgeClass = 'confirmed';
       } else if (log.action_type === 'TRANSACTION_APPROVED') {
-        actionBadgeClass = 'badge-info';
+        actionBadgeClass = 'confirmed';
       } else if (log.action_type === 'PDF_DOWNLOADED') {
-        actionBadgeClass = 'badge-accent';
+        actionBadgeClass = 'needs-review';
       } else if (log.action_type === 'AI_AUDIT_QUERY') {
-        actionBadgeClass = 'badge-secondary';
+        actionBadgeClass = 'draft';
       }
 
       return `
-        <tr>
-          <td style="white-space: nowrap; font-size: 13px; color: var(--text-secondary);">${dateStr}</td>
-          <td><span class="badge ${actionBadgeClass}" style="text-transform: uppercase; font-size: 11px;">${escapeHtml(log.action_type)}</span></td>
-          <td style="font-size: 13.5px; color: var(--text-primary); line-height: 1.4;">${escapeHtml(log.description)}</td>
+        <tr class="ledger-row">
+          <td class="audit-date">${dateStr}</td>
+          <td><span class="status-pill ${actionBadgeClass}">${escapeHtml(log.action_type)}</span></td>
+          <td>${escapeHtml(log.description)}</td>
         </tr>
       `;
     }).join('');
 
   } catch (err) {
     console.error(err);
-    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding: 24px; color: var(--text-error);">Error loading audit logs: ${escapeHtml(err.message)}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3"><div class="dashboard-empty-state">Audit logs failed to load. Retry from the Audit Trail tab.</div></td></tr>`;
   }
 }
 

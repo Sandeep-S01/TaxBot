@@ -400,26 +400,25 @@ function renderOverview() {
   const criticalPct = (criticalCount / totalBar) * 100;
 
   document.getElementById('health-visual-bar-root').innerHTML = `
-    <div class="bar-segment bg-success" style="width: ${healthyPct}%;"></div>
-    <div class="bar-segment bg-warning" style="width: ${reviewPct}%;"></div>
-    <div class="bar-segment bg-danger" style="width: ${criticalPct}%;"></div>
+    <div class="bar-segment bar-segment-confirmed" style="width: ${healthyPct}%;"></div>
+    <div class="bar-segment bar-segment-draft" style="width: ${reviewPct}%;"></div>
+    <div class="bar-segment bar-segment-review" style="width: ${criticalPct}%;"></div>
   `;
 
   // Render recent activities from real transactions
   const activityContainer = document.getElementById('overview-activity-feed');
   if (globalTransactions.length === 0) {
     activityContainer.innerHTML = `
-      <div class="empty-state">
-        <i data-lucide="inbox" style="width:40px;height:40px;color:var(--text-secondary);margin-bottom:12px;"></i>
-        <p class="text-secondary">No transactions yet. Clients can send invoices via WhatsApp to start logging.</p>
+      <div class="dashboard-empty-state">
+        <p>No entries yet. Send your first receipt on WhatsApp to see it here.</p>
       </div>
     `;
   } else {
     activityContainer.innerHTML = globalTransactions.slice(0, 5).map((t, idx) => `
       <div class="feed-item">
-        <div class="feed-marker ${t.type === 'Sale' ? 'bg-success' : 'bg-primary'}"></div>
+        <div class="feed-marker ${t.type === 'Sale' ? 'feed-marker-confirmed' : 'feed-marker-draft'}"></div>
         <div class="feed-content">
-          <p class="feed-text"><strong>${t.clientName}</strong> logged a ${t.type.toLowerCase()} of ₹${Math.abs(t.amount).toLocaleString('en-IN')} — ${t.category}</p>
+          <p class="feed-text"><strong>${t.clientName}</strong> logged a ${t.type.toLowerCase()} of Rs ${Math.abs(t.amount).toLocaleString('en-IN')} - ${t.category}</p>
           <span class="feed-time">${t.date} via ${t.source}</span>
         </div>
       </div>
@@ -440,6 +439,12 @@ function renderClients(filterType = 'all', searchQuery = '') {
   const container = document.getElementById('clients-list-container');
   const query = searchQuery.toLowerCase();
 
+  const clientStatusPill = (status) => {
+    if (status === 'Ready') return '<span class="status-pill confirmed">Confirmed</span>';
+    if (status === 'Review Required') return '<span class="status-pill needs-review">Needs review</span>';
+    return '<span class="status-pill draft">Draft</span>';
+  };
+
   let filtered = globalClientsList.filter(c => {
     const matchesSearch = c.name.toLowerCase().includes(query) || 
                           c.gstin.toLowerCase().includes(query) || 
@@ -453,8 +458,8 @@ function renderClients(filterType = 'all', searchQuery = '') {
 
   if (currentClientsViewMode === 'table') {
     container.innerHTML = `
-      <div class="card overflow-x">
-        <table class="data-table">
+      <div class="dashboard-card overflow-x p-0">
+        <table class="data-table dashboard-ledger-table">
           <thead>
             <tr>
               <th>Business Name</th>
@@ -462,15 +467,15 @@ function renderClients(filterType = 'all', searchQuery = '') {
               <th>Owner / WhatsApp</th>
               <th>Active Plan</th>
               <th>Last Activity</th>
-              <th class="text-right">Health</th>
+              <th class="numeric">Health</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
             ${filtered.length === 0 ? `
-              <tr><td colspan="7" class="text-secondary" style="text-align:center;">No clients found matching the criteria.</td></tr>
+              <tr><td colspan="7"><div class="dashboard-empty-state"><p>No clients match these filters. Adjust search or add a client.</p></div></td></tr>
             ` : filtered.map(c => `
-              <tr data-client-id="${c.id}" class="client-row-link">
+              <tr data-client-id="${c.id}" class="client-row-link ledger-row">
                 <td>
                   <div class="client-meta-wrap">
                     <span class="client-name-cell">${c.name}</span>
@@ -486,12 +491,8 @@ function renderClients(filterType = 'all', searchQuery = '') {
                 </td>
                 <td>${c.plan}</td>
                 <td>${c.lastActivity}</td>
-                <td class="text-right font-semibold ${c.health > 80 ? 'text-success' : c.health > 50 ? 'text-warning' : 'text-danger'}">${c.health}%</td>
-                <td>
-                  <span class="badge ${c.filedStatus === 'Ready' ? 'badge-success' : c.filedStatus === 'Review Required' ? 'badge-warning' : 'badge-error'}">
-                    ${c.filedStatus}
-                  </span>
-                </td>
+                <td class="numeric"><strong>${c.health}%</strong></td>
+                <td>${clientStatusPill(c.filedStatus)}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -502,17 +503,15 @@ function renderClients(filterType = 'all', searchQuery = '') {
     container.innerHTML = `
       <div class="clients-grid">
         ${filtered.length === 0 ? `
-          <p class="text-secondary">No clients found matching criteria.</p>
+          <div class="dashboard-card dashboard-empty-state"><p>No clients match these filters. Adjust search or add a client.</p></div>
         ` : filtered.map(c => `
-          <div class="card client-card-crm" data-client-id="${c.id}">
+          <div class="dashboard-card client-card-crm" data-client-id="${c.id}">
             <div class="client-card-header">
               <div>
                 <h3 class="client-card-name">${c.name}</h3>
                 <span class="client-gstin-cell">GSTIN: ${c.gstin}</span>
               </div>
-              <span class="badge ${c.filedStatus === 'Ready' ? 'badge-success' : c.filedStatus === 'Review Required' ? 'badge-warning' : 'badge-error'}">
-                ${c.filedStatus}
-              </span>
+              ${clientStatusPill(c.filedStatus)}
             </div>
             <div class="client-card-details">
               <div class="client-detail-row">
@@ -525,7 +524,7 @@ function renderClients(filterType = 'all', searchQuery = '') {
               </div>
               <div class="client-detail-row">
                 <span class="client-detail-label">Health Score</span>
-                <strong class="${c.health > 80 ? 'text-success' : c.health > 50 ? 'text-warning' : 'text-danger'}">${c.health}%</strong>
+                <strong class="numeric">${c.health}%</strong>
               </div>
             </div>
           </div>
@@ -604,10 +603,10 @@ async function renderClientWorkspace(clientId) {
   const gstDueVal = Math.max(0, (salesVal - expenseVal) * 0.18);
   const itcVal = expenseVal * 0.18;
 
-  document.getElementById('ws-kpi-sales').textContent = `₹${salesVal.toLocaleString('en-IN')}`;
-  document.getElementById('ws-kpi-expenses').textContent = `₹${expenseVal.toLocaleString('en-IN')}`;
-  document.getElementById('ws-kpi-gst-payable').textContent = `₹${gstDueVal.toLocaleString('en-IN')}`;
-  document.getElementById('ws-kpi-itc').textContent = `₹${itcVal.toLocaleString('en-IN')}`;
+  document.getElementById('ws-kpi-sales').textContent = `Rs ${salesVal.toLocaleString('en-IN')}`;
+  document.getElementById('ws-kpi-expenses').textContent = `Rs ${expenseVal.toLocaleString('en-IN')}`;
+  document.getElementById('ws-kpi-gst-payable').textContent = `Rs ${gstDueVal.toLocaleString('en-IN')}`;
+  document.getElementById('ws-kpi-itc').textContent = `Rs ${itcVal.toLocaleString('en-IN')}`;
 
   // Setup sub-tabs
   const tabLinks = document.querySelectorAll('[data-ws-tab]');
@@ -667,6 +666,17 @@ function renderWorkspaceTabPanel(tabName, clientId, cTx) {
   initIcons();
   
   const clientObj = globalClientsList.find(c => c.id === clientId);
+  const workspaceStatusPill = (status) => {
+    if (status === 'Verified' || status === 'Confirmed' || status === 'Ready' || status === 'Filed') return '<span class="status-pill confirmed">Confirmed</span>';
+    if (status === 'Review Required' || status === 'Needs Review') return '<span class="status-pill needs-review">Needs review</span>';
+    if (status === 'Rejected') return '<span class="status-pill rejected">Rejected</span>';
+    return '<span class="status-pill draft">Draft</span>';
+  };
+  const workspaceSourcePill = (source) => {
+    const label = source || 'Manual';
+    const isWhatsapp = String(label).toLowerCase().includes('whatsapp');
+    return `<span class="status-pill ${isWhatsapp ? 'confirmed' : 'draft'}">${escapeHtml(label)}</span>`;
+  };
 
   switch (tabName) {
     case 'overview':
@@ -675,15 +685,15 @@ function renderWorkspaceTabPanel(tabName, clientId, cTx) {
       const pTx = cTx.filter(t => t.status === 'Review Required');
 
       if (pTx.length === 0) {
-        pendingContainer.innerHTML = '<p class="text-secondary">All transactions verified!</p>';
+        pendingContainer.innerHTML = '<div class="dashboard-empty-state"><p>All transactions are confirmed. New review items will appear here.</p></div>';
       } else {
         pendingContainer.innerHTML = pTx.map(t => `
-          <div class="action-item border-warning">
+          <div class="action-item">
             <div class="action-details">
-              <span class="action-title">${t.category || 'Expense Ledger'} | ₹${t.amount.toLocaleString('en-IN')}</span>
+              <span class="action-title">${t.category || 'Expense Ledger'} | Rs ${Math.abs(t.amount).toLocaleString('en-IN')}</span>
               <span class="action-desc">Logged on ${t.date || 'Today'} via ${t.source || 'WhatsApp'}</span>
             </div>
-            <button class="btn btn-sm btn-primary btn-approve-ws-tx" data-tx-id="${t.id}">Approve</button>
+            <button class="btn-khata-primary px-3 py-1.5 text-xs btn-approve-ws-tx" data-tx-id="${t.id}">Approve</button>
           </div>
         `).join('');
 
@@ -693,7 +703,7 @@ function renderWorkspaceTabPanel(tabName, clientId, cTx) {
             const target = globalTransactions.find(t => t.id === tid);
             if (target) {
               target.status = 'Verified';
-              logFrontendAction('TRANSACTION_APPROVED', `Approved transaction ${target.category || 'Ledger Item'} worth ₹${Math.abs(target.amount).toLocaleString('en-IN')} for client ${target.clientName || 'Workspace Client'}`, clientId);
+              logFrontendAction('TRANSACTION_APPROVED', `Approved transaction ${target.category || 'Ledger Item'} worth Rs ${Math.abs(target.amount).toLocaleString('en-IN')} for client ${target.clientName || 'Workspace Client'}`, clientId);
             }
             showToast('Transaction approved!');
             renderClientWorkspace(clientId);
@@ -703,12 +713,14 @@ function renderWorkspaceTabPanel(tabName, clientId, cTx) {
 
       // WhatsApp Feed
       const cDocs = globalDocuments.filter(d => d.clientId === clientId);
-      document.getElementById('ws-overview-whatsapp-feed').innerHTML = cDocs.map(d => `
+      document.getElementById('ws-overview-whatsapp-feed').innerHTML = cDocs.length === 0 ? `
+        <div class="dashboard-empty-state"><p>No WhatsApp files yet. Client receipts and invoices will appear here after parsing.</p></div>
+      ` : cDocs.map(d => `
         <div class="feed-item">
-          <div class="feed-marker bg-success"></div>
+          <div class="feed-marker feed-marker-confirmed"></div>
           <div class="feed-content">
             <p class="feed-text"><strong>${d.name}</strong> received via WhatsApp.</p>
-            <span class="feed-time">${d.received} &bull; Size: ${d.size}</span>
+            <span class="feed-time">${d.received} - Size: ${d.size}</span>
           </div>
         </div>
       `).join('');
@@ -716,19 +728,17 @@ function renderWorkspaceTabPanel(tabName, clientId, cTx) {
 
     case 'transactions':
       const txBody = document.querySelector('#ws-transactions-table tbody');
-      txBody.innerHTML = cTx.map(t => `
-        <tr>
-          <td>${t.date}</td>
-          <td><span class="badge ${t.type === 'Sale' || t.category === 'sales' ? 'badge-success' : 'badge-secondary'}">${t.type || t.category}</span></td>
-          <td>${t.category}</td>
-          <td>${t.gstRate || t.gst_rate + '%'}</td>
-          <td><strong>₹${t.amount.toLocaleString('en-IN')}</strong></td>
-          <td><span class="badge badge-accent">${t.source}</span></td>
-          <td>
-            <span class="badge ${t.status === 'Verified' ? 'badge-success' : t.status === 'Review Required' ? 'badge-warning' : 'badge-accent'}">
-              ${t.status}
-            </span>
-          </td>
+      txBody.innerHTML = cTx.length === 0 ? `
+        <tr><td colspan="7"><div class="dashboard-empty-state"><p>No entries yet. Send this client's first receipt on WhatsApp to see it here.</p></div></td></tr>
+      ` : cTx.map(t => `
+        <tr class="ledger-row">
+          <td class="numeric">${escapeHtml(t.date || '-')}</td>
+          <td><span class="status-pill ${t.type === 'Sale' || t.category === 'sales' ? 'confirmed' : 'draft'}">${escapeHtml(t.type || t.category || 'Draft')}</span></td>
+          <td>${escapeHtml(t.category || '-')}</td>
+          <td class="numeric">${escapeHtml(t.gstRate || `${t.gst_rate || 0}%`)}</td>
+          <td class="numeric"><strong>Rs ${Math.abs(Number(t.amount || 0)).toLocaleString('en-IN')}</strong></td>
+          <td>${workspaceSourcePill(t.source)}</td>
+          <td>${workspaceStatusPill(t.status)}</td>
         </tr>
       `).join('');
       break;
@@ -736,12 +746,14 @@ function renderWorkspaceTabPanel(tabName, clientId, cTx) {
     case 'documents':
       const docBody = document.querySelector('#ws-docs-table tbody');
       const clientDocsList = globalDocuments.filter(d => d.clientId === clientId);
-      docBody.innerHTML = clientDocsList.map(d => `
-        <tr class="doc-row-ws" data-doc-id="${d.id}">
+      docBody.innerHTML = clientDocsList.length === 0 ? `
+        <tr><td colspan="4"><div class="dashboard-empty-state"><p>No documents yet. Parsed WhatsApp files will appear here.</p></div></td></tr>
+      ` : clientDocsList.map(d => `
+        <tr class="doc-row-ws ledger-row" data-doc-id="${d.id}">
           <td><strong>${d.name}</strong></td>
-          <td>${d.received}</td>
-          <td><span class="badge badge-secondary">${d.folder}</span></td>
-          <td>${d.size}</td>
+          <td class="numeric">${d.received}</td>
+          <td><span class="status-pill draft">${d.folder}</span></td>
+          <td class="numeric">${d.size}</td>
         </tr>
       `).join('');
       
@@ -756,12 +768,13 @@ function renderWorkspaceTabPanel(tabName, clientId, cTx) {
     case 'gst':
       document.querySelector('.gst-recon-results').innerHTML = `
         <div class="action-list">
-          <div class="action-item ${clientObj.filedStatus === 'Ready' ? 'border-success' : 'border-error'}">
+          <div class="action-item">
             <div class="action-details">
               <span class="action-title">GSTR-2B Automated Match Progress</span>
               <span class="action-desc">${clientObj.filedStatus === 'Ready' ? 'All invoices match exactly.' : 'Mismatches detected in purchase register files.'}</span>
             </div>
-            <button class="btn btn-sm btn-secondary" onclick="showToast('Re-running matching algorithms...')">Re-Scan</button>
+            ${workspaceStatusPill(clientObj.filedStatus)}
+            <button class="btn-khata-secondary px-3 py-1.5 text-xs" onclick="showToast('Re-running matching algorithms...')">Re-Scan</button>
           </div>
         </div>
       `;
@@ -814,7 +827,11 @@ async function renderWorkspaceReconciliation(clientId) {
   const container = document.getElementById('ws-recon-summary');
   if (!container) return;
 
-  container.innerHTML = '<p class="text-secondary">Loading reconciliation results...</p>';
+  container.innerHTML = `
+    <div class="skeleton-row"></div>
+    <div class="skeleton-row mt-4"></div>
+    <div class="skeleton-row mt-4"></div>
+  `;
 
   try {
     const res = await fetch(`/api/ca/clients/${clientId}/reconciliation`, {
@@ -834,64 +851,64 @@ async function renderWorkspaceReconciliation(clientId) {
       : 0;
 
     container.innerHTML = `
-      <div class="kpi-grid mb-24">
-        <div class="kpi-card">
-          <span class="kpi-label">Bank Lines</span>
-          <span class="kpi-value">${Number(recon.totalBankLines || 0).toLocaleString('en-IN')}</span>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="dashboard-card workspace-kpi-card">
+          <span class="dashboard-label">Bank Lines</span>
+          <span class="workspace-kpi-value numeric">${Number(recon.totalBankLines || 0).toLocaleString('en-IN')}</span>
         </div>
-        <div class="kpi-card">
-          <span class="kpi-label">Matched</span>
-          <span class="kpi-value">${Number(recon.matchedBankLines || 0).toLocaleString('en-IN')}</span>
+        <div class="dashboard-card workspace-kpi-card">
+          <span class="dashboard-label">Matched</span>
+          <span class="workspace-kpi-value numeric">${Number(recon.matchedBankLines || 0).toLocaleString('en-IN')}</span>
         </div>
-        <div class="kpi-card">
-          <span class="kpi-label">Match Rate</span>
-          <span class="kpi-value">${matchRate}%</span>
+        <div class="dashboard-card workspace-kpi-card">
+          <span class="dashboard-label">Match Rate</span>
+          <span class="workspace-kpi-value numeric">${matchRate}%</span>
         </div>
-        <div class="kpi-card">
-          <span class="kpi-label">Needs Review</span>
-          <span class="kpi-value">${(unmatchedBankLines.length + unmatchedLedgerEntries.length).toLocaleString('en-IN')}</span>
+        <div class="dashboard-card workspace-kpi-card">
+          <span class="dashboard-label">Needs Review</span>
+          <span class="workspace-kpi-value numeric">${(unmatchedBankLines.length + unmatchedLedgerEntries.length).toLocaleString('en-IN')}</span>
         </div>
       </div>
       <div class="dashboard-split">
         <div class="split-left">
-          <h4 class="mb-16">Unmatched Bank Lines</h4>
+          <h4 class="mb-4">Unmatched Bank Lines</h4>
           ${renderReconciliationTable(unmatchedBankLines, 'No unmatched bank statement lines.')}
         </div>
         <div class="split-right">
-          <h4 class="mb-16">Unmatched Ledger Entries</h4>
+          <h4 class="mb-4">Unmatched Ledger Entries</h4>
           ${renderReconciliationTable(unmatchedLedgerEntries, 'No unmatched ledger entries.')}
         </div>
       </div>
     `;
   } catch (err) {
     console.error('Failed to load reconciliation results:', err);
-    container.innerHTML = '<p class="text-secondary">Unable to load reconciliation results right now.</p>';
+    container.innerHTML = '<div class="dashboard-empty-state"><p>Unable to load reconciliation results. Retry this tab to refresh the match.</p></div>';
   }
 }
 
 function renderReconciliationTable(rows, emptyText) {
   if (!rows.length) {
-    return `<p class="text-secondary">${emptyText}</p>`;
+    return `<div class="dashboard-empty-state"><p>${emptyText}</p></div>`;
   }
 
   return `
-    <div class="overflow-x">
-      <table class="data-table">
+    <div class="dashboard-card overflow-x p-0">
+      <table class="data-table dashboard-ledger-table">
         <thead>
           <tr>
             <th>Date</th>
             <th>Description</th>
             <th>Category</th>
-            <th>Amount</th>
+            <th class="numeric">Amount</th>
           </tr>
         </thead>
         <tbody>
           ${rows.map(row => `
-            <tr>
-              <td>${escapeHtml(row.date || '-')}</td>
+            <tr class="ledger-row">
+              <td class="numeric">${escapeHtml(row.date || '-')}</td>
               <td>${escapeHtml(row.description || row.raw_text || '-')}</td>
-              <td><span class="badge badge-secondary">${escapeHtml(row.category || '-')}</span></td>
-              <td><strong>Rs ${Number(row.amount || 0).toLocaleString('en-IN')}</strong></td>
+              <td><span class="status-pill draft">${escapeHtml(row.category || '-')}</span></td>
+              <td class="numeric"><strong>Rs ${Number(row.amount || 0).toLocaleString('en-IN')}</strong></td>
             </tr>
           `).join('')}
         </tbody>
@@ -906,6 +923,19 @@ function renderTransactions() {
   const searchInput = document.getElementById('transactions-global-search');
   const clientFilter = document.getElementById('tx-filter-client');
   const channelFilter = document.getElementById('tx-filter-channel');
+
+  const transactionStatusPill = (status) => {
+    if (status === 'Verified' || status === 'Confirmed') return '<span class="status-pill confirmed">Confirmed</span>';
+    if (status === 'Review Required' || status === 'Needs Review') return '<span class="status-pill needs-review">Needs review</span>';
+    if (status === 'Rejected') return '<span class="status-pill rejected">Rejected</span>';
+    return '<span class="status-pill draft">Draft</span>';
+  };
+
+  const sourcePill = (source) => {
+    const label = source || 'Manual';
+    const isWhatsapp = String(label).toLowerCase().includes('whatsapp');
+    return `<span class="status-pill ${isWhatsapp ? 'confirmed' : 'draft'}">${escapeHtml(label)}</span>`;
+  };
 
   // Populate client filter dropdown options
   clientFilter.innerHTML = '<option value="all">All Clients</option>' + 
@@ -928,32 +958,32 @@ function renderTransactions() {
     if (filtered.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="9" style="text-align:center;padding:48px 24px;">
-            <div class="empty-state" style="padding:0;">
-              <i data-lucide="receipt" style="width:40px;height:40px;color:var(--text-secondary);margin-bottom:12px;"></i>
-              <p class="text-secondary">${globalTransactions.length === 0 ? 'No transactions have been logged yet. Clients can send invoices via WhatsApp to start.' : 'No transactions match the current filters.'}</p>
+          <td colspan="9">
+            <div class="dashboard-empty-state">
+              <p>${globalTransactions.length === 0 ? 'No entries yet. Send your first receipt on WhatsApp to see it here.' : 'No entries match these filters. Adjust search or filters to review more rows.'}</p>
             </div>
           </td>
         </tr>
       `;
     } else {
-      tbody.innerHTML = filtered.map(t => `
-        <tr>
-          <td><input type="checkbox" class="tx-checkbox" data-tx-id="${t.id}"></td>
-          <td>${t.date}</td>
-          <td><strong>${t.clientName}</strong></td>
-          <td><span class="badge ${t.type === 'Sale' ? 'badge-success' : 'badge-secondary'}">${t.type}</span></td>
-          <td><span class="badge badge-accent">${t.source}</span></td>
-          <td>${t.category}</td>
-          <td>${t.gstRate}</td>
-          <td><strong>₹${Math.abs(t.amount).toLocaleString('en-IN')}</strong></td>
-          <td>
-            <span class="badge ${t.status === 'Verified' ? 'badge-success' : t.status === 'Review Required' ? 'badge-warning' : 'badge-accent'}">
-              ${t.status}
-            </span>
-          </td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = filtered.map(t => {
+        const isRejected = t.status === 'Rejected';
+        const amount = `Rs ${Math.abs(t.amount).toLocaleString('en-IN')}`;
+
+        return `
+          <tr class="ledger-row">
+            <td><input type="checkbox" class="tx-checkbox" data-tx-id="${t.id}"></td>
+            <td class="numeric">${escapeHtml(t.date || '-')}</td>
+            <td><strong>${escapeHtml(t.clientName || '-')}</strong></td>
+            <td><span class="status-pill ${t.type === 'Sale' ? 'confirmed' : 'draft'}">${escapeHtml(t.type || 'Draft')}</span></td>
+            <td>${sourcePill(t.source)}</td>
+            <td>${escapeHtml(t.category || '-')}</td>
+            <td class="numeric">${escapeHtml(t.gstRate || '-')}</td>
+            <td class="numeric"><strong class="${isRejected ? 'rejected-amount' : ''}">${amount}</strong></td>
+            <td>${transactionStatusPill(t.status)}</td>
+          </tr>
+        `;
+      }).join('');
     }
     
     initIcons();
@@ -980,7 +1010,7 @@ function renderTransactions() {
       const match = globalTransactions.find(t => t.id === tid);
       if (match) {
         match.status = 'Verified';
-        logFrontendAction('TRANSACTION_APPROVED', `Approved transaction ${match.category || 'Ledger Item'} worth ₹${Math.abs(match.amount).toLocaleString('en-IN')} for client ${match.clientName || 'Workspace Client'}`, match.clientId);
+        logFrontendAction('TRANSACTION_APPROVED', `Approved transaction ${match.category || 'Ledger Item'} worth Rs ${Math.abs(match.amount).toLocaleString('en-IN')} for client ${match.clientName || 'Workspace Client'}`, match.clientId);
       }
     });
     showToast(`Approved ${selected.length} transactions!`);
@@ -1011,12 +1041,14 @@ function renderDocuments() {
       return matchesSearch && matchesFolder;
     });
 
-    tbody.innerHTML = filtered.map(d => `
-      <tr class="document-list-row ${selectedDocId === d.id ? 'active-row' : ''}" data-doc-id="${d.id}">
-        <td><strong>${d.name}</strong></td>
-        <td>${d.clientName}</td>
-        <td><span class="badge badge-secondary">${d.folder}</span></td>
-        <td>${d.received}</td>
+    tbody.innerHTML = filtered.length === 0 ? `
+      <tr><td colspan="4"><div class="dashboard-empty-state"><p>No documents match these filters. Adjust search or upload a file.</p></div></td></tr>
+    ` : filtered.map(d => `
+      <tr class="document-list-row ledger-row ${selectedDocId === d.id ? 'active-row' : ''}" data-doc-id="${d.id}">
+        <td><strong>${escapeHtml(d.name || '-')}</strong></td>
+        <td>${escapeHtml(d.clientName || '-')}</td>
+        <td><span class="status-pill draft">${escapeHtml(d.folder || 'documents')}</span></td>
+        <td class="numeric">${escapeHtml(d.received || '-')}</td>
       </tr>
     `).join('');
 
@@ -1053,45 +1085,46 @@ function renderDocPreview(docId) {
   if (!doc) return;
 
   const previewPanel = document.getElementById('doc-preview-panel');
+  const moneyText = (value) => String(value || 'Rs 0').replace(/₹/g, 'Rs ');
   previewPanel.innerHTML = `
     <div class="preview-content-view" id="doc-preview-content">
       <div class="preview-header-meta">
-        <h4 id="preview-filename">${doc.name}</h4>
-        <span class="badge badge-success" id="preview-status">${doc.status}</span>
+        <h4 id="preview-filename">${escapeHtml(doc.name || 'Document')}</h4>
+        <span class="status-pill confirmed" id="preview-status">${escapeHtml(doc.status || 'Parsed')}</span>
       </div>
       
-      <div class="preview-ocr-fields mt-24">
+      <div class="preview-ocr-fields">
         <div class="form-group">
           <label>Client</label>
-          <input type="text" id="preview-field-client" value="${doc.clientName}" class="form-input" disabled>
+          <input type="text" id="preview-field-client" value="${escapeHtml(doc.clientName || '')}" class="form-input" disabled>
         </div>
-        <div class="form-group mt-16">
+        <div class="form-group">
           <label>Vendor Name</label>
-          <input type="text" id="preview-field-vendor" value="${doc.vendor}" class="form-input">
+          <input type="text" id="preview-field-vendor" value="${escapeHtml(doc.vendor || '')}" class="form-input">
         </div>
-        <div class="form-group mt-16">
+        <div class="form-group">
           <label>Vendor GSTIN</label>
-          <input type="text" id="preview-field-gstin" value="${doc.gstin}" class="form-input">
+          <input type="text" id="preview-field-gstin" value="${escapeHtml(doc.gstin || '')}" class="form-input">
         </div>
-        <div class="form-grid-2 mt-16">
+        <div class="form-grid-2">
           <div class="form-group">
             <label>Subtotal</label>
-            <input type="text" id="preview-field-subtotal" value="${doc.subtotal}" class="form-input">
+            <input type="text" id="preview-field-subtotal" value="${escapeHtml(moneyText(doc.subtotal))}" class="form-input numeric">
           </div>
           <div class="form-group">
             <label>GST Amount</label>
-            <input type="text" id="preview-field-gst" value="${doc.gst}" class="form-input">
+            <input type="text" id="preview-field-gst" value="${escapeHtml(moneyText(doc.gst))}" class="form-input numeric">
           </div>
         </div>
-        <div class="form-group mt-16">
+        <div class="form-group">
           <label>Total Amount</label>
-          <input type="text" id="preview-field-total" value="${doc.total}" class="form-input input-highlight">
+          <input type="text" id="preview-field-total" value="${escapeHtml(moneyText(doc.total))}" class="form-input input-highlight numeric">
         </div>
       </div>
 
-      <div class="preview-actions-panel mt-24">
-        <button class="btn btn-primary btn-block" id="btn-preview-accept-ledger">Approve & Log Ledger</button>
-        <button class="btn btn-outline-success btn-block mt-8" id="btn-preview-ask-whatsapp">Ask Client on WhatsApp</button>
+      <div class="preview-actions-panel">
+        <button class="btn-khata-primary px-4 py-2 text-sm" id="btn-preview-accept-ledger">Approve & Log Ledger</button>
+        <button class="btn-khata-whatsapp px-4 py-2 text-sm" id="btn-preview-ask-whatsapp">Ask Client on WhatsApp</button>
       </div>
     </div>
   `;
@@ -1111,7 +1144,7 @@ function renderDocPreview(docId) {
       status: 'Verified'
     });
 
-    logFrontendAction('TRANSACTION_CREATED', `Logged expense transaction of ₹${val.toLocaleString('en-IN')} from document ${doc.name} for client ${doc.clientName}`, doc.clientId);
+    logFrontendAction('TRANSACTION_CREATED', `Logged expense transaction of Rs ${val.toLocaleString('en-IN')} from document ${doc.name} for client ${doc.clientName}`, doc.clientId);
 
     globalDocuments = globalDocuments.filter(d => d.id !== docId);
     selectedDocId = null;
@@ -1133,6 +1166,11 @@ function renderDocPreview(docId) {
 async function renderGSTCenter() {
   const tbody = document.getElementById('gst-center-table-body');
   const picker = document.getElementById('gst-period-picker');
+  const gstStatusPill = (status) => {
+    if (status === 'Ready' || status === 'Filed') return '<span class="status-pill confirmed">Confirmed</span>';
+    if (status === 'Review Required') return '<span class="status-pill needs-review">Needs review</span>';
+    return '<span class="status-pill draft">Draft</span>';
+  };
   
   if (!picker.value) {
     picker.value = new Date().toISOString().substring(0, 7);
@@ -1155,8 +1193,8 @@ async function renderGSTCenter() {
   }
 
   // Render top metrics
-  document.getElementById('gst-total-liability-metric').textContent = `₹${report.totalOutwardTaxableValue.toLocaleString('en-IN')}`;
-  document.getElementById('gst-total-itc-metric').textContent = `₹${report.totalInwardTaxAmount.toLocaleString('en-IN')}`;
+  document.getElementById('gst-total-liability-metric').textContent = `Rs ${report.totalOutwardTaxableValue.toLocaleString('en-IN')}`;
+  document.getElementById('gst-total-itc-metric').textContent = `Rs ${report.totalInwardTaxAmount.toLocaleString('en-IN')}`;
   
   const readyCount = globalClientsList.filter(c => c.filedStatus === 'Ready').length;
   document.getElementById('gst-ready-to-file-metric').textContent = readyCount;
@@ -1171,11 +1209,7 @@ async function renderGSTCenter() {
     tbody.innerHTML = `
       <tr>
         <td colspan="6">
-          <div class="empty-state gst-empty-state">
-            <i data-lucide="file-check-2" style="width:40px;height:40px;color:var(--text-secondary);margin-bottom:12px;"></i>
-            <strong>No filing records for ${escapeHtml(picker.value)}</strong>
-            <p>Link GST-registered clients or change the return period to review filing status.</p>
-          </div>
+          <div class="dashboard-empty-state"><p>No filing records for ${escapeHtml(picker.value)}. Link GST-registered clients or change the return period.</p></div>
         </td>
       </tr>`;
   } else {
@@ -1185,18 +1219,14 @@ async function renderGSTCenter() {
       const filedStatus = client.calculationStatus === 'error' ? 'Review Required' : cObj.filedStatus;
 
       return `
-        <tr>
+        <tr class="ledger-row">
           <td><strong>${escapeHtml(client.businessName || client.clientName || 'Unknown Client')}</strong><br><code style="font-size:12px;color:var(--text-secondary);">${escapeHtml(client.gstin || 'N/A')}</code></td>
-          <td>₹${client.outwardTaxable.toLocaleString('en-IN')}</td>
-          <td>₹${client.inwardTaxable.toLocaleString('en-IN')}</td>
-          <td><strong>₹${netLiability.toLocaleString('en-IN')}</strong></td>
+          <td class="numeric">Rs ${client.outwardTaxable.toLocaleString('en-IN')}</td>
+          <td class="numeric">Rs ${client.inwardTaxable.toLocaleString('en-IN')}</td>
+          <td class="numeric"><strong>Rs ${netLiability.toLocaleString('en-IN')}</strong></td>
+          <td>${gstStatusPill(filedStatus)}</td>
           <td>
-            <span class="badge ${filedStatus === 'Ready' ? 'badge-success' : filedStatus === 'Filed' ? 'badge-success' : 'badge-warning'}">
-              ${escapeHtml(filedStatus)}
-            </span>
-          </td>
-          <td>
-            <button class="btn btn-sm ${filedStatus === 'Ready' ? 'btn-primary' : 'btn-secondary'} btn-gst-file-action" data-client-id="${client.clientId}">
+            <button class="${filedStatus === 'Ready' ? 'btn-khata-primary' : 'btn-khata-secondary'} px-3 py-1.5 text-xs btn-gst-file-action" data-client-id="${client.clientId}">
               ${filedStatus === 'Ready' ? 'File GSTR-1' : 'Verify'}
             </button>
           </td>
@@ -1247,6 +1277,11 @@ async function renderGSTCenter() {
 // Screen 7: AI Insights Dashboard
 function renderAIInsights(filterSeverity = 'all') {
   const container = document.getElementById('ai-insights-cards-container');
+  const insightSeverityPill = (severity) => {
+    if (severity === 'high') return '<span class="status-pill needs-review">High severity</span>';
+    if (severity === 'medium') return '<span class="status-pill draft">Medium</span>';
+    return '<span class="status-pill confirmed">Info</span>';
+  };
   
   let filtered = globalInsights.filter(ins => {
     if (filterSeverity === 'all') return true;
@@ -1254,23 +1289,21 @@ function renderAIInsights(filterSeverity = 'all') {
   });
 
   if (filtered.length === 0) {
-    container.innerHTML = '<p class="text-secondary">No risk alerts detected matching this filter.</p>';
+    container.innerHTML = '<div class="dashboard-card dashboard-empty-state"><p>No risk alerts match this filter. New review items will appear here after client activity is scanned.</p></div>';
     return;
   }
 
   container.innerHTML = filtered.map(ins => `
-    <div class="card insight-card severity-${ins.severity}">
+    <div class="dashboard-card insight-card severity-${ins.severity}">
       <div class="insight-header">
-        <span class="badge ${ins.severity === 'high' ? 'badge-error' : ins.severity === 'medium' ? 'badge-warning' : 'badge-info'} insight-severity-label">
-          ${ins.severity} Severity
-        </span>
-        <strong class="text-primary">${ins.clientName}</strong>
+        ${insightSeverityPill(ins.severity)}
+        <strong>${escapeHtml(ins.clientName || 'Client')}</strong>
       </div>
-      <h3 class="mt-8" style="font-size: 16px; font-weight: 600;">${ins.title}</h3>
-      <p class="card-subtitle mt-8">${ins.desc}</p>
+      <h3>${escapeHtml(ins.title || 'Review item')}</h3>
+      <p class="card-subtitle">${escapeHtml(ins.desc || '')}</p>
       <div class="insight-rec-box">
-        <span class="insight-rec-text"><strong>AI Recommendation:</strong> ${ins.suggestion}</span>
-        <button class="btn btn-sm btn-primary btn-resolve-insight" data-insight-id="${ins.id}">Resolve</button>
+        <span class="insight-rec-text"><strong>Recommended:</strong> ${escapeHtml(ins.suggestion || 'Review the source entries before filing.')}</span>
+        <button class="btn-khata-primary px-3 py-1.5 text-xs btn-resolve-insight" data-insight-id="${ins.id}">Resolve</button>
       </div>
     </div>
   `).join('');
@@ -1306,7 +1339,7 @@ function renderBilling() {
   if (clientCount >= 50) unitRate = 99;
   else if (clientCount >= 10) unitRate = 119;
 
-  document.getElementById('billing-marginal-rate-display').textContent = `Rs. ${(clientCount * unitRate).toLocaleString('en-IN')} / month`;
+  document.getElementById('billing-marginal-rate-display').textContent = `Rs ${(clientCount * unitRate).toLocaleString('en-IN')} / month`;
   document.getElementById('billing-limit-label').textContent = `Client Limit (${clientCount} / 200)`;
   
   const pct = (clientCount / 200) * 100;
@@ -1358,7 +1391,7 @@ function renderSettingsUsers() {
   if (!container) return;
   
   container.innerHTML = `
-    <div class="user-item-row">
+    <div class="user-item-row ledger-row">
       <div class="user-item-info">
         <div class="firm-avatar">SS</div>
         <div class="user-item-text">
@@ -1366,17 +1399,17 @@ function renderSettingsUsers() {
           <span class="firm-role-text">FCA Principal &amp; Owner</span>
         </div>
       </div>
-      <span class="badge badge-accent">Admin</span>
+      <span class="status-pill confirmed">Admin</span>
     </div>
-    <div class="user-item-row mt-8">
+    <div class="user-item-row ledger-row">
       <div class="user-item-info">
-        <div class="firm-avatar" style="background-color: var(--primary);">RG</div>
+        <div class="firm-avatar">RG</div>
         <div class="user-item-text">
           <strong>Rohan Gupta</strong>
           <span class="firm-role-text">Assistant Auditor</span>
         </div>
       </div>
-      <span class="badge badge-secondary">Edit Access</span>
+      <span class="status-pill draft">Edit Access</span>
     </div>
   `;
 }
@@ -1824,5 +1857,3 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btn) btn.onclick = () => { window.location.hash = hash; };
   });
 });
-
-

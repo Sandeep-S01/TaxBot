@@ -7,6 +7,18 @@ let chartSalesExpenses = null;
 let chartExpenseCategories = null;
 let chartWsGstTrend = null;
 
+function getDashboardChartTokens() {
+  const styles = getComputedStyle(document.documentElement);
+  return {
+    ink: styles.getPropertyValue('--ink').trim() || '#232A24',
+    inkSoft: styles.getPropertyValue('--ink-soft').trim() || '#5B6459',
+    rule: styles.getPropertyValue('--rule').trim() || '#CBBFA0',
+    paper: styles.getPropertyValue('--paper').trim() || '#F3EEDF',
+    stamp: styles.getPropertyValue('--stamp').trim() || '#B23A2E',
+    sage: styles.getPropertyValue('--sage').trim() || '#4B6350',
+  };
+}
+
 function getMonthlySalesExpensesData(transactions) {
   const months = [];
   const salesByMonth = {};
@@ -122,9 +134,9 @@ function renderOverviewCharts() {
       chartSalesExpenses.destroy();
     }
 
-    const isDark = document.body.classList.contains('dark-theme');
-    const textColor = isDark ? '#94A3B8' : '#64748B';
-    const gridColor = isDark ? '#1E293B' : '#E2E8F0';
+    const chartTokens = getDashboardChartTokens();
+    const textColor = chartTokens.inkSoft;
+    const gridColor = chartTokens.rule;
 
     chartSalesExpenses = new Chart(ctxTrend, {
       type: 'line',
@@ -134,8 +146,8 @@ function renderOverviewCharts() {
           {
             label: 'Sales (INR)',
             data: trendData.sales,
-            borderColor: '#2563EB',
-            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+            borderColor: chartTokens.sage,
+            backgroundColor: 'rgb(75 99 80 / 0.1)',
             borderWidth: 2.5,
             fill: true,
             tension: 0.3,
@@ -143,8 +155,8 @@ function renderOverviewCharts() {
           {
             label: 'Expenses (INR)',
             data: trendData.expenses,
-            borderColor: '#EF4444',
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            borderColor: chartTokens.stamp,
+            backgroundColor: 'rgb(178 58 46 / 0.1)',
             borderWidth: 2.5,
             fill: true,
             tension: 0.3,
@@ -179,8 +191,8 @@ function renderOverviewCharts() {
       chartExpenseCategories.destroy();
     }
 
-    const isDark = document.body.classList.contains('dark-theme');
-    const textColor = isDark ? '#94A3B8' : '#64748B';
+    const chartTokens = getDashboardChartTokens();
+    const textColor = chartTokens.inkSoft;
 
     if (expenseCatData.labels.length === 0) {
       const ctx = ctxCat.getContext('2d');
@@ -198,10 +210,16 @@ function renderOverviewCharts() {
           datasets: [{
             data: expenseCatData.data,
             backgroundColor: [
-              '#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#6366F1', '#EC4899', '#8B5CF6',
+              chartTokens.stamp,
+              chartTokens.sage,
+              chartTokens.inkSoft,
+              chartTokens.rule,
+              chartTokens.ink,
+              chartTokens.paper,
+              chartTokens.paper,
             ],
-            borderWidth: isDark ? 2 : 1,
-            borderColor: isDark ? '#121824' : '#FFFFFF',
+            borderWidth: 1,
+            borderColor: chartTokens.paper,
           }],
         },
         options: {
@@ -230,9 +248,9 @@ function renderClientWorkspaceGstChart(clientId, cTx) {
   }
 
   const gstTrend = getMonthlyGstTrendData(cTx);
-  const isDark = document.body.classList.contains('dark-theme');
-  const textColor = isDark ? '#94A3B8' : '#64748B';
-  const gridColor = isDark ? '#1E293B' : '#E2E8F0';
+  const chartTokens = getDashboardChartTokens();
+  const textColor = chartTokens.inkSoft;
+  const gridColor = chartTokens.rule;
 
   chartWsGstTrend = new Chart(ctxGst, {
     type: 'bar',
@@ -242,13 +260,13 @@ function renderClientWorkspaceGstChart(clientId, cTx) {
         {
           label: 'Outward GST (Liabilities)',
           data: gstTrend.salesTax,
-          backgroundColor: '#3B82F6',
+          backgroundColor: chartTokens.stamp,
           borderRadius: 4,
         },
         {
           label: 'Inward GST (Eligible ITC)',
           data: gstTrend.purchaseTax,
-          backgroundColor: '#10B981',
+          backgroundColor: chartTokens.sage,
           borderRadius: 4,
         },
       ],
@@ -276,10 +294,10 @@ function renderClientWorkspaceGstChart(clientId, cTx) {
 }
 
 function updateChartsTheme() {
-  const isDark = document.body.classList.contains('dark-theme');
-  const textColor = isDark ? '#94A3B8' : '#64748B';
-  const gridColor = isDark ? '#1E293B' : '#E2E8F0';
-  const borderColor = isDark ? '#121824' : '#FFFFFF';
+  const chartTokens = getDashboardChartTokens();
+  const textColor = chartTokens.inkSoft;
+  const gridColor = chartTokens.rule;
+  const borderColor = chartTokens.paper;
 
   if (chartSalesExpenses && chartSalesExpenses.options) {
     chartSalesExpenses.options.plugins.legend.labels.color = textColor;
@@ -294,7 +312,7 @@ function updateChartsTheme() {
     chartExpenseCategories.options.plugins.legend.labels.color = textColor;
     if (chartExpenseCategories.data && chartExpenseCategories.data.datasets && chartExpenseCategories.data.datasets[0]) {
       chartExpenseCategories.data.datasets[0].borderColor = borderColor;
-      chartExpenseCategories.data.datasets[0].borderWidth = isDark ? 2 : 1;
+      chartExpenseCategories.data.datasets[0].borderWidth = 1;
     }
     chartExpenseCategories.update();
   }

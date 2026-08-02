@@ -10,6 +10,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        paper: '#F3EEDF',
+        'paper-dim': '#EAE3CD',
+        ink: '#232A24',
+        'ink-soft': '#5B6459',
+        rule: '#CBBFA0',
+        stamp: '#B23A2E',
+        sage: '#4B6350',
         primary: 'rgb(var(--color-teal-500) / <alpha-value>)',
         'background-light': 'rgb(var(--color-mist-50) / <alpha-value>)',
         'background-dark': 'rgb(var(--color-night-950) / <alpha-value>)',
@@ -18,8 +25,9 @@ module.exports = {
         'text-muted': 'rgb(var(--color-ink-600) / <alpha-value>)',
       },
       fontFamily: {
-        display: ['Space Grotesk', 'sans-serif'],
+        display: ['Bricolage Grotesque', 'sans-serif'],
         body: ['Inter', 'sans-serif'],
+        mono: ['IBM Plex Mono', 'monospace'],
       },
       borderRadius: {
         DEFAULT: '0.5rem',

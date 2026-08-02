@@ -11,3 +11,10 @@ yarn-error.log*
 .codex/
 playwright-report/
 test-results/
+audit-*.png
+compare-*.png
+header-*.png
+landing-no-theme-*.png
+local-navbar-matches-live.png
+tmp-*.png
+live-index.html
