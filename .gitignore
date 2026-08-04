@@ -1,5 +1,7 @@
 node_modules/
 dist/
+.tools/
+qa-screenshots/
 .env
 *.log
 audit_logs.json

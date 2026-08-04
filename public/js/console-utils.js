@@ -42,6 +42,69 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function getStatusVariant(status) {
+  const normalized = String(status || '').toLowerCase();
+  if (['needs-review', 'confirmed', 'draft', 'rejected'].includes(normalized)) return normalized;
+  if (normalized.includes('reject')) return 'rejected';
+  if (normalized.includes('review') || normalized.includes('high')) return 'needs-review';
+  if (normalized.includes('verified') || normalized.includes('confirmed') || normalized.includes('ready') || normalized.includes('filed') || normalized === 'info') return 'confirmed';
+  return 'draft';
+}
+
+function renderStatusPill(status, label = null) {
+  const text = label || (() => {
+    const normalized = String(status || '').toLowerCase();
+    if (normalized.includes('review')) return 'Needs review';
+    if (normalized.includes('reject')) return 'Rejected';
+    if (normalized.includes('verified') || normalized.includes('confirmed') || normalized.includes('ready') || normalized.includes('filed')) return 'Confirmed';
+    if (normalized.includes('high')) return 'High severity';
+    if (normalized.includes('medium')) return 'Medium';
+    if (normalized === 'info') return 'Info';
+    return status || 'Draft';
+  })();
+  return `<span class="status-pill ${getStatusVariant(status)}">${escapeHtml(text)}</span>`;
+}
+
+function renderSourcePill(source) {
+  const label = source || 'Manual';
+  const variant = String(label).toLowerCase().includes('whatsapp') ? 'confirmed' : 'draft';
+  return `<span class="status-pill ${variant}">${escapeHtml(label)}</span>`;
+}
+
+function renderEmptyState(message, actionHtml = '') {
+  return `
+    <div class="dashboard-empty-state">
+      <p>${escapeHtml(message)}</p>
+      ${actionHtml ? `<div class="dashboard-empty-action">${actionHtml}</div>` : ''}
+    </div>
+  `;
+}
+
+function renderTableEmptyState(colspan, message, actionHtml = '') {
+  return `<tr><td colspan="${Number(colspan) || 1}">${renderEmptyState(message, actionHtml)}</td></tr>`;
+}
+
+function renderErrorState(message, actionHtml = '') {
+  return `
+    <div class="dashboard-error-state" role="alert">
+      <p>${escapeHtml(message)}</p>
+      ${actionHtml ? `<div class="dashboard-empty-action">${actionHtml}</div>` : ''}
+    </div>
+  `;
+}
+
+function renderTableErrorState(colspan, message, actionHtml = '') {
+  return `<tr><td colspan="${Number(colspan) || 1}">${renderErrorState(message, actionHtml)}</td></tr>`;
+}
+
+function renderLoadingRows(colspan, count = 3) {
+  return Array.from({ length: count }, () => `
+    <tr>
+      <td colspan="${Number(colspan) || 1}"><div class="skeleton-row" aria-hidden="true"></div></td>
+    </tr>
+  `).join('');
+}
+
 async function withButtonState(button, busyLabel, action) {
   if (!button || button.disabled) return undefined;
   const previous = {
@@ -98,19 +161,19 @@ function parseMarkdown(text) {
 
   html = html.replace(
     /```([\s\S]*?)```/g,
-    '<pre style="background: var(--bg-app); border: 1px solid var(--border); padding: var(--space-8); border-radius: var(--radius-6); overflow-x: auto; font-family: monospace; font-size: 13px; margin: var(--space-8) 0;"><code>$1</code></pre>'
+    '<pre style="background: var(--paper); border: 1px solid var(--rule); padding: var(--space-8); border-radius: var(--radius-6); overflow-x: auto; font-family: monospace; font-size: 13px; margin: var(--space-8) 0;"><code>$1</code></pre>'
   );
   html = html.replace(
     /`([^`]+)`/g,
-    '<code style="background: var(--bg-app); border: 1px solid var(--border); padding: 2px 4px; border-radius: var(--radius-4); font-family: monospace; font-size: 13px;">$1</code>'
+    '<code style="background: var(--paper); border: 1px solid var(--rule); padding: 2px 4px; border-radius: var(--radius-4); font-family: monospace; font-size: 13px;">$1</code>'
   );
 
-  html = html.replace(/^\s*###\s+(.+)$/gm, '<h5 style="margin: var(--space-12) 0 var(--space-6) 0; font-size: 14px; font-weight: 600; color: var(--text-primary);">$1</h5>');
-  html = html.replace(/^\s*##\s+(.+)$/gm, '<h4 style="margin: var(--space-16) 0 var(--space-8) 0; font-size: 15px; font-weight: 600; color: var(--text-primary);">$1</h4>');
-  html = html.replace(/^\s*#\s+(.+)$/gm, '<h3 style="margin: var(--space-16) 0 var(--space-8) 0; font-size: 16px; font-weight: 700; color: var(--text-primary);">$1</h3>');
+  html = html.replace(/^\s*###\s+(.+)$/gm, '<h5 style="margin: var(--space-12) 0 var(--space-6) 0; font-size: 14px; font-weight: 600; color: var(--ink);">$1</h5>');
+  html = html.replace(/^\s*##\s+(.+)$/gm, '<h4 style="margin: var(--space-16) 0 var(--space-8) 0; font-size: 15px; font-weight: 600; color: var(--ink);">$1</h4>');
+  html = html.replace(/^\s*#\s+(.+)$/gm, '<h3 style="margin: var(--space-16) 0 var(--space-8) 0; font-size: 16px; font-weight: 700; color: var(--ink);">$1</h3>');
   html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  html = html.replace(/^\s*[-*]\s+(.+)$/gm, '<li style="margin-left: var(--space-16); list-style-type: disc; color: var(--text-primary); font-size: 13.5px; line-height: 1.5; margin-bottom: 4px;">$1</li>');
-  html = html.replace(/^\s*(\d+)\.\s+(.+)$/gm, '<li style="margin-left: var(--space-16); list-style-type: decimal; color: var(--text-primary); font-size: 13.5px; line-height: 1.5; margin-bottom: 4px;">$2</li>');
+  html = html.replace(/^\s*[-*]\s+(.+)$/gm, '<li style="margin-left: var(--space-16); list-style-type: disc; color: var(--ink); font-size: 13.5px; line-height: 1.5; margin-bottom: 4px;">$1</li>');
+  html = html.replace(/^\s*(\d+)\.\s+(.+)$/gm, '<li style="margin-left: var(--space-16); list-style-type: decimal; color: var(--ink); font-size: 13.5px; line-height: 1.5; margin-bottom: 4px;">$2</li>');
 
   const lines = html.split('\n');
   let insidePre = false;

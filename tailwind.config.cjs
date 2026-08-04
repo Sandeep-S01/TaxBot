@@ -6,7 +6,6 @@ module.exports = {
     './public/*.html',
     './public/js/*.js',
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -17,12 +16,6 @@ module.exports = {
         rule: '#CBBFA0',
         stamp: '#B23A2E',
         sage: '#4B6350',
-        primary: 'rgb(var(--color-teal-500) / <alpha-value>)',
-        'background-light': 'rgb(var(--color-mist-50) / <alpha-value>)',
-        'background-dark': 'rgb(var(--color-night-950) / <alpha-value>)',
-        'card-dark': 'rgb(var(--color-night-900) / <alpha-value>)',
-        'border-dark': 'rgb(var(--color-night-700) / <alpha-value>)',
-        'text-muted': 'rgb(var(--color-ink-600) / <alpha-value>)',
       },
       fontFamily: {
         display: ['Bricolage Grotesque', 'sans-serif'],

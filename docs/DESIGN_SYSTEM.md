@@ -4,9 +4,10 @@
 
 - `public/css/tokens.css` owns primitive values, semantic theme roles, and compatibility aliases.
 - `tailwind.config.cjs` maps existing Tailwind color names to primitive token channels.
-- `public/js/theme.js` owns theme detection, persistence, application, and toggle binding.
-- `public/css/console-shell.css` owns authenticated console geometry, navigation, header actions, shell menus, and responsive shell modes.
+- `public/css/public-pages.css` owns landing and auth page styling on top of the shared tokens.
+- `public/css/dashboard-khata.css` owns authenticated console geometry, navigation, header actions, shell menus, dashboard components, and responsive shell modes.
 - `public/js/console-shell.js` owns sidebar persistence, mobile drawer state, and the profile menu.
+- `public/js/console.js` owns route rendering, dashboard data binding, and shared screen state orchestration.
 
 Page-level styles may consume tokens but must not redefine global theme values.
 
@@ -20,16 +21,14 @@ New components should prefer semantic roles. Compatibility aliases exist to supp
 
 ## Theme Contract
 
-The persisted value uses `taxbot_theme` with `light` or `dark`. Without a saved preference, TaxBot follows the operating-system preference.
+TaxBot is a light-only Digital Khata interface. Do not add dark-mode toggles, `dark:` variants, persisted theme storage, or page-specific theme controllers.
 
-The controller applies:
+The active theme surface is defined by the shared tokens and Tailwind palette:
 
-- `html.dark` for Tailwind dark variants
-- `html[data-theme]` as the canonical state
-- `body.dark-theme` for existing console selectors and chart code
-- `taxbot:themechange` when the active theme changes
-
-Use `window.TaxBotTheme.bindToggle()` for theme controls. Do not add page-specific storage or root-class logic.
+- `paper`, `paper-dim`, `ink`, `ink-soft`, `rule`, `stamp`, and `sage`
+- Bricolage Grotesque for headings
+- Inter for body text
+- IBM Plex Mono for labels, data, and numbers
 
 ## Console Shell Contract
 
@@ -45,6 +44,6 @@ Use `window.TaxBotTheme.bindToggle()` for theme controls. Do not add page-specif
 - Do not add raw color values to new component rules when an existing semantic token fits.
 - Keep spacing on the 4px foundation scale.
 - Use the shared radius, shadow, motion, and z-index tokens.
-- Keep text and status contrast meaningful in both themes.
+- Keep text and status contrast meaningful on the light paper-toned surface.
 - Preserve visible focus styles and honor reduced-motion preferences.
-- Validate changes through `npm run test:ui` at 390px and 1440px in both themes.
+- Validate changes through `npm run test:ui` at 390px and 1440px in light mode.

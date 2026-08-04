@@ -10,15 +10,36 @@ function renderExports() {
   const csvBtn = document.getElementById('btn-action-export-csv');
   const gstBtn = document.getElementById('btn-action-export-gst');
   const pdfBtn = document.getElementById('btn-action-export-pdf');
+  const statePanel = document.getElementById('exports-state');
 
   if (!tallySelect || !csvSelect) return;
+
+  if (statePanel) {
+    statePanel.classList.add('hidden');
+    statePanel.innerHTML = '';
+  }
+
+  if (appDataState.clients.loading) {
+    if (statePanel) {
+      statePanel.classList.remove('hidden');
+      statePanel.innerHTML = `<div class="dashboard-card"><div class="skeleton-row"></div><div class="skeleton-row mt-3"></div></div>`;
+    }
+  }
+
+  if (appDataState.clients.error) {
+    if (statePanel) {
+      statePanel.classList.remove('hidden');
+      statePanel.innerHTML = renderErrorState('Exports could not load because the client directory failed to refresh.', '<button class="btn-khata-secondary px-3 py-2 text-xs" data-retry-load="clients">Retry</button>');
+      bindDataRetryActions(statePanel);
+    }
+  }
 
   const optHtml = globalClientsList.length > 0
     ? globalClientsList.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name || c.business_name || 'Unnamed Client')}</option>`).join('')
     : '<option value="">No clients linked yet</option>';
   tallySelect.innerHTML = optHtml;
   csvSelect.innerHTML = optHtml;
-  const hasClients = globalClientsList.length > 0;
+  const hasClients = globalClientsList.length > 0 && !appDataState.clients.loading && !appDataState.clients.error;
   [tallySelect, csvSelect, tallyBtn, csvBtn].forEach(el => {
     if (!el) return;
     el.disabled = !hasClients;

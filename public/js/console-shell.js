@@ -34,6 +34,20 @@
 
     if (!sidebar || !collapseButton || !mobileMenuButton || !backdrop) return;
 
+    function getFocusable(container) {
+      return Array.from(container.querySelectorAll([
+        'a[href]',
+        'button:not([disabled])',
+        'input:not([disabled])',
+        'select:not([disabled])',
+        'textarea:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])',
+      ].join(','))).filter((element) => {
+        const style = window.getComputedStyle(element);
+        return style.display !== 'none' && style.visibility !== 'hidden';
+      });
+    }
+
     function applyCollapsedState(collapsed) {
       const active = desktopQuery.matches && collapsed;
       sidebar.classList.toggle('collapsed', active);
@@ -51,6 +65,12 @@
       sidebar.setAttribute('aria-hidden', String(!desktopQuery.matches && !active));
 
       if (active) {
+        setProfileOpen(false);
+        if (notificationMenu) {
+          notificationMenu.classList.add('hidden');
+          notificationMenu.hidden = true;
+        }
+        if (notificationButton) notificationButton.setAttribute('aria-expanded', 'false');
         const firstLink = sidebar.querySelector('.nav-link');
         if (firstLink) requestAnimationFrame(() => firstLink.focus());
       } else if (restoreFocus) {
@@ -63,7 +83,10 @@
       profileMenu.hidden = !open;
       profileButton.setAttribute('aria-expanded', String(open));
       if (open) {
-        if (notificationMenu) notificationMenu.classList.add('hidden');
+        if (notificationMenu) {
+          notificationMenu.classList.add('hidden');
+          notificationMenu.hidden = true;
+        }
         if (notificationButton) notificationButton.setAttribute('aria-expanded', 'false');
         window.dispatchEvent(new CustomEvent('taxbot:shell-menu-open', {
           detail: { source: 'profile' }
@@ -126,6 +149,21 @@
 
     document.addEventListener('click', () => setProfileOpen(false));
     document.addEventListener('keydown', (event) => {
+      if (event.key === 'Tab' && sidebar.classList.contains('drawer-open')) {
+        const focusable = getFocusable(sidebar);
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+        return;
+      }
+
       if (event.key !== 'Escape') return;
       if (sidebar.classList.contains('drawer-open')) setDrawerOpen(false, true);
       if (profileMenu && !profileMenu.hidden) setProfileOpen(false, true);

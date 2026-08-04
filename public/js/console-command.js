@@ -37,6 +37,7 @@ function initCommandBar() {
     }));
     commandModal.classList.remove('hidden');
     commandTrigger.setAttribute('aria-expanded', 'true');
+    commandInput.setAttribute('aria-expanded', 'true');
     document.body.classList.add('shell-modal-open');
     commandInput.focus();
     renderList('');
@@ -45,6 +46,8 @@ function initCommandBar() {
   function closeBar(restoreFocus = false) {
     commandModal.classList.add('hidden');
     commandTrigger.setAttribute('aria-expanded', 'false');
+    commandInput.setAttribute('aria-expanded', 'false');
+    commandInput.setAttribute('aria-activedescendant', '');
     document.body.classList.remove('shell-modal-open');
     commandInput.value = '';
     selectedIndex = -1;
@@ -84,12 +87,19 @@ function initCommandBar() {
   };
 
   function updateSelection(items) {
+    if (items.length === 0 || selectedIndex < 0) {
+      commandInput.setAttribute('aria-activedescendant', '');
+      return;
+    }
     items.forEach((item, index) => {
       if (index === selectedIndex) {
         item.classList.add('selected');
+        item.setAttribute('aria-selected', 'true');
+        commandInput.setAttribute('aria-activedescendant', item.id || '');
         item.scrollIntoView({ block: 'nearest' });
       } else {
         item.classList.remove('selected');
+        item.setAttribute('aria-selected', 'false');
       }
     });
   }
@@ -116,7 +126,7 @@ function initCommandBar() {
         const id = itemsToClick.length;
         itemsToClick.push(s.action);
         html += `
-          <div class="command-result-item" data-item-id="${id}">
+          <div class="command-result-item" id="command-result-${id}" role="option" aria-selected="false" data-item-id="${id}">
             <i data-lucide="corner-down-right"></i>
             <span>${escapeHtml(s.text)}</span>
           </div>
@@ -130,7 +140,7 @@ function initCommandBar() {
         const id = itemsToClick.length;
         itemsToClick.push(() => { window.location.hash = `client/${c.id}`; });
         html += `
-          <div class="command-result-item" data-item-id="${id}">
+          <div class="command-result-item" id="command-result-${id}" role="option" aria-selected="false" data-item-id="${id}">
             <i data-lucide="user"></i>
             <span>Open workspace for <strong>${escapeHtml(c.name || c.business_name || 'Unnamed Client')}</strong> (${escapeHtml(c.owner || c.owner_name || 'Owner')})</span>
           </div>
@@ -142,7 +152,7 @@ function initCommandBar() {
       if (q.length > 0) {
         html += `
           <div class="command-result-group-title">AI Command Search</div>
-          <div class="command-result-item" id="ai-command-search-btn">
+          <div class="command-result-item" id="ai-command-search-btn" role="option" aria-selected="false">
             <i data-lucide="sparkles"></i>
             <span>Query AI: "${escapeHtml(query)}"</span>
           </div>

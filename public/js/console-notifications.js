@@ -16,12 +16,15 @@ function initNotifications() {
 
   const setMenuOpen = (open, restoreFocus = false) => {
     menu.classList.toggle('hidden', !open);
+    menu.hidden = !open;
     btn.setAttribute('aria-expanded', String(open));
     if (open) {
       window.dispatchEvent(new CustomEvent('taxbot:shell-menu-open', {
         detail: { source: 'notifications' }
       }));
       renderNotificationsList();
+      const firstItem = menu.querySelector('.notification-item, #btn-mark-all-read:not([disabled])');
+      requestAnimationFrame(() => (firstItem || menu).focus());
     } else if (restoreFocus) {
       btn.focus();
     }
@@ -77,12 +80,7 @@ function renderNotificationsList() {
   }
 
   if (globalNotifications.length === 0) {
-    list.innerHTML = `
-      <div class="empty-state" style="padding: 24px;">
-        <i data-lucide="bell-off" style="width:24px;height:24px;color:var(--text-muted);margin-bottom:8px;"></i>
-        <p class="text-secondary" style="font-size:13px;margin:0;">No notifications yet</p>
-      </div>
-    `;
+    list.innerHTML = renderEmptyState('No notifications yet. New client and filing alerts will appear here.');
     initIcons();
     return;
   }
@@ -126,7 +124,10 @@ function renderNotificationsList() {
         updateNotificationIndicator();
         const menu = document.getElementById('notifications-dropdown-menu');
         const button = document.getElementById('notification-btn');
-        if (menu) menu.classList.add('hidden');
+        if (menu) {
+          menu.classList.add('hidden');
+          menu.hidden = true;
+        }
         if (button) button.setAttribute('aria-expanded', 'false');
         if (typeof notif.action === 'function') notif.action();
       }

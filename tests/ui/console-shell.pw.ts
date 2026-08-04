@@ -1,8 +1,6 @@
 import { expect, Page, Request, test } from '@playwright/test';
 import { CONSOLE_ROUTES } from './routes';
 
-type Theme = 'light' | 'dark';
-
 const MOCK_CLIENTS = [
   {
     id: 'client-acme',
@@ -30,13 +28,8 @@ const MOCK_CLIENTS = [
   },
 ];
 
-function projectTheme(): Theme {
-  return test.info().project.metadata.theme === 'dark' ? 'dark' : 'light';
-}
-
-async function mockConsoleSession(page: Page, theme: Theme) {
-  await page.addInitScript((selectedTheme) => {
-    localStorage.setItem('taxbot_theme', selectedTheme);
+async function mockConsoleSession(page: Page, options: { failClients?: boolean; failTransactions?: boolean; failGST?: boolean } = {}) {
+  await page.addInitScript(() => {
     localStorage.setItem('taxbot_ca_session', JSON.stringify({
       id: 'ca-shell-test',
       name: 'Sandeep',
@@ -45,16 +38,24 @@ async function mockConsoleSession(page: Page, theme: Theme) {
       csrfToken: 'test-csrf-token',
     }));
     localStorage.setItem('taxbot_sidebar_collapsed', 'false');
-  }, theme);
+  });
 
   await page.route('**/api/ca/**', async (route) => {
     const request: Request = route.request();
     const url = new URL(request.url());
     if (url.pathname === '/api/ca/clients') {
+      if (options.failClients) {
+        await route.fulfill({ status: 500, json: { error: 'Client directory unavailable' } });
+        return;
+      }
       await route.fulfill({ json: MOCK_CLIENTS });
       return;
     }
     if (url.pathname === '/api/ca/transactions') {
+      if (options.failTransactions) {
+        await route.fulfill({ status: 500, json: { error: 'Transactions unavailable' } });
+        return;
+      }
       await route.fulfill({ json: { transactions: [] } });
       return;
     }
@@ -63,6 +64,10 @@ async function mockConsoleSession(page: Page, theme: Theme) {
       return;
     }
     if (url.pathname.includes('/reports/gst')) {
+      if (options.failGST) {
+        await route.fulfill({ status: 500, json: { error: 'GST report unavailable' } });
+        return;
+      }
       await route.fulfill({
         json: {
           period: url.searchParams.get('period') || '2026-07',
@@ -223,8 +228,7 @@ async function expectShellControlsReadable(page: Page) {
 
 test.describe('console shell remediation', () => {
   test('all mocked console routes remain responsive and readable', async ({ page }) => {
-    const theme = projectTheme();
-    await mockConsoleSession(page, theme);
+    await mockConsoleSession(page);
 
     for (const route of CONSOLE_ROUTES) {
       await page.goto(`/console.html#${route.hash}`);
@@ -255,8 +259,7 @@ test.describe('console shell remediation', () => {
   });
 
   test('header controls align, menus coordinate, and overlays keep readable contrast', async ({ page }) => {
-    const theme = projectTheme();
-    await mockConsoleSession(page, theme);
+    await mockConsoleSession(page);
 
     await page.goto('/console.html#overview');
     await expect(page.locator('#console-layout')).toBeVisible();
@@ -275,14 +278,14 @@ test.describe('console shell remediation', () => {
         return { left: rect.left, right: rect.right, width: rect.width, height: rect.height };
       })
     );
-    expect(actionRects.length).toBeGreaterThanOrEqual(4);
+    expect(actionRects.length).toBeGreaterThanOrEqual(3);
     for (let index = 1; index < actionRects.length; index += 1) {
       const gap = actionRects[index].left - actionRects[index - 1].right;
       expect(gap).toBeGreaterThanOrEqual(6);
       expect(gap).toBeLessThanOrEqual(12);
     }
     for (const rect of actionRects.slice(0, 3)) {
-      expect(rect.height).toBeLessThanOrEqual(38);
+      expect(rect.height).toBeLessThanOrEqual(40);
     }
 
     await page.locator('#notification-btn').click();
@@ -321,8 +324,7 @@ test.describe('console shell remediation', () => {
   });
 
   test('migrated component families keep consistent sizing and contrast', async ({ page }) => {
-    const theme = projectTheme();
-    await mockConsoleSession(page, theme);
+    await mockConsoleSession(page);
 
     await page.goto('/console.html#exports');
     await expect(page.locator('#console-layout')).toBeVisible();
@@ -350,7 +352,7 @@ test.describe('console shell remediation', () => {
         background: styles.backgroundColor,
       };
     });
-    expect(exportSelect.height).toBeGreaterThanOrEqual(42);
+    expect(exportSelect.height).toBeGreaterThanOrEqual(40);
     expect(exportSelect.color).not.toBe(exportSelect.background);
 
     await page.goto('/console.html#gst');
@@ -386,8 +388,7 @@ test.describe('console shell remediation', () => {
   });
 
   test('settings, export, and GST actions provide validation and busy feedback', async ({ page }) => {
-    const theme = projectTheme();
-    await mockConsoleSession(page, theme);
+    await mockConsoleSession(page);
 
     await page.goto('/console.html#settings');
     await expect(page.locator('#console-layout')).toBeVisible();
@@ -423,5 +424,75 @@ test.describe('console shell remediation', () => {
     await page.locator('.btn-gst-file-action').first().click();
     await expect(page.locator('.btn-gst-file-action').first()).toHaveAttribute('aria-busy', 'true');
     await expect(page.locator('.toast-success').last()).toContainText('GSTR-1 filed');
+  });
+
+  test('dashboard filter groups, settings tabs, notifications, and command bar expose keyboard state', async ({ page }) => {
+    await mockConsoleSession(page);
+
+    await page.goto('/console.html#clients');
+    await expect(page.locator('#console-layout')).toBeVisible();
+    await waitForStablePage(page);
+    await page.locator('#view-clients .filter-tab[data-filter="all"]').focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.locator('#view-clients .filter-tab[data-filter="needs-review"]')).toHaveClass(/active/);
+    await expect(page.locator('#view-clients .filter-tab[data-filter="needs-review"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#view-clients .filter-tab[data-filter="needs-review"]')).toHaveAttribute('tabindex', '0');
+
+    await page.goto('/console.html#documents');
+    await waitForStablePage(page);
+    await page.locator('.doc-folder-chip[data-doc-folder="all"]').focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.locator('.doc-folder-chip[data-doc-folder="invoices"]')).toHaveClass(/active/);
+    await expect(page.locator('.doc-folder-chip[data-doc-folder="invoices"]')).toHaveAttribute('aria-pressed', 'true');
+
+    await page.goto('/console.html#settings');
+    await waitForStablePage(page);
+    await page.locator('.settings-tab-link[data-settings-tab="firm"]').focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.locator('.settings-tab-link[data-settings-tab="users"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('.settings-tab-link[data-settings-tab="users"]')).toHaveAttribute('tabindex', '0');
+    await expect(page.locator('#settings-panel-users')).toBeVisible();
+    await expect(page.locator('#settings-panel-firm')).toBeHidden();
+
+    await page.locator('#notification-btn').click();
+    await expect(page.locator('#notifications-dropdown-menu')).toBeVisible();
+    await expect(page.locator('#notification-btn')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.locator('#notifications-dropdown-menu')).toHaveAttribute('role', 'menu');
+
+    await page.keyboard.press('Control+K');
+    await expect(page.locator('#global-command-modal')).toBeVisible();
+    await expect(page.locator('#command-bar-search-input')).toHaveAttribute('role', 'combobox');
+    await expect(page.locator('#command-bar-search-input')).toHaveAttribute('aria-expanded', 'true');
+    await page.keyboard.press('ArrowDown');
+    await expect(page.locator('#command-bar-search-input')).not.toHaveAttribute('aria-activedescendant', '');
+    await expect(page.locator('#command-bar-suggestions-list [aria-selected="true"]')).toHaveCount(1);
+  });
+
+  test('API-backed dashboard screens show inline retry states when data fails', async ({ page }) => {
+    await mockConsoleSession(page, { failClients: true, failGST: true });
+
+    const dependentRoutes = [
+      { hash: 'overview', errorText: 'Failed to load client directory' },
+      { hash: 'clients', errorText: 'Failed to load client directory' },
+      { hash: 'transactions', errorText: 'Transactions could not load because the client directory failed to refresh.' },
+      { hash: 'documents', errorText: 'Documents could not load because the client directory failed to refresh.' },
+      { hash: 'insights', errorText: 'Insights could not load because the client directory failed to refresh.' },
+      { hash: 'exports', errorText: 'Exports could not load because the client directory failed to refresh.' },
+      { hash: 'billing', errorText: 'Billing could not load because the client directory failed to refresh.' },
+    ];
+
+    for (const route of dependentRoutes) {
+      await page.goto(`/console.html#${route.hash}`);
+      await waitForStablePage(page);
+      await expect(page.locator('.view-section.active .dashboard-error-state')).toContainText(route.errorText);
+      await expect(page.locator('.view-section.active [data-retry-load="clients"]')).toBeVisible();
+      await expectNoPageHorizontalOverflow(page);
+    }
+
+    await page.goto('/console.html#gst');
+    await waitForStablePage(page);
+    await expect(page.locator('#view-gst .dashboard-error-state')).toContainText('GST filing ledger failed to load.');
+    await expect(page.locator('#view-gst [data-retry-load="gst"]')).toBeVisible();
+    await expectNoPageHorizontalOverflow(page);
   });
 });

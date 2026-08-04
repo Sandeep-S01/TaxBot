@@ -9,10 +9,80 @@
 let activeClientId = null;
 let selectedDocId = null;
 let currentClientsViewMode = 'table';
+let currentClientsPage = 1;
+const CLIENTS_PAGE_SIZE = 10;
 let globalClientsList = []; // loaded from backend
 let globalTransactions = []; // compiled from clients
 let globalDocuments = []; // compiled client files
 let globalInsights = []; // AI insights calculated dynamically
+const appDataState = {
+  clients: { loading: false, loaded: false, error: '' },
+  transactions: { loading: false, loaded: false, error: '' },
+  gst: { loading: false, error: '' },
+};
+
+const SHELL_ROUTE_META = {
+  overview: {
+    label: 'Overview',
+    title: 'Overview Dashboard',
+    parentView: 'overview',
+    crumbs: ['Console', 'Overview'],
+  },
+  clients: {
+    label: 'Clients',
+    title: 'Client Ledger',
+    parentView: 'clients',
+    crumbs: ['Console', 'Clients'],
+  },
+  'client-workspace': {
+    label: 'Client Workspace',
+    title: 'Client Workspace',
+    parentView: 'clients',
+    crumbs: ['Console', 'Clients', 'Workspace'],
+  },
+  transactions: {
+    label: 'Transactions',
+    title: 'Transaction Ledger',
+    parentView: 'transactions',
+    crumbs: ['Console', 'Transactions'],
+  },
+  documents: {
+    label: 'Documents',
+    title: 'Document Ledger',
+    parentView: 'documents',
+    crumbs: ['Console', 'Documents'],
+  },
+  gst: {
+    label: 'GST Center',
+    title: 'GST Center',
+    parentView: 'gst',
+    crumbs: ['Console', 'GST Center'],
+  },
+  insights: {
+    label: 'AI Insights',
+    title: 'AI Insights',
+    parentView: 'insights',
+    crumbs: ['Console', 'AI Insights'],
+  },
+  exports: {
+    label: 'Exports',
+    title: 'Export Ledger',
+    parentView: 'exports',
+    crumbs: ['Console', 'Exports'],
+  },
+  billing: {
+    label: 'Billing',
+    title: 'Billing',
+    parentView: 'billing',
+    crumbs: ['Console', 'Billing'],
+  },
+  settings: {
+    label: 'Settings',
+    title: 'Settings',
+    parentView: 'settings',
+    crumbs: ['Console', 'Settings'],
+  },
+};
 
 // Check CA Authentication session
 function checkAuth() {
@@ -94,12 +164,17 @@ function initRouter() {
       activeSec.classList.remove('hidden');
     }
 
+    const routeMeta = SHELL_ROUTE_META[targetView] || SHELL_ROUTE_META.overview;
     navLinks.forEach(link => {
       link.classList.remove('active');
-      if (link.getAttribute('data-view') === targetView) {
+      link.removeAttribute('aria-current');
+      if (link.getAttribute('data-view') === routeMeta.parentView) {
         link.classList.add('active');
+        link.setAttribute('aria-current', 'page');
       }
     });
+
+    updateShellContext(routeMeta);
 
     // Page-specific render trigger
     triggerPageRender(targetView);
@@ -120,6 +195,33 @@ function initRouter() {
 
   // Initial routing load
   handleRoute(window.location.hash);
+}
+
+function updateShellContext(routeMeta) {
+  const breadcrumb = document.getElementById('dashboard-breadcrumb');
+  const pageHeader = document.getElementById('dashboard-page-header');
+  const titleSlot = document.getElementById('dashboard-page-title-slot');
+
+  if (breadcrumb) {
+    breadcrumb.replaceChildren();
+    routeMeta.crumbs.forEach((crumb, index) => {
+      const item = document.createElement('span');
+      item.className = 'dashboard-breadcrumb-item';
+      item.textContent = crumb;
+      if (index === routeMeta.crumbs.length - 1) {
+        item.setAttribute('aria-current', 'page');
+      }
+      breadcrumb.appendChild(item);
+    });
+  }
+
+  if (titleSlot) {
+    titleSlot.textContent = routeMeta.title;
+  }
+
+  if (pageHeader) {
+    pageHeader.hidden = true;
+  }
 }
 
 async function triggerPageRender(viewName) {
@@ -170,6 +272,82 @@ function initIcons() {
   }
 }
 
+function getActiveViewName() {
+  const activeSection = document.querySelector('.view-section.active');
+  return activeSection ? activeSection.id.replace('view-', '') : 'overview';
+}
+
+function refreshActiveDataView() {
+  const activeView = getActiveViewName();
+  switch (activeView) {
+    case 'overview':
+      renderOverview();
+      break;
+    case 'clients':
+      renderClients();
+      break;
+    case 'transactions':
+      renderTransactions();
+      break;
+    case 'documents':
+      renderDocuments();
+      break;
+    case 'insights':
+      renderAIInsights();
+      break;
+    case 'exports':
+      renderExports();
+      break;
+    case 'billing':
+      renderBilling();
+      break;
+  }
+}
+
+function bindDataRetryActions(root = document) {
+  root.querySelectorAll('[data-retry-load]').forEach(button => {
+    button.onclick = () => {
+      const target = button.getAttribute('data-retry-load');
+      if (target === 'gst') {
+        renderGSTCenter();
+      } else if (target === 'transactions') {
+        fetchGlobalTransactions().then(refreshActiveDataView);
+      } else {
+        fetchClientsList();
+      }
+    };
+  });
+}
+
+function bindRovingButtonGroup(buttons, options = {}) {
+  const items = Array.from(buttons || []);
+  if (items.length === 0) return;
+  const activeClass = options.activeClass || 'active';
+  const stateAttr = options.stateAttr || 'aria-pressed';
+  const selectedValue = options.selectedValue;
+
+  items.forEach((button, index) => {
+    const isActive = selectedValue
+      ? button.getAttribute(options.valueAttr || 'data-filter') === selectedValue
+      : button.classList.contains(activeClass);
+    button.setAttribute(stateAttr, String(isActive));
+    button.setAttribute('tabindex', isActive || (selectedValue === undefined && index === 0) ? '0' : '-1');
+
+    button.onkeydown = (event) => {
+      const horizontalKeys = ['ArrowLeft', 'ArrowRight', 'Home', 'End'];
+      if (!horizontalKeys.includes(event.key)) return;
+      event.preventDefault();
+      let nextIndex = index;
+      if (event.key === 'ArrowRight') nextIndex = (index + 1) % items.length;
+      if (event.key === 'ArrowLeft') nextIndex = (index - 1 + items.length) % items.length;
+      if (event.key === 'Home') nextIndex = 0;
+      if (event.key === 'End') nextIndex = items.length - 1;
+      items[nextIndex].focus();
+      items[nextIndex].click();
+    };
+  });
+}
+
 // --------------------------------------------------------------------------
 // 4. API Live Connectors
 // --------------------------------------------------------------------------
@@ -177,6 +355,10 @@ function initIcons() {
 async function fetchClientsList() {
   const caSession = getCASession();
   if (!caSession) return;
+
+  appDataState.clients.loading = true;
+  appDataState.clients.error = '';
+  refreshActiveDataView();
 
   try {
     const res = await fetch('/api/ca/clients', {
@@ -208,8 +390,13 @@ async function fetchClientsList() {
 
     // Setup mock notifications linked to actual clients
     setupMockNotifications();
+    appDataState.clients.loaded = true;
   } catch (err) {
-    showToast(err.message);
+    appDataState.clients.error = err.message || 'Client directory failed to load. Retry to refresh the ledger.';
+    showToast(appDataState.clients.error, 'error');
+  } finally {
+    appDataState.clients.loading = false;
+    refreshActiveDataView();
   }
 }
 
@@ -221,6 +408,9 @@ async function fetchGlobalTransactions() {
   globalTransactions = [];
   globalDocuments = [];
   globalInsights = [];
+  appDataState.transactions.loading = true;
+  appDataState.transactions.error = '';
+  refreshActiveDataView();
 
   try {
     const res = await fetch('/api/ca/transactions', {
@@ -321,8 +511,13 @@ async function fetchGlobalTransactions() {
         }
       }
     });
+    appDataState.transactions.loaded = true;
   } catch (err) {
     console.error('Failed to fetch global transactions:', err);
+    appDataState.transactions.error = err.message || 'Transactions failed to load. Retry to refresh entries.';
+    showToast(appDataState.transactions.error, 'error');
+  } finally {
+    appDataState.transactions.loading = false;
   }
 
   // Update badges
@@ -407,12 +602,13 @@ function renderOverview() {
 
   // Render recent activities from real transactions
   const activityContainer = document.getElementById('overview-activity-feed');
-  if (globalTransactions.length === 0) {
-    activityContainer.innerHTML = `
-      <div class="dashboard-empty-state">
-        <p>No entries yet. Send your first receipt on WhatsApp to see it here.</p>
-      </div>
-    `;
+  if (appDataState.clients.loading || appDataState.transactions.loading) {
+    activityContainer.innerHTML = `<div class="skeleton-row"></div><div class="skeleton-row"></div><div class="skeleton-row"></div>`;
+  } else if (appDataState.clients.error || appDataState.transactions.error) {
+    activityContainer.innerHTML = renderErrorState(appDataState.clients.error || appDataState.transactions.error, '<button class="btn-khata-secondary px-3 py-2 text-xs" data-retry-load="clients">Retry</button>');
+    bindDataRetryActions(activityContainer);
+  } else if (globalTransactions.length === 0) {
+    activityContainer.innerHTML = renderEmptyState('No entries yet. Send your first receipt on WhatsApp to see it here.');
   } else {
     activityContainer.innerHTML = globalTransactions.slice(0, 5).map((t, idx) => `
       <div class="feed-item">
@@ -435,15 +631,58 @@ function renderOverview() {
 }
 
 // Screen 2: Client Management CRM
-function renderClients(filterType = 'all', searchQuery = '') {
+function renderClients(filterType = 'all', searchQuery = '', page = currentClientsPage) {
   const container = document.getElementById('clients-list-container');
   const query = searchQuery.toLowerCase();
 
-  const clientStatusPill = (status) => {
-    if (status === 'Ready') return '<span class="status-pill confirmed">Confirmed</span>';
-    if (status === 'Review Required') return '<span class="status-pill needs-review">Needs review</span>';
-    return '<span class="status-pill draft">Draft</span>';
-  };
+  if (appDataState.clients.loading) {
+    container.innerHTML = `
+      <div class="dashboard-card clients-table-card overflow-x p-0">
+        <table class="data-table dashboard-ledger-table clients-ledger-table">
+          <thead>
+            <tr>
+              <th>Business</th>
+              <th>Owner</th>
+              <th>GSTIN</th>
+              <th>Plan</th>
+              <th>Last Active</th>
+              <th class="numeric">Health</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>${renderLoadingRows(7, 5)}</tbody>
+        </table>
+      </div>
+    `;
+    const resultCount = document.getElementById('clients-result-count');
+    if (resultCount) resultCount.textContent = 'Loading clients';
+    return;
+  }
+
+  if (appDataState.clients.error) {
+    container.innerHTML = `
+      <div class="dashboard-card clients-table-card overflow-x p-0">
+        <table class="data-table dashboard-ledger-table clients-ledger-table">
+          <thead>
+            <tr>
+              <th>Business</th>
+              <th>Owner</th>
+              <th>GSTIN</th>
+              <th>Plan</th>
+              <th>Last Active</th>
+              <th class="numeric">Health</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>${renderTableErrorState(7, appDataState.clients.error, '<button class="btn-khata-secondary px-3 py-2 text-xs" data-retry-load="clients">Retry</button>')}</tbody>
+        </table>
+      </div>
+    `;
+    const resultCount = document.getElementById('clients-result-count');
+    if (resultCount) resultCount.textContent = 'Load failed';
+    bindDataRetryActions(container);
+    return;
+  }
 
   let filtered = globalClientsList.filter(c => {
     const matchesSearch = c.name.toLowerCase().includes(query) || 
@@ -456,98 +695,111 @@ function renderClients(filterType = 'all', searchQuery = '') {
     return matchesSearch;
   });
 
-  if (currentClientsViewMode === 'table') {
-    container.innerHTML = `
-      <div class="dashboard-card overflow-x p-0">
-        <table class="data-table dashboard-ledger-table">
-          <thead>
-            <tr>
-              <th>Business Name</th>
-              <th>GSTIN</th>
-              <th>Owner / WhatsApp</th>
-              <th>Active Plan</th>
-              <th>Last Activity</th>
-              <th class="numeric">Health</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${filtered.length === 0 ? `
-              <tr><td colspan="7"><div class="dashboard-empty-state"><p>No clients match these filters. Adjust search or add a client.</p></div></td></tr>
-            ` : filtered.map(c => `
-              <tr data-client-id="${c.id}" class="client-row-link ledger-row">
-                <td>
-                  <div class="client-meta-wrap">
-                    <span class="client-name-cell">${c.name}</span>
-                    <span class="client-gstin-cell">${c.plan}</span>
-                  </div>
-                </td>
-                <td><code>${c.gstin}</code></td>
-                <td>
-                  <div class="client-meta-wrap">
-                    <span>${c.owner}</span>
-                    <span class="client-gstin-cell">${c.phone}</span>
-                  </div>
-                </td>
-                <td>${c.plan}</td>
-                <td>${c.lastActivity}</td>
-                <td class="numeric"><strong>${c.health}%</strong></td>
-                <td>${clientStatusPill(c.filedStatus)}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
-    `;
-  } else {
-    container.innerHTML = `
-      <div class="clients-grid">
-        ${filtered.length === 0 ? `
-          <div class="dashboard-card dashboard-empty-state"><p>No clients match these filters. Adjust search or add a client.</p></div>
-        ` : filtered.map(c => `
-          <div class="dashboard-card client-card-crm" data-client-id="${c.id}">
-            <div class="client-card-header">
-              <div>
-                <h3 class="client-card-name">${c.name}</h3>
-                <span class="client-gstin-cell">GSTIN: ${c.gstin}</span>
-              </div>
-              ${clientStatusPill(c.filedStatus)}
-            </div>
-            <div class="client-card-details">
-              <div class="client-detail-row">
-                <span class="client-detail-label">Owner</span>
-                <span class="client-detail-value">${c.owner}</span>
-              </div>
-              <div class="client-detail-row">
-                <span class="client-detail-label">WhatsApp</span>
-                <span class="client-detail-value">${c.phone}</span>
-              </div>
-              <div class="client-detail-row">
-                <span class="client-detail-label">Health Score</span>
-                <strong class="numeric">${c.health}%</strong>
-              </div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / CLIENTS_PAGE_SIZE));
+  currentClientsPage = Math.min(Math.max(1, page), totalPages);
+  const startIndex = (currentClientsPage - 1) * CLIENTS_PAGE_SIZE;
+  const pageRows = filtered.slice(startIndex, startIndex + CLIENTS_PAGE_SIZE);
+  const resultCount = document.getElementById('clients-result-count');
+  if (resultCount) {
+    resultCount.textContent = `${filtered.length.toLocaleString('en-IN')} client${filtered.length === 1 ? '' : 's'}`;
   }
 
+  container.innerHTML = `
+    <div class="dashboard-card clients-table-card overflow-x p-0">
+      <table class="data-table dashboard-ledger-table clients-ledger-table">
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Owner</th>
+            <th>GSTIN</th>
+            <th>Plan</th>
+            <th>Last Active</th>
+            <th class="numeric">Health</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filtered.length === 0 ? renderTableEmptyState(7, 'No clients match these filters. Adjust search or add a client.') : pageRows.map(c => `
+            <tr data-client-id="${c.id}" class="client-row-link ledger-row">
+              <td>
+                <div class="client-meta-wrap">
+                  <span class="client-name-cell">${c.name}</span>
+                  <span class="client-gstin-cell">${c.id}</span>
+                </div>
+              </td>
+              <td>
+                <div class="client-meta-wrap">
+                  <span class="client-owner-cell">${c.owner}</span>
+                  <span class="client-gstin-cell">${c.phone}</span>
+                </div>
+              </td>
+              <td><code>${c.gstin}</code></td>
+              <td>${c.plan}</td>
+              <td>${c.lastActivity}</td>
+              <td class="numeric"><strong>${c.health}%</strong></td>
+              <td>${renderStatusPill(c.filedStatus)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="clients-pagination" id="clients-pagination">
+      <span class="dashboard-label">
+        ${filtered.length === 0 ? 'Showing 0 clients' : `Showing ${(startIndex + 1).toLocaleString('en-IN')} - ${Math.min(startIndex + CLIENTS_PAGE_SIZE, filtered.length).toLocaleString('en-IN')} of ${filtered.length.toLocaleString('en-IN')}`}
+      </span>
+      <div class="pagination-actions">
+        <button type="button" class="btn-khata-secondary px-3 py-2 text-xs" id="clients-prev-page" ${currentClientsPage === 1 ? 'disabled' : ''}>Previous</button>
+        <span class="dashboard-label">Page ${currentClientsPage} / ${totalPages}</span>
+        <button type="button" class="btn-khata-secondary px-3 py-2 text-xs" id="clients-next-page" ${currentClientsPage === totalPages ? 'disabled' : ''}>Next</button>
+      </div>
+    </div>
+  `;
+
   // Bind workspace clicks
-  document.querySelectorAll('.client-row-link, .client-card-crm').forEach(el => {
+  document.querySelectorAll('.client-row-link').forEach(el => {
     el.onclick = () => {
       const cid = el.getAttribute('data-client-id');
       window.location.hash = `client/${cid}`;
     };
   });
+
+  const prevPage = document.getElementById('clients-prev-page');
+  const nextPage = document.getElementById('clients-next-page');
+  if (prevPage) {
+    prevPage.onclick = () => renderClients(filterType, searchQuery, currentClientsPage - 1);
+  }
+  if (nextPage) {
+    nextPage.onclick = () => renderClients(filterType, searchQuery, currentClientsPage + 1);
+  }
   
   initIcons();
 }
 
 // Screen 3: Client Workspace (360)
 async function renderClientWorkspace(clientId) {
+  const viewport = document.getElementById('ws-tab-viewport');
+  if (appDataState.clients.loading) {
+    if (viewport) viewport.innerHTML = `<div class="dashboard-card"><div class="skeleton-row"></div><div class="skeleton-row mt-3"></div><div class="skeleton-row mt-3"></div><div class="skeleton-row mt-3"></div></div>`;
+    return;
+  }
+
+  if (appDataState.clients.error) {
+    if (viewport) {
+      viewport.innerHTML = `<div class="dashboard-card">${renderErrorState('Client workspace could not load because the client directory failed to refresh.', '<button class="btn-khata-secondary px-3 py-2 text-xs" data-retry-load="clients">Retry</button>')}</div>`;
+      bindDataRetryActions(viewport);
+    }
+    return;
+  }
+
   const clientObj = globalClientsList.find(c => c.id === clientId);
-  if (!clientObj) return;
+  if (!clientObj) {
+    if (viewport) {
+      viewport.innerHTML = `<div class="dashboard-card">${renderEmptyState('Client not found. Return to the client directory and select an active account.', '<button class="btn-khata-secondary px-3 py-2 text-xs" data-open-clients>Open Clients</button>')}</div>`;
+      const openClientsBtn = viewport.querySelector('[data-open-clients]');
+      if (openClientsBtn) openClientsBtn.onclick = () => { window.location.hash = 'clients'; };
+    }
+    return;
+  }
 
   // Set workspace headers
   document.getElementById('workspace-client-name').textContent = clientObj.name;
@@ -666,18 +918,6 @@ function renderWorkspaceTabPanel(tabName, clientId, cTx) {
   initIcons();
   
   const clientObj = globalClientsList.find(c => c.id === clientId);
-  const workspaceStatusPill = (status) => {
-    if (status === 'Verified' || status === 'Confirmed' || status === 'Ready' || status === 'Filed') return '<span class="status-pill confirmed">Confirmed</span>';
-    if (status === 'Review Required' || status === 'Needs Review') return '<span class="status-pill needs-review">Needs review</span>';
-    if (status === 'Rejected') return '<span class="status-pill rejected">Rejected</span>';
-    return '<span class="status-pill draft">Draft</span>';
-  };
-  const workspaceSourcePill = (source) => {
-    const label = source || 'Manual';
-    const isWhatsapp = String(label).toLowerCase().includes('whatsapp');
-    return `<span class="status-pill ${isWhatsapp ? 'confirmed' : 'draft'}">${escapeHtml(label)}</span>`;
-  };
-
   switch (tabName) {
     case 'overview':
       renderClientWorkspaceGstChart(clientId, cTx);
@@ -685,7 +925,7 @@ function renderWorkspaceTabPanel(tabName, clientId, cTx) {
       const pTx = cTx.filter(t => t.status === 'Review Required');
 
       if (pTx.length === 0) {
-        pendingContainer.innerHTML = '<div class="dashboard-empty-state"><p>All transactions are confirmed. New review items will appear here.</p></div>';
+        pendingContainer.innerHTML = renderEmptyState('All transactions are confirmed. New review items will appear here.');
       } else {
         pendingContainer.innerHTML = pTx.map(t => `
           <div class="action-item">
@@ -714,7 +954,7 @@ function renderWorkspaceTabPanel(tabName, clientId, cTx) {
       // WhatsApp Feed
       const cDocs = globalDocuments.filter(d => d.clientId === clientId);
       document.getElementById('ws-overview-whatsapp-feed').innerHTML = cDocs.length === 0 ? `
-        <div class="dashboard-empty-state"><p>No WhatsApp files yet. Client receipts and invoices will appear here after parsing.</p></div>
+        ${renderEmptyState('No WhatsApp files yet. Client receipts and invoices will appear here after parsing.')}
       ` : cDocs.map(d => `
         <div class="feed-item">
           <div class="feed-marker feed-marker-confirmed"></div>
@@ -729,16 +969,16 @@ function renderWorkspaceTabPanel(tabName, clientId, cTx) {
     case 'transactions':
       const txBody = document.querySelector('#ws-transactions-table tbody');
       txBody.innerHTML = cTx.length === 0 ? `
-        <tr><td colspan="7"><div class="dashboard-empty-state"><p>No entries yet. Send this client's first receipt on WhatsApp to see it here.</p></div></td></tr>
+        ${renderTableEmptyState(7, "No entries yet. Send this client's first receipt on WhatsApp to see it here.")}
       ` : cTx.map(t => `
         <tr class="ledger-row">
           <td class="numeric">${escapeHtml(t.date || '-')}</td>
-          <td><span class="status-pill ${t.type === 'Sale' || t.category === 'sales' ? 'confirmed' : 'draft'}">${escapeHtml(t.type || t.category || 'Draft')}</span></td>
+          <td>${renderStatusPill(t.type === 'Sale' || t.category === 'sales' ? 'Confirmed' : 'Draft', t.type || t.category || 'Draft')}</td>
           <td>${escapeHtml(t.category || '-')}</td>
           <td class="numeric">${escapeHtml(t.gstRate || `${t.gst_rate || 0}%`)}</td>
           <td class="numeric"><strong>Rs ${Math.abs(Number(t.amount || 0)).toLocaleString('en-IN')}</strong></td>
-          <td>${workspaceSourcePill(t.source)}</td>
-          <td>${workspaceStatusPill(t.status)}</td>
+          <td>${renderSourcePill(t.source)}</td>
+          <td>${renderStatusPill(t.status)}</td>
         </tr>
       `).join('');
       break;
@@ -747,12 +987,12 @@ function renderWorkspaceTabPanel(tabName, clientId, cTx) {
       const docBody = document.querySelector('#ws-docs-table tbody');
       const clientDocsList = globalDocuments.filter(d => d.clientId === clientId);
       docBody.innerHTML = clientDocsList.length === 0 ? `
-        <tr><td colspan="4"><div class="dashboard-empty-state"><p>No documents yet. Parsed WhatsApp files will appear here.</p></div></td></tr>
+        ${renderTableEmptyState(4, 'No documents yet. Parsed WhatsApp files will appear here.')}
       ` : clientDocsList.map(d => `
         <tr class="doc-row-ws ledger-row" data-doc-id="${d.id}">
           <td><strong>${d.name}</strong></td>
           <td class="numeric">${d.received}</td>
-          <td><span class="status-pill draft">${d.folder}</span></td>
+          <td>${renderStatusPill('Draft', d.folder)}</td>
           <td class="numeric">${d.size}</td>
         </tr>
       `).join('');
@@ -773,7 +1013,7 @@ function renderWorkspaceTabPanel(tabName, clientId, cTx) {
               <span class="action-title">GSTR-2B Automated Match Progress</span>
               <span class="action-desc">${clientObj.filedStatus === 'Ready' ? 'All invoices match exactly.' : 'Mismatches detected in purchase register files.'}</span>
             </div>
-            ${workspaceStatusPill(clientObj.filedStatus)}
+            ${renderStatusPill(clientObj.filedStatus)}
             <button class="btn-khata-secondary px-3 py-1.5 text-xs" onclick="showToast('Re-running matching algorithms...')">Re-Scan</button>
           </div>
         </div>
@@ -828,9 +1068,11 @@ async function renderWorkspaceReconciliation(clientId) {
   if (!container) return;
 
   container.innerHTML = `
-    <div class="skeleton-row"></div>
-    <div class="skeleton-row mt-4"></div>
-    <div class="skeleton-row mt-4"></div>
+    <div class="dashboard-card p-0 overflow-x">
+      <table class="dashboard-ledger-table">
+        <tbody>${renderLoadingRows(1, 3)}</tbody>
+      </table>
+    </div>
   `;
 
   try {
@@ -882,13 +1124,13 @@ async function renderWorkspaceReconciliation(clientId) {
     `;
   } catch (err) {
     console.error('Failed to load reconciliation results:', err);
-    container.innerHTML = '<div class="dashboard-empty-state"><p>Unable to load reconciliation results. Retry this tab to refresh the match.</p></div>';
+    container.innerHTML = renderErrorState('Unable to load reconciliation results. Retry this tab to refresh the match.');
   }
 }
 
 function renderReconciliationTable(rows, emptyText) {
   if (!rows.length) {
-    return `<div class="dashboard-empty-state"><p>${emptyText}</p></div>`;
+    return renderEmptyState(emptyText);
   }
 
   return `
@@ -907,7 +1149,7 @@ function renderReconciliationTable(rows, emptyText) {
             <tr class="ledger-row">
               <td class="numeric">${escapeHtml(row.date || '-')}</td>
               <td>${escapeHtml(row.description || row.raw_text || '-')}</td>
-              <td><span class="status-pill draft">${escapeHtml(row.category || '-')}</span></td>
+              <td>${renderStatusPill('Draft', row.category || '-')}</td>
               <td class="numeric"><strong>Rs ${Number(row.amount || 0).toLocaleString('en-IN')}</strong></td>
             </tr>
           `).join('')}
@@ -923,28 +1165,43 @@ function renderTransactions() {
   const searchInput = document.getElementById('transactions-global-search');
   const clientFilter = document.getElementById('tx-filter-client');
   const channelFilter = document.getElementById('tx-filter-channel');
-
-  const transactionStatusPill = (status) => {
-    if (status === 'Verified' || status === 'Confirmed') return '<span class="status-pill confirmed">Confirmed</span>';
-    if (status === 'Review Required' || status === 'Needs Review') return '<span class="status-pill needs-review">Needs review</span>';
-    if (status === 'Rejected') return '<span class="status-pill rejected">Rejected</span>';
-    return '<span class="status-pill draft">Draft</span>';
-  };
-
-  const sourcePill = (source) => {
-    const label = source || 'Manual';
-    const isWhatsapp = String(label).toLowerCase().includes('whatsapp');
-    return `<span class="status-pill ${isWhatsapp ? 'confirmed' : 'draft'}">${escapeHtml(label)}</span>`;
-  };
+  const statusFilter = document.getElementById('tx-filter-status');
+  const resultCount = document.getElementById('transactions-result-count');
+  const selectionCount = document.getElementById('transactions-selection-count');
+  const selectAllTransactions = document.getElementById('select-all-transactions');
 
   // Populate client filter dropdown options
   clientFilter.innerHTML = '<option value="all">All Clients</option>' + 
     globalClientsList.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
 
+  if (appDataState.clients.error) {
+    tbody.innerHTML = renderTableErrorState(9, 'Transactions could not load because the client directory failed to refresh.', '<button class="btn-khata-secondary px-3 py-2 text-xs" data-retry-load="clients">Retry</button>');
+    if (resultCount) resultCount.textContent = 'Load failed';
+    if (selectionCount) selectionCount.textContent = '0 selected';
+    bindDataRetryActions(tbody);
+    return;
+  }
+
+  if (appDataState.transactions.loading) {
+    tbody.innerHTML = renderLoadingRows(9, 5);
+    if (resultCount) resultCount.textContent = 'Loading entries';
+    if (selectionCount) selectionCount.textContent = '0 selected';
+    return;
+  }
+
+  if (appDataState.transactions.error) {
+    tbody.innerHTML = renderTableErrorState(9, appDataState.transactions.error, '<button class="btn-khata-secondary px-3 py-2 text-xs" data-retry-load="transactions">Retry</button>');
+    if (resultCount) resultCount.textContent = 'Load failed';
+    if (selectionCount) selectionCount.textContent = '0 selected';
+    bindDataRetryActions(tbody);
+    return;
+  }
+
   function filterAndRender() {
     const query = searchInput.value.toLowerCase();
     const clientVal = clientFilter.value;
     const channelVal = channelFilter.value;
+    const statusVal = statusFilter ? statusFilter.value : 'all';
 
     let filtered = globalTransactions.filter(t => {
       const matchesSearch = t.clientName.toLowerCase().includes(query) || 
@@ -952,50 +1209,100 @@ function renderTransactions() {
                             t.amount.toString().includes(query);
       const matchesClient = clientVal === 'all' || t.clientId === clientVal;
       const matchesChannel = channelVal === 'all' || t.source.toLowerCase().includes(channelVal);
-      return matchesSearch && matchesClient && matchesChannel;
+      const normalizedStatus = String(t.status || '').toLowerCase();
+      const matchesStatus = statusVal === 'all'
+        || (statusVal === 'review' && normalizedStatus.includes('review'))
+        || (statusVal === 'confirmed' && (normalizedStatus.includes('verified') || normalizedStatus.includes('confirmed')))
+        || (statusVal === 'draft' && !(normalizedStatus.includes('review') || normalizedStatus.includes('verified') || normalizedStatus.includes('confirmed') || normalizedStatus.includes('rejected')))
+        || (statusVal === 'rejected' && normalizedStatus.includes('rejected'));
+      return matchesSearch && matchesClient && matchesChannel && matchesStatus;
     });
 
+    if (resultCount) {
+      resultCount.textContent = `${filtered.length.toLocaleString('en-IN')} entr${filtered.length === 1 ? 'y' : 'ies'}`;
+    }
+    if (selectAllTransactions) {
+      selectAllTransactions.checked = false;
+      selectAllTransactions.indeterminate = false;
+    }
+    updateTransactionSelectionCount();
+
     if (filtered.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="9">
-            <div class="dashboard-empty-state">
-              <p>${globalTransactions.length === 0 ? 'No entries yet. Send your first receipt on WhatsApp to see it here.' : 'No entries match these filters. Adjust search or filters to review more rows.'}</p>
-            </div>
-          </td>
-        </tr>
-      `;
+      tbody.innerHTML = renderTableEmptyState(9, globalTransactions.length === 0 ? 'No entries yet. Send your first receipt on WhatsApp to see it here.' : 'No entries match these filters. Adjust search or filters to review more rows.');
     } else {
       tbody.innerHTML = filtered.map(t => {
         const isRejected = t.status === 'Rejected';
         const amount = `Rs ${Math.abs(t.amount).toLocaleString('en-IN')}`;
 
         return `
-          <tr class="ledger-row">
-            <td><input type="checkbox" class="tx-checkbox" data-tx-id="${t.id}"></td>
+          <tr class="ledger-row transaction-row" tabindex="0" data-tx-id="${t.id}" aria-label="Transaction for ${escapeHtml(t.clientName || 'client')} worth ${amount}">
+            <td><input type="checkbox" class="tx-checkbox" data-tx-id="${t.id}" aria-label="Select transaction for ${escapeHtml(t.clientName || 'client')}"></td>
             <td class="numeric">${escapeHtml(t.date || '-')}</td>
             <td><strong>${escapeHtml(t.clientName || '-')}</strong></td>
-            <td><span class="status-pill ${t.type === 'Sale' ? 'confirmed' : 'draft'}">${escapeHtml(t.type || 'Draft')}</span></td>
-            <td>${sourcePill(t.source)}</td>
+            <td>${renderStatusPill(t.type === 'Sale' ? 'Confirmed' : 'Draft', t.type || 'Draft')}</td>
+            <td>${renderSourcePill(t.source)}</td>
             <td>${escapeHtml(t.category || '-')}</td>
             <td class="numeric">${escapeHtml(t.gstRate || '-')}</td>
             <td class="numeric"><strong class="${isRejected ? 'rejected-amount' : ''}">${amount}</strong></td>
-            <td>${transactionStatusPill(t.status)}</td>
+            <td>${renderStatusPill(t.status)}</td>
           </tr>
         `;
       }).join('');
     }
-    
+
+    bindTransactionSelection();
+    updateTransactionSelectionCount();
+     
     initIcons();
   }
 
   searchInput.oninput = filterAndRender;
   clientFilter.onchange = filterAndRender;
   channelFilter.onchange = filterAndRender;
+  if (statusFilter) statusFilter.onchange = filterAndRender;
 
-  const selectAllTransactions = document.getElementById('select-all-transactions');
+  function updateTransactionSelectionCount() {
+    const boxes = Array.from(document.querySelectorAll('#global-transactions-table-body .tx-checkbox'));
+    const selected = boxes.filter(box => box.checked).length;
+    if (selectionCount) {
+      selectionCount.textContent = `${selected} selected`;
+    }
+    if (selectAllTransactions) {
+      selectAllTransactions.checked = boxes.length > 0 && selected === boxes.length;
+      selectAllTransactions.indeterminate = selected > 0 && selected < boxes.length;
+    }
+  }
+
+  function bindTransactionSelection() {
+    document.querySelectorAll('#global-transactions-table-body .tx-checkbox').forEach(box => {
+      box.onchange = updateTransactionSelectionCount;
+      box.onclick = (event) => event.stopPropagation();
+    });
+
+    document.querySelectorAll('#global-transactions-table-body .transaction-row').forEach(row => {
+      row.onclick = (event) => {
+        if (event.target.closest('input, button, a, select')) return;
+        const box = row.querySelector('.tx-checkbox');
+        if (!box) return;
+        box.checked = !box.checked;
+        updateTransactionSelectionCount();
+      };
+      row.onkeydown = (event) => {
+        if (event.key !== ' ' && event.key !== 'Enter') return;
+        event.preventDefault();
+        const box = row.querySelector('.tx-checkbox');
+        if (!box) return;
+        box.checked = !box.checked;
+        updateTransactionSelectionCount();
+      };
+    });
+  }
+
   if (selectAllTransactions) selectAllTransactions.onchange = (e) => {
-    document.querySelectorAll('.tx-checkbox').forEach(box => box.checked = e.target.checked);
+    document.querySelectorAll('#global-transactions-table-body .tx-checkbox').forEach(box => {
+      box.checked = e.target.checked;
+    });
+    updateTransactionSelectionCount();
   };
 
   const bulkApproveBtn = document.getElementById('btn-bulk-approve-transactions');
@@ -1015,6 +1322,7 @@ function renderTransactions() {
     });
     showToast(`Approved ${selected.length} transactions!`);
     filterAndRender();
+    updateTransactionSelectionCount();
   };
 
   const exportTransactionsBtn = document.getElementById('btn-export-transactions');
@@ -1030,10 +1338,28 @@ function renderDocuments() {
   const tbody = document.getElementById('global-documents-table-body');
   const searchInput = document.getElementById('doc-global-search');
   const folderChips = document.querySelectorAll('.doc-folder-chip');
+  const previewUploadBtn = document.getElementById('btn-preview-upload-document');
   
   let currentFolder = 'all';
 
   function filterAndRender() {
+    if (appDataState.clients.error) {
+      tbody.innerHTML = renderTableErrorState(4, 'Documents could not load because the client directory failed to refresh.', '<button class="btn-khata-secondary px-3 py-2 text-xs" data-retry-load="clients">Retry</button>');
+      bindDataRetryActions(tbody);
+      return;
+    }
+
+    if (appDataState.transactions.loading) {
+      tbody.innerHTML = renderLoadingRows(4, 5);
+      return;
+    }
+
+    if (appDataState.transactions.error) {
+      tbody.innerHTML = renderTableErrorState(4, 'Documents failed to load because transaction entries could not be refreshed.', '<button class="btn-khata-secondary px-3 py-2 text-xs" data-retry-load="transactions">Retry</button>');
+      bindDataRetryActions(tbody);
+      return;
+    }
+
     const query = searchInput.value.toLowerCase();
     let filtered = globalDocuments.filter(d => {
       const matchesSearch = d.name.toLowerCase().includes(query) || d.clientName.toLowerCase().includes(query);
@@ -1041,13 +1367,11 @@ function renderDocuments() {
       return matchesSearch && matchesFolder;
     });
 
-    tbody.innerHTML = filtered.length === 0 ? `
-      <tr><td colspan="4"><div class="dashboard-empty-state"><p>No documents match these filters. Adjust search or upload a file.</p></div></td></tr>
-    ` : filtered.map(d => `
+    tbody.innerHTML = filtered.length === 0 ? renderTableEmptyState(4, 'No documents match these filters. Adjust search or upload a file.') : filtered.map(d => `
       <tr class="document-list-row ledger-row ${selectedDocId === d.id ? 'active-row' : ''}" data-doc-id="${d.id}">
         <td><strong>${escapeHtml(d.name || '-')}</strong></td>
         <td>${escapeHtml(d.clientName || '-')}</td>
-        <td><span class="status-pill draft">${escapeHtml(d.folder || 'documents')}</span></td>
+        <td>${renderStatusPill('Draft', d.folder || 'documents')}</td>
         <td class="numeric">${escapeHtml(d.received || '-')}</td>
       </tr>
     `).join('');
@@ -1067,11 +1391,26 @@ function renderDocuments() {
       folderChips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
       currentFolder = chip.getAttribute('data-doc-folder');
+      bindRovingButtonGroup(folderChips, {
+        activeClass: 'active',
+        stateAttr: 'aria-pressed',
+        valueAttr: 'data-doc-folder',
+        selectedValue: currentFolder
+      });
       filterAndRender();
     };
   });
+  bindRovingButtonGroup(folderChips, {
+    activeClass: 'active',
+    stateAttr: 'aria-pressed',
+    valueAttr: 'data-doc-folder',
+    selectedValue: currentFolder
+  });
 
   searchInput.oninput = filterAndRender;
+  if (previewUploadBtn) {
+    previewUploadBtn.onclick = () => document.getElementById('btn-upload-new-document')?.click();
+  }
 
   if (selectedDocId) {
     renderDocPreview(selectedDocId);
@@ -1090,7 +1429,7 @@ function renderDocPreview(docId) {
     <div class="preview-content-view" id="doc-preview-content">
       <div class="preview-header-meta">
         <h4 id="preview-filename">${escapeHtml(doc.name || 'Document')}</h4>
-        <span class="status-pill confirmed" id="preview-status">${escapeHtml(doc.status || 'Parsed')}</span>
+        ${renderStatusPill('Confirmed', doc.status || 'Parsed')}
       </div>
       
       <div class="preview-ocr-fields">
@@ -1166,12 +1505,9 @@ function renderDocPreview(docId) {
 async function renderGSTCenter() {
   const tbody = document.getElementById('gst-center-table-body');
   const picker = document.getElementById('gst-period-picker');
-  const gstStatusPill = (status) => {
-    if (status === 'Ready' || status === 'Filed') return '<span class="status-pill confirmed">Confirmed</span>';
-    if (status === 'Review Required') return '<span class="status-pill needs-review">Needs review</span>';
-    return '<span class="status-pill draft">Draft</span>';
-  };
-  
+  const searchInput = document.getElementById('gst-client-search');
+  const statusFilter = document.getElementById('gst-status-filter');
+  const resultCount = document.getElementById('gst-result-count');
   if (!picker.value) {
     picker.value = new Date().toISOString().substring(0, 7);
   }
@@ -1181,15 +1517,32 @@ async function renderGSTCenter() {
   if (!caSession) return;
 
   let report = { totalOutwardTaxableValue: 0, totalInwardTaxAmount: 0, netGstPayable: 0, clientBreakdown: [], incomplete: false, warnings: [] };
+  appDataState.gst.loading = true;
+  appDataState.gst.error = '';
+  tbody.innerHTML = renderLoadingRows(6, 5);
+  if (resultCount) resultCount.textContent = 'Compiling ledger';
   try {
     const res = await fetch(`/api/ca/reports/gst?period=${picker.value}`, {
       headers: getAuthHeaders()
     });
-    if (res.ok) {
-      report = await res.json();
-    }
+    if (!res.ok) throw new Error('GST filing ledger failed to load. Retry to compile this period again.');
+    report = await res.json();
   } catch (err) {
     console.error('Failed GSTR report compilation:', err);
+    appDataState.gst.error = err.message || 'GST filing ledger failed to load. Retry to compile this period again.';
+  } finally {
+    appDataState.gst.loading = false;
+  }
+
+  if (appDataState.gst.error) {
+    tbody.innerHTML = renderTableErrorState(6, appDataState.gst.error, '<button class="btn-khata-secondary px-3 py-2 text-xs" data-retry-load="gst">Retry</button>');
+    if (resultCount) resultCount.textContent = 'Load failed';
+    bindDataRetryActions(tbody);
+    picker.onchange = renderGSTCenter;
+    if (searchInput) searchInput.oninput = () => {};
+    if (statusFilter) statusFilter.onchange = () => {};
+    initIcons();
+    return;
   }
 
   // Render top metrics
@@ -1204,52 +1557,71 @@ async function renderGSTCenter() {
     showToast('GSTR report compiled with review-needed client calculations.', 'warning');
   }
 
-  // Render table body
-  if (report.clientBreakdown.length === 0) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="6">
-          <div class="dashboard-empty-state"><p>No filing records for ${escapeHtml(picker.value)}. Link GST-registered clients or change the return period.</p></div>
-        </td>
-      </tr>`;
-  } else {
-    tbody.innerHTML = report.clientBreakdown.map(client => {
+  function renderGSTRows() {
+    const statusValue = statusFilter?.value || 'all';
+    const query = (searchInput?.value || '').trim().toLowerCase();
+    const rows = report.clientBreakdown.map(client => {
       const netLiability = Math.max(0, client.outwardTax - client.inwardTax);
       const cObj = globalClientsList.find(c => c.id === client.clientId) || { filedStatus: 'Review Required' };
       const filedStatus = client.calculationStatus === 'error' ? 'Review Required' : cObj.filedStatus;
+      return { ...client, netLiability, filedStatus };
+    }).filter(client => {
+      const text = [
+        client.businessName,
+        client.clientName,
+        client.gstin
+      ].filter(Boolean).join(' ').toLowerCase();
+      const matchesSearch = !query || text.includes(query);
+      const status = String(client.filedStatus || '').toLowerCase();
+      const matchesStatus = statusValue === 'all'
+        || (statusValue === 'ready' && status === 'ready')
+        || (statusValue === 'review' && status !== 'ready' && status !== 'filed')
+        || (statusValue === 'filed' && status === 'filed');
+      return matchesSearch && matchesStatus;
+    });
 
-      return `
+    if (resultCount) {
+      resultCount.textContent = `${rows.length} of ${report.clientBreakdown.length} clients`;
+    }
+
+    if (report.clientBreakdown.length === 0) {
+      tbody.innerHTML = `
+        ${renderTableEmptyState(6, `No filing records for ${picker.value}. Link GST-registered clients or change the return period.`)}`;
+    } else if (rows.length === 0) {
+      tbody.innerHTML = renderTableEmptyState(6, 'No clients match these GST filters. Clear search or change status.');
+    } else {
+      tbody.innerHTML = rows.map(client => `
         <tr class="ledger-row">
-          <td><strong>${escapeHtml(client.businessName || client.clientName || 'Unknown Client')}</strong><br><code style="font-size:12px;color:var(--text-secondary);">${escapeHtml(client.gstin || 'N/A')}</code></td>
+          <td><strong>${escapeHtml(client.businessName || client.clientName || 'Unknown Client')}</strong><br><code style="font-size:12px;color:var(--ink-soft);">${escapeHtml(client.gstin || 'N/A')}</code></td>
           <td class="numeric">Rs ${client.outwardTaxable.toLocaleString('en-IN')}</td>
           <td class="numeric">Rs ${client.inwardTaxable.toLocaleString('en-IN')}</td>
-          <td class="numeric"><strong>Rs ${netLiability.toLocaleString('en-IN')}</strong></td>
-          <td>${gstStatusPill(filedStatus)}</td>
+          <td class="numeric"><strong>Rs ${client.netLiability.toLocaleString('en-IN')}</strong></td>
+          <td>${renderStatusPill(client.filedStatus)}</td>
           <td>
-            <button class="${filedStatus === 'Ready' ? 'btn-khata-primary' : 'btn-khata-secondary'} px-3 py-1.5 text-xs btn-gst-file-action" data-client-id="${client.clientId}">
-              ${filedStatus === 'Ready' ? 'File GSTR-1' : 'Verify'}
+            <button class="${client.filedStatus === 'Ready' ? 'btn-khata-primary' : 'btn-khata-secondary'} px-3 py-1.5 text-xs btn-gst-file-action" data-client-id="${client.clientId}">
+              ${client.filedStatus === 'Ready' ? 'File GSTR-1' : 'Verify'}
             </button>
           </td>
         </tr>
-      `;
-    }).join('');
+      `).join('');
 
-    document.querySelectorAll('.btn-gst-file-action').forEach(btn => {
-      btn.onclick = () => withButtonState(btn, 'Working', async () => {
-        const cid = btn.getAttribute('data-client-id');
-        const c = globalClientsList.find(cl => cl.id === cid);
-        if (c && c.filedStatus === 'Ready') {
-          await sleep(450);
-          c.filedStatus = 'Filed';
-          logFrontendAction('GST_FILED', `Marked GSTR filing as filed for ${c.name || c.business_name || 'Client'}`, c.id);
-          showToast(`GSTR-1 filed for ${c.name || c.business_name || 'client'}.`, 'success');
-          renderGSTCenter();
-        } else {
-          showToast('Opening AI insights to verify filing blockers.', 'info');
-          window.location.hash = 'insights';
-        }
+      document.querySelectorAll('.btn-gst-file-action').forEach(btn => {
+        btn.onclick = () => withButtonState(btn, 'Working', async () => {
+          const cid = btn.getAttribute('data-client-id');
+          const c = globalClientsList.find(cl => cl.id === cid);
+          if (c && c.filedStatus === 'Ready') {
+            await sleep(450);
+            c.filedStatus = 'Filed';
+            logFrontendAction('GST_FILED', `Marked GSTR filing as filed for ${c.name || c.business_name || 'Client'}`, c.id);
+            showToast(`GSTR-1 filed for ${c.name || c.business_name || 'client'}.`, 'success');
+            renderGSTCenter();
+          } else {
+            showToast('Opening AI insights to verify filing blockers.', 'info');
+            window.location.hash = 'insights';
+          }
+        });
       });
-    });
+    }
   }
 
   const gstBulkFileBtn = document.getElementById('btn-gst-bulk-file');
@@ -1271,32 +1643,80 @@ async function renderGSTCenter() {
   }
 
   picker.onchange = renderGSTCenter;
+  if (searchInput) searchInput.oninput = renderGSTRows;
+  if (statusFilter) statusFilter.onchange = renderGSTRows;
+  renderGSTRows();
   initIcons();
 }
 
 // Screen 7: AI Insights Dashboard
 function renderAIInsights(filterSeverity = 'all') {
   const container = document.getElementById('ai-insights-cards-container');
-  const insightSeverityPill = (severity) => {
-    if (severity === 'high') return '<span class="status-pill needs-review">High severity</span>';
-    if (severity === 'medium') return '<span class="status-pill draft">Medium</span>';
-    return '<span class="status-pill confirmed">Info</span>';
-  };
+  const severityRank = { high: 0, medium: 1, low: 2 };
+
+  if (appDataState.clients.error) {
+    container.innerHTML = `<div class="dashboard-card">${renderErrorState('Insights could not load because the client directory failed to refresh.', '<button class="btn-khata-secondary px-3 py-2 text-xs" data-retry-load="clients">Retry</button>')}</div>`;
+    bindDataRetryActions(container);
+    return;
+  }
+
+  if (appDataState.transactions.loading) {
+    container.innerHTML = `
+      <div class="dashboard-card"><div class="skeleton-row"></div><div class="skeleton-row mt-3"></div><div class="skeleton-row mt-3"></div></div>
+      <div class="dashboard-card"><div class="skeleton-row"></div><div class="skeleton-row mt-3"></div><div class="skeleton-row mt-3"></div></div>
+    `;
+    return;
+  }
+
+  if (appDataState.transactions.error) {
+    container.innerHTML = `<div class="dashboard-card">${renderErrorState('Insights failed to load because transaction entries could not be refreshed.', '<button class="btn-khata-secondary px-3 py-2 text-xs" data-retry-load="transactions">Retry</button>')}</div>`;
+    bindDataRetryActions(container);
+    return;
+  }
+
+  const counts = globalInsights.reduce((acc, insight) => {
+    const severity = insight.severity || 'low';
+    acc[severity] = (acc[severity] || 0) + 1;
+    acc.all += 1;
+    return acc;
+  }, { all: 0, high: 0, medium: 0, low: 0 });
+
+  ['all', 'high', 'medium', 'low'].forEach(key => {
+    const el = document.getElementById(`insight-count-${key}`);
+    if (el) el.textContent = counts[key] || 0;
+  });
   
   let filtered = globalInsights.filter(ins => {
     if (filterSeverity === 'all') return true;
     return ins.severity === filterSeverity;
+  }).sort((a, b) => (severityRank[a.severity] ?? 3) - (severityRank[b.severity] ?? 3));
+
+  const tabs = document.querySelectorAll('#view-insights .filter-tab');
+  tabs.forEach(tab => {
+    const isActive = tab.getAttribute('data-severity') === filterSeverity;
+    tab.classList.toggle('active', isActive);
+    tab.onclick = () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      renderAIInsights(tab.getAttribute('data-severity'));
+    };
+  });
+  bindRovingButtonGroup(tabs, {
+    activeClass: 'active',
+    stateAttr: 'aria-pressed',
+    valueAttr: 'data-severity',
+    selectedValue: filterSeverity
   });
 
   if (filtered.length === 0) {
-    container.innerHTML = '<div class="dashboard-card dashboard-empty-state"><p>No risk alerts match this filter. New review items will appear here after client activity is scanned.</p></div>';
+    container.innerHTML = `<div class="dashboard-card">${renderEmptyState('No risk alerts match this filter. New review items will appear here after client activity is scanned.')}</div>`;
     return;
   }
 
   container.innerHTML = filtered.map(ins => `
     <div class="dashboard-card insight-card severity-${ins.severity}">
       <div class="insight-header">
-        ${insightSeverityPill(ins.severity)}
+        ${renderStatusPill(ins.severity, ins.severity === 'high' ? 'High severity' : (ins.severity === 'medium' ? 'Medium' : 'Info'))}
         <strong>${escapeHtml(ins.clientName || 'Client')}</strong>
       </div>
       <h3>${escapeHtml(ins.title || 'Review item')}</h3>
@@ -1317,21 +1737,30 @@ function renderAIInsights(filterSeverity = 'all') {
     };
   });
 
-  // Re-bind insight severity clicks
-  const tabs = document.querySelectorAll('#view-insights .filter-tab');
-  tabs.forEach(tab => {
-    tab.onclick = () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      renderAIInsights(tab.getAttribute('data-severity'));
-    };
-  });
-
   initIcons();
 }
 
 // Screen 9: Billing
 function renderBilling() {
+  const statePanel = document.getElementById('billing-state');
+  if (statePanel) {
+    statePanel.classList.add('hidden');
+    statePanel.innerHTML = '';
+  }
+
+  if (appDataState.clients.loading) {
+    if (statePanel) {
+      statePanel.classList.remove('hidden');
+      statePanel.innerHTML = `<div class="dashboard-card"><div class="skeleton-row"></div><div class="skeleton-row mt-3"></div></div>`;
+    }
+  } else if (appDataState.clients.error) {
+    if (statePanel) {
+      statePanel.classList.remove('hidden');
+      statePanel.innerHTML = renderErrorState('Billing could not load because the client directory failed to refresh.', '<button class="btn-khata-secondary px-3 py-2 text-xs" data-retry-load="clients">Retry</button>');
+      bindDataRetryActions(statePanel);
+    }
+  }
+
   const clientCount = globalClientsList.length;
   document.getElementById('billing-subtitle-count').textContent = `Currently managing ${clientCount} clients on TaxBot Partner API.`;
   
@@ -1367,12 +1796,25 @@ function renderSettings() {
 
   settingsLinks.forEach(link => {
     link.onclick = () => {
-      settingsLinks.forEach(l => l.classList.remove('active'));
-      settingsPanels.forEach(p => p.classList.remove('active'));
+      settingsLinks.forEach(l => {
+        l.classList.remove('active');
+        l.setAttribute('aria-selected', 'false');
+        l.setAttribute('tabindex', '-1');
+      });
+      settingsPanels.forEach(p => {
+        p.classList.remove('active');
+        p.hidden = true;
+      });
       
       link.classList.add('active');
+      link.setAttribute('aria-selected', 'true');
+      link.setAttribute('tabindex', '0');
       const targetPanel = link.getAttribute('data-settings-tab');
-      document.getElementById(`settings-panel-${targetPanel}`).classList.add('active');
+      const panel = document.getElementById(`settings-panel-${targetPanel}`);
+      if (panel) {
+        panel.classList.add('active');
+        panel.hidden = false;
+      }
       
       if (targetPanel === 'users') {
         renderSettingsUsers();
@@ -1380,6 +1822,15 @@ function renderSettings() {
         fetchAndRenderAuditTrail();
       }
     };
+  });
+  bindRovingButtonGroup(settingsLinks, {
+    activeClass: 'active',
+    stateAttr: 'aria-selected',
+    valueAttr: 'data-settings-tab',
+    selectedValue: document.querySelector('.settings-tab-link.active')?.getAttribute('data-settings-tab') || 'firm'
+  });
+  settingsPanels.forEach(panel => {
+    panel.hidden = !panel.classList.contains('active');
   });
 
   bindSettingsActions();
@@ -1399,7 +1850,7 @@ function renderSettingsUsers() {
           <span class="firm-role-text">FCA Principal &amp; Owner</span>
         </div>
       </div>
-      <span class="status-pill confirmed">Admin</span>
+      ${renderStatusPill('Confirmed', 'Admin')}
     </div>
     <div class="user-item-row ledger-row">
       <div class="user-item-info">
@@ -1409,7 +1860,7 @@ function renderSettingsUsers() {
           <span class="firm-role-text">Assistant Auditor</span>
         </div>
       </div>
-      <span class="status-pill draft">Edit Access</span>
+      ${renderStatusPill('Draft', 'Edit Access')}
     </div>
   `;
 }
@@ -1781,20 +2232,6 @@ function showToast(message, type = 'info') {
 
 // Initialization bootstrap
 document.addEventListener('DOMContentLoaded', () => {
-  const themeToggleBtn = document.getElementById('theme-toggle-btn');
-  const themeToggleIcon = document.getElementById('theme-toggle-icon');
-  if (window.TaxBotTheme) {
-    window.TaxBotTheme.bindToggle([themeToggleBtn], (theme) => {
-      if (themeToggleIcon) {
-        themeToggleIcon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
-        if (typeof lucide !== 'undefined') {
-          lucide.createIcons();
-        }
-      }
-      if (typeof updateChartsTheme === 'function') updateChartsTheme();
-    });
-  }
-
   setupAuthHandlers();
   checkAuth();
 
@@ -1824,6 +2261,7 @@ document.addEventListener('DOMContentLoaded', () => {
     clientSearchInput.oninput = (e) => {
       const activeTab = document.querySelector('#view-clients .filter-tab.active');
       const filterVal = activeTab ? activeTab.getAttribute('data-filter') : 'all';
+      currentClientsPage = 1;
       renderClients(filterVal, e.target.value);
     };
   }
@@ -1834,8 +2272,21 @@ document.addEventListener('DOMContentLoaded', () => {
     tab.onclick = () => {
       filterTabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
+      bindRovingButtonGroup(filterTabs, {
+        activeClass: 'active',
+        stateAttr: 'aria-pressed',
+        valueAttr: 'data-filter',
+        selectedValue: tab.getAttribute('data-filter')
+      });
+      currentClientsPage = 1;
       renderClients(tab.getAttribute('data-filter'), clientSearchInput ? clientSearchInput.value : '');
     };
+  });
+  bindRovingButtonGroup(filterTabs, {
+    activeClass: 'active',
+    stateAttr: 'aria-pressed',
+    valueAttr: 'data-filter',
+    selectedValue: document.querySelector('#view-clients .filter-tab.active')?.getAttribute('data-filter') || 'all'
   });
 
   // Client workspace back btn

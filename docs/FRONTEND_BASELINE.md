@@ -4,7 +4,7 @@
 
 - Browser: Playwright Chromium
 - Viewports: 390x844 and 1440x1000
-- Themes: light and dark through the existing `taxbot_theme` implementation
+- Theme: light-only Digital Khata surface
 - Test command: `npm run test:ui`
 - Snapshot update command: `npm run test:ui:update`
 - Optional external server: set `PLAYWRIGHT_BASE_URL`
@@ -35,14 +35,12 @@ Covered when test credentials are supplied:
 
 ## Baseline Results
 
-Each accessible view is exercised by four Playwright projects:
+Each accessible view is exercised by two Playwright projects:
 
 | Project | Width | Theme |
 | --- | ---: | --- |
 | `mobile-light` | 390px | Light |
-| `mobile-dark` | 390px | Dark |
 | `desktop-light` | 1440px | Light |
-| `desktop-dark` | 1440px | Dark |
 
 Every baseline test records:
 
@@ -54,7 +52,7 @@ Every baseline test records:
 - Full-page screenshot comparison
 - Page-level horizontal overflow
 - Minimal keyboard reachability
-- Theme activation and persistence
+- Light-only token application
 
 Initial public baseline before remediation:
 
@@ -79,18 +77,18 @@ Authenticated route results are not available in this environment because no saf
 - The `tailwind is not defined` exception and Tailwind production-CDN warning are resolved.
 - Reviewed snapshots were updated after the compiled stylesheet began applying the repository's declared custom utilities consistently.
 - The design-system foundation centralizes primitive, semantic, and compatibility tokens in `public/css/tokens.css`.
-- Landing, auth, and console now use the shared `public/js/theme.js` controller while retaining the console's existing `body.dark-theme` compatibility hook.
+- Landing and auth use `public/css/public-pages.css`; the console uses `public/css/dashboard-khata.css` and modular console scripts.
 - The landing page now declares the same inline SVG favicon as the console, resolving the `/favicon.ico` failure.
 - The shared console shell now has focused coverage for header action alignment, dropdown coordination, command palette focus, notification readability, and add-client modal contrast without requiring real CA credentials.
 - Console component migration now standardizes repeated button, form field, card, panel, table, badge, and empty-state styling through the shared shell layer.
-- Focused shell coverage now checks migrated component families on Exports, GST, Settings, and Billing in 390px/1440px light and dark projects.
+- Focused shell coverage now checks migrated component families on Exports, GST, Settings, and Billing in 390px/1440px light projects.
 - Page-level UX polish now covers Settings validation, webhook save/test feedback, notification test actions, export busy/success states, and GST file/bulk-file action feedback.
-- Route-wide mocked console QA now visits every console route plus client workspace tabs without real CA credentials, checking shell visibility, horizontal overflow, and visible control contrast in 390px/1440px light and dark projects.
+- Route-wide mocked console QA now visits every console route plus client workspace tabs without real CA credentials, checking shell visibility, horizontal overflow, and visible control contrast in 390px/1440px light projects.
 - Console status colors now use semantic success, warning, error, and info tokens instead of raw Tailwind status colors; selected document navigation and colored outline actions were tightened to meet readable contrast.
 - Auth login/registration snapshots were updated after the shared shell contrast rules made form labels, placeholders, and focused inputs visibly readable.
 - Landing/auth parity now loads `public/css/public-pages.css` after existing page styles to align public CTAs, cards, forms, modal surfaces, theme colors, and mobile spacing with the console token system.
 - Public baseline now checks visible landing/auth controls for 4.5:1 contrast before screenshot comparison.
-- Current public/shell result: 24 passed across 390px and 1440px in light and dark themes; 4 real-auth suites skipped because credentials are not configured.
+- Current public/shell result: baseline and console shell coverage pass across 390px and 1440px in light mode; real-auth suites are skipped when credentials are not configured.
 
 ## Authentication Limitations
 

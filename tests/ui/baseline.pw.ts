@@ -1,7 +1,5 @@
-import { expect, Page, Request, TestInfo, test } from '@playwright/test';
+import { expect, Page, Request, test } from '@playwright/test';
 import { CONSOLE_ROUTES, PUBLIC_ROUTES, WORKSPACE_TABS } from './routes';
-
-type Theme = 'light' | 'dark';
 
 interface BrowserDiagnostics {
   consoleErrors: string[];
@@ -13,21 +11,13 @@ interface BrowserDiagnostics {
 const REQUIRED_RESOURCE_TYPES = new Set(['document', 'stylesheet', 'script', 'image', 'font']);
 const APP_ORIGIN = new URL(process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3000').origin;
 
-function projectTheme(testInfo: TestInfo): Theme {
-  return testInfo.project.metadata.theme === 'dark' ? 'dark' : 'light';
-}
-
-async function preparePage(page: Page, theme: Theme): Promise<BrowserDiagnostics> {
+async function preparePage(page: Page): Promise<BrowserDiagnostics> {
   const diagnostics: BrowserDiagnostics = {
     consoleErrors: [],
     pageErrors: [],
     failedRequests: [],
     failedAssets: [],
   };
-
-  await page.addInitScript((selectedTheme) => {
-    localStorage.setItem('taxbot_theme', selectedTheme);
-  }, theme);
 
   page.on('pageerror', (error) => {
     diagnostics.pageErrors.push(error.message);
@@ -90,6 +80,69 @@ async function expectNoHorizontalOverflow(page: Page) {
     scrollWidth: document.documentElement.scrollWidth,
   }));
   expect(dimensions.scrollWidth, `Horizontal overflow: ${JSON.stringify(dimensions)}`).toBeLessThanOrEqual(dimensions.clientWidth);
+}
+
+async function expectLandingNavbarStable(page: Page) {
+  const metrics = await page.evaluate(() => {
+    const read = (selector: string) => {
+      const element = document.querySelector(selector) as HTMLElement | null;
+      if (!element) return null;
+      const rect = element.getBoundingClientRect();
+      const styles = getComputedStyle(element);
+      return {
+        display: styles.display,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+        backgroundColor: styles.backgroundColor,
+      };
+    };
+
+    const nav = read('body > nav');
+    const navInner = read('body > nav > div');
+    const row = read('body > nav > div > div');
+    const links = read('body > nav > div > div > div:nth-child(2)');
+    const menu = read('#mobile-menu-button');
+    const consoleLink = read('body > nav > div > div > div:nth-child(3) > a[href="console.html"]');
+    const themeButton = read('#theme-toggle-btn');
+    const mobileThemeButton = read('#theme-toggle-btn-mobile');
+
+    return {
+      viewportWidth: window.innerWidth,
+      nav,
+      navInner,
+      row,
+      links,
+      menu,
+      consoleLink,
+      themeButton,
+      mobileThemeButton,
+      overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    };
+  });
+
+  expect(metrics.nav, 'Landing navbar should render').not.toBeNull();
+  expect(metrics.overflowX, `Landing navbar overflow: ${JSON.stringify(metrics)}`).toBe(0);
+
+  if (metrics.viewportWidth >= 1024) {
+    expect(metrics.nav?.height, `Desktop navbar height drifted: ${JSON.stringify(metrics)}`).toBeGreaterThanOrEqual(64);
+    expect(metrics.nav?.height, `Desktop navbar height drifted: ${JSON.stringify(metrics)}`).toBeLessThanOrEqual(66);
+    expect(metrics.navInner?.width, `Desktop navbar container drifted: ${JSON.stringify(metrics)}`).toBeLessThanOrEqual(1280);
+    expect(metrics.row?.display).toBe('flex');
+    expect(metrics.links?.display).toBe('flex');
+    expect(metrics.menu?.display).toBe('none');
+    expect(metrics.consoleLink?.display).toBe('block');
+    expect(metrics.themeButton).toBeNull();
+    expect(metrics.mobileThemeButton).toBeNull();
+  } else {
+    expect(metrics.nav?.height, `Mobile navbar height drifted: ${JSON.stringify(metrics)}`).toBeGreaterThanOrEqual(63);
+    expect(metrics.nav?.height, `Mobile navbar height drifted: ${JSON.stringify(metrics)}`).toBeLessThanOrEqual(66);
+    expect(metrics.links?.display).toBe('none');
+    expect(metrics.menu?.display).not.toBe('none');
+    expect(metrics.consoleLink?.display).toBe('none');
+    expect(metrics.themeButton).toBeNull();
+    expect(metrics.mobileThemeButton).toBeNull();
+  }
 }
 
 async function expectReadableControls(page: Page, rootSelector: string) {
@@ -173,18 +226,16 @@ async function expectReadableControls(page: Page, rootSelector: string) {
   expect(badControls, `Unreadable public controls: ${JSON.stringify(badControls.slice(0, 6))}`).toEqual([]);
 }
 
-async function expectTheme(page: Page, theme: Theme) {
+async function expectLightOnly(page: Page) {
   const state = await page.evaluate(() => ({
     saved: localStorage.getItem('taxbot_theme'),
     htmlDark: document.documentElement.classList.contains('dark'),
     bodyDark: document.body.classList.contains('dark-theme'),
   }));
 
-  expect(state.saved).toBe(theme);
-  expect(state.htmlDark).toBe(theme === 'dark');
-  if (page.url().includes('console.html')) {
-    expect(state.bodyDark).toBe(theme === 'dark');
-  }
+  expect(state.saved).not.toBe('dark');
+  expect(state.htmlDark).toBe(false);
+  expect(state.bodyDark).toBe(false);
 }
 
 async function assertDiagnostics(diagnostics: BrowserDiagnostics) {
@@ -210,16 +261,16 @@ async function tabTo(page: Page, selector: string, maxTabs = 80) {
 }
 
 test.describe('public frontend baseline', () => {
-  test('landing page loads, remains keyboard reachable, and matches its snapshot', async ({ page }, testInfo) => {
-    const theme = projectTheme(testInfo);
-    const diagnostics = await preparePage(page, theme);
+  test('landing page loads, remains keyboard reachable, and matches its snapshot', async ({ page }) => {
+    const diagnostics = await preparePage(page);
 
     await page.goto(PUBLIC_ROUTES[0].path);
     await expect(page).toHaveURL(/\/$/);
     await expect(page.locator(PUBLIC_ROUTES[0].container)).toBeVisible();
     await waitForStablePage(page);
-    await expectTheme(page, theme);
+    await expectLightOnly(page);
     await expectNoHorizontalOverflow(page);
+    await expectLandingNavbarStable(page);
     await expectReadableControls(page, 'body');
 
     await page.keyboard.press('Tab');
@@ -227,27 +278,21 @@ test.describe('public frontend baseline', () => {
 
     await expect(page).toHaveScreenshot('landing.png', { fullPage: true });
 
-    await page.locator('#theme-toggle-btn').click();
-    await expectTheme(page, theme === 'dark' ? 'light' : 'dark');
-    await page.locator('#theme-toggle-btn').click();
-    await expectTheme(page, theme);
-
     await page.reload();
     await waitForStablePage(page);
-    await expectTheme(page, theme);
+    await expectLightOnly(page);
     await assertDiagnostics(diagnostics);
   });
 
-  test('login and registration screens load, accept keyboard focus, and match snapshots', async ({ page }, testInfo) => {
-    const theme = projectTheme(testInfo);
-    const diagnostics = await preparePage(page, theme);
+  test('login and registration screens load, accept keyboard focus, and match snapshots', async ({ page }) => {
+    const diagnostics = await preparePage(page);
 
     await page.goto(PUBLIC_ROUTES[1].path);
     await expect(page).toHaveURL(/\/console\.html$/);
     await expect(page.locator(PUBLIC_ROUTES[1].container)).toBeVisible();
     await expect(page.locator('#login-form')).toBeVisible();
     await waitForStablePage(page);
-    await expectTheme(page, theme);
+    await expectLightOnly(page);
     await expectNoHorizontalOverflow(page);
     await expectReadableControls(page, '#auth-layout');
 
@@ -276,9 +321,8 @@ test.describe('authenticated console baseline', () => {
 
   test.skip(!email || !password, 'Set TAXBOT_UI_CA_EMAIL and TAXBOT_UI_CA_PASSWORD to baseline authenticated routes.');
 
-  test('all console routes, workspace tabs, notifications, keyboard focus, and theme remain stable', async ({ page }, testInfo) => {
-    const theme = projectTheme(testInfo);
-    const diagnostics = await preparePage(page, theme);
+  test('all console routes, workspace tabs, notifications, and keyboard focus remain stable', async ({ page }, testInfo) => {
+    const diagnostics = await preparePage(page);
 
     await page.goto('/console.html#overview');
     await page.locator('#login-email').fill(email as string);
@@ -292,7 +336,7 @@ test.describe('authenticated console baseline', () => {
       await expect(page).toHaveURL(new RegExp(`/console\\.html#${route.hash}$`));
       await expect(page.locator(route.container)).toBeVisible();
       await waitForStablePage(page);
-      await expectTheme(page, theme);
+      await expectLightOnly(page);
       await expectNoHorizontalOverflow(page);
       await tabTo(page, route.keyboardTarget);
       await expect(page).toHaveScreenshot(`console-${route.name}.png`, { fullPage: true });
@@ -331,14 +375,9 @@ test.describe('authenticated console baseline', () => {
       });
     }
 
-    const originalTheme = theme;
     await page.goto('/console.html#overview');
-    await page.locator('#theme-toggle-btn').click();
-    await expectTheme(page, originalTheme === 'dark' ? 'light' : 'dark');
-    await page.locator('#theme-toggle-btn').click();
-    await expectTheme(page, originalTheme);
     await page.reload();
-    await expectTheme(page, originalTheme);
+    await expectLightOnly(page);
 
     await assertDiagnostics(diagnostics);
   });

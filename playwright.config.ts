@@ -48,19 +48,9 @@ export default defineConfig({
       use: { viewport: { width: 390, height: 844 }, colorScheme: 'light' },
     },
     {
-      name: 'mobile-dark',
-      metadata: { theme: 'dark', viewportLabel: '390' },
-      use: { viewport: { width: 390, height: 844 }, colorScheme: 'dark' },
-    },
-    {
       name: 'desktop-light',
       metadata: { theme: 'light', viewportLabel: '1440' },
       use: { viewport: { width: 1440, height: 1000 }, colorScheme: 'light' },
-    },
-    {
-      name: 'desktop-dark',
-      metadata: { theme: 'dark', viewportLabel: '1440' },
-      use: { viewport: { width: 1440, height: 1000 }, colorScheme: 'dark' },
     },
   ],
 });

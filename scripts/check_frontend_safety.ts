@@ -3,6 +3,7 @@ import path from 'path';
 
 const ROOT = process.cwd();
 const PUBLIC_JS_DIR = path.join(ROOT, 'public', 'js');
+const PUBLIC_DIR = path.join(ROOT, 'public');
 
 interface Finding {
   file: string;
@@ -10,6 +11,37 @@ interface Finding {
 }
 
 const findings: Finding[] = [];
+
+const activeHtmlFiles = ['index.html', 'console.html'];
+const legacyPublicAssets = ['js/theme.js', 'js/app.js', 'css/console.css', 'css/console-shell.css'];
+
+for (const htmlFile of activeHtmlFiles) {
+  const htmlPath = path.join(PUBLIC_DIR, htmlFile);
+  if (!fs.existsSync(htmlPath)) {
+    continue;
+  }
+
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  for (const asset of legacyPublicAssets) {
+    if (html.includes(`"${asset}"`) || html.includes(`'${asset}'`)) {
+      findings.push({
+        file: path.join('public', htmlFile),
+        message: `Active pages must not reference legacy public asset ${asset}.`,
+      });
+    }
+  }
+}
+
+const playwrightConfigPath = path.join(ROOT, 'playwright.config.ts');
+if (fs.existsSync(playwrightConfigPath)) {
+  const playwrightConfig = fs.readFileSync(playwrightConfigPath, 'utf8');
+  if (/colorScheme:\s*['"]dark['"]/i.test(playwrightConfig) || /name:\s*['"][^'"]*dark/i.test(playwrightConfig)) {
+    findings.push({
+      file: 'playwright.config.ts',
+      message: 'Playwright UI coverage must remain light-only for the Digital Khata design system.',
+    });
+  }
+}
 
 function readPublicJsFiles() {
   return fs

@@ -28,15 +28,11 @@ async function fetchAndRenderAuditTrail() {
 
   const caSession = getCASession();
   if (!caSession) {
-    tbody.innerHTML = `<tr><td colspan="3"><div class="dashboard-empty-state">Sign in to view audit trail events.</div></td></tr>`;
+    tbody.innerHTML = renderTableEmptyState(3, 'Sign in to view audit trail events.');
     return;
   }
 
-  tbody.innerHTML = Array.from({ length: 4 }, () => `
-    <tr>
-      <td colspan="3"><div class="skeleton-row"></div></td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = renderLoadingRows(3, 4);
 
   try {
     const response = await fetch('/api/ca/audit/logs', {
@@ -51,7 +47,7 @@ async function fetchAndRenderAuditTrail() {
     const logs = await response.json();
 
     if (!logs || logs.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="3"><div class="dashboard-empty-state">No audit trail events yet. Administrative activity will appear here.</div></td></tr>`;
+      tbody.innerHTML = renderTableEmptyState(3, 'No audit trail events yet. Administrative activity will appear here.');
       return;
     }
 
@@ -71,7 +67,7 @@ async function fetchAndRenderAuditTrail() {
       return `
         <tr class="ledger-row">
           <td class="audit-date">${dateStr}</td>
-          <td><span class="status-pill ${actionBadgeClass}">${escapeHtml(log.action_type)}</span></td>
+          <td>${renderStatusPill(actionBadgeClass, log.action_type)}</td>
           <td>${escapeHtml(log.description)}</td>
         </tr>
       `;
@@ -79,7 +75,7 @@ async function fetchAndRenderAuditTrail() {
 
   } catch (err) {
     console.error(err);
-    tbody.innerHTML = `<tr><td colspan="3"><div class="dashboard-empty-state">Audit logs failed to load. Retry from the Audit Trail tab.</div></td></tr>`;
+    tbody.innerHTML = renderTableErrorState(3, 'Audit logs failed to load. Retry from the Audit Trail tab.');
   }
 }
 
@@ -96,14 +92,14 @@ function initAuditChatTab(clientId, cTx) {
 
   chatFeed.innerHTML = `
     <!-- Welcome message -->
-    <div class="chat-msg system-msg" style="align-self: flex-start; max-width: 80%; background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-12) var(--radius-12) var(--radius-12) 0; padding: var(--space-12) var(--space-16); box-shadow: var(--shadow-sm); animation: fadeIn 0.2s ease-out;">
-      <div style="font-weight: 600; color: var(--primary); font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+    <div class="chat-msg system-msg" style="align-self: flex-start; max-width: 80%; background-color: #fff; border: 1px solid var(--rule); border-radius: var(--radius-8) var(--radius-8) var(--radius-8) 0; padding: var(--space-12) var(--space-16); box-shadow: none;">
+      <div style="font-weight: 600; color: var(--sage); font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
         <i data-lucide="bot" style="width: 14px; height: 14px;"></i> AI Auditor
       </div>
-      <p style="margin: 0; font-size: 14px; color: var(--text-primary);">
+      <p style="margin: 0; font-size: 14px; color: var(--ink);">
         Hello! I have loaded **${escapeHtml(clientName)}**'s transaction ledger (containing ${cTx.length} records). Ask me any auditing questions, such as:
       </p>
-      <ul style="margin: var(--space-8) 0 0 var(--space-16); padding: 0; font-size: 13px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px; list-style-type: disc;">
+      <ul style="margin: var(--space-8) 0 0 var(--space-16); padding: 0; font-size: 13px; color: var(--ink-soft); display: flex; flex-direction: column; gap: 4px; list-style-type: disc;">
         <li><em>"Check for anomalies or unverified items"</em></li>
         <li><em>"What is their GST liability and compliance status?"</em></li>
         <li><em>"Identify any duplicate entries"</em></li>
@@ -122,8 +118,8 @@ function initAuditChatTab(clientId, cTx) {
     chatInput.value = '';
 
     const userMsgHtml = `
-      <div class="chat-msg user-msg" style="align-self: flex-end; max-width: 80%; background-color: var(--primary); color: white; border-radius: var(--radius-12) var(--radius-12) 0 var(--radius-12); padding: var(--space-12) var(--space-16); box-shadow: var(--shadow-sm); animation: fadeIn 0.2s ease-out;">
-        <div style="font-weight: 600; font-size: 11px; margin-bottom: 4px; text-align: right; color: rgba(255, 255, 255, 0.8);">
+      <div class="chat-msg user-msg" style="align-self: flex-end; max-width: 80%; background-color: var(--ink); color: var(--paper); border-radius: var(--radius-8) var(--radius-8) 0 var(--radius-8); padding: var(--space-12) var(--space-16); box-shadow: none;">
+        <div style="font-weight: 600; font-size: 11px; margin-bottom: 4px; text-align: right; color: var(--paper-dim);">
           You
         </div>
         <div style="margin: 0; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word;">${escapeHtml(message)}</div>
@@ -134,9 +130,9 @@ function initAuditChatTab(clientId, cTx) {
 
     const loadingId = 'bot-loading-' + Date.now();
     const loadingMsgHtml = `
-      <div class="chat-msg system-msg" id="${loadingId}" style="align-self: flex-start; max-width: 80%; background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-12) var(--radius-12) var(--radius-12) 0; padding: var(--space-12) var(--space-16); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 8px;">
-        <div class="spinner" style="width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--primary); border-radius: 50%;"></div>
-        <span style="font-size: 13px; color: var(--text-secondary);">Auditing ledger transactions...</span>
+      <div class="chat-msg system-msg" id="${loadingId}" style="align-self: flex-start; max-width: 80%; background-color: #fff; border: 1px solid var(--rule); border-radius: var(--radius-8) var(--radius-8) var(--radius-8) 0; padding: var(--space-12) var(--space-16); box-shadow: none; display: flex; align-items: center; gap: 8px;">
+        <span class="btn-spinner" aria-hidden="true"></span>
+        <span style="font-size: 13px; color: var(--ink-soft);">Auditing ledger transactions...</span>
       </div>
     `;
     chatFeed.insertAdjacentHTML('beforeend', loadingMsgHtml);
@@ -171,11 +167,11 @@ function initAuditChatTab(clientId, cTx) {
       }
 
       const botMsgHtml = `
-        <div class="chat-msg system-msg" style="align-self: flex-start; max-width: 80%; background-color: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-12) var(--radius-12) var(--radius-12) 0; padding: var(--space-12) var(--space-16); box-shadow: var(--shadow-sm); animation: fadeIn 0.2s ease-out;">
-          <div style="font-weight: 600; color: var(--primary); font-size: 13px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+        <div class="chat-msg system-msg" style="align-self: flex-start; max-width: 80%; background-color: #fff; border: 1px solid var(--rule); border-radius: var(--radius-8) var(--radius-8) var(--radius-8) 0; padding: var(--space-12) var(--space-16); box-shadow: none;">
+          <div style="font-weight: 600; color: var(--sage); font-size: 13px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
             <i data-lucide="bot" style="width: 14px; height: 14px;"></i> AI Auditor
           </div>
-          <div style="margin: 0; font-size: 14px; color: var(--text-primary); line-height: 1.5; word-break: break-word;">
+          <div style="margin: 0; font-size: 14px; color: var(--ink); line-height: 1.5; word-break: break-word;">
             ${parseMarkdown(data.response)}
           </div>
         </div>
@@ -190,8 +186,8 @@ function initAuditChatTab(clientId, cTx) {
       if (loadingEl) loadingEl.remove();
 
       const errorMsgHtml = `
-        <div class="chat-msg system-msg" style="align-self: flex-start; max-width: 80%; background-color: var(--bg-card); border: 1px solid var(--border-error); border-radius: var(--radius-12) var(--radius-12) var(--radius-12) 0; padding: var(--space-12) var(--space-16); box-shadow: var(--shadow-sm); color: var(--text-error);">
-          <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; color: var(--error);">
+        <div class="chat-msg system-msg" style="align-self: flex-start; max-width: 80%; background-color: #fff; border: 1px solid var(--rule); border-radius: var(--radius-8) var(--radius-8) var(--radius-8) 0; padding: var(--space-12) var(--space-16); box-shadow: none; color: var(--stamp);">
+          <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; color: var(--stamp);">
             <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i> Error
           </div>
           <p style="margin: 0; font-size: 13px;">${escapeHtml(err.message)}</p>

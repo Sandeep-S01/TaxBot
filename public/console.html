@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TaxBot Partner Console | AI-First CA Platform</title>
   <meta name="description" content="TaxBot Partner Console provides Chartered Accountants with automated bookkeeping, real-time GST reconciliation, AI client insights, and seamless WhatsApp document capture.">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2329e3c1' stroke-width='2'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B23A2E' stroke-width='2'%3E%3Cpath d='M9 2h6M9 22h6M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM9 6h6M9 10h6M9 14h4'/%3E%3C/svg%3E">
 
   <!-- Premium Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,1280 +55,8 @@
       -webkit-font-feature-settings: 'liga';
       -webkit-font-smoothing: antialiased;
     }
-
-    /* Dynamic active navigation overrides */
-    .nav-link.active {
-      background-color: rgba(20, 184, 166, 0.16);
-      color: #0f766e !important;
-      font-weight: 600;
-    }
-
-    .settings-tab-link.active {
-      background-color: #14b8a6;
-      color: #042f2e !important;
-      font-weight: 600;
-    }
-
-    .filter-tab.active {
-      background-color: #14b8a6;
-      color: #042f2e !important;
-      font-weight: 600;
-    }
-
-    .tab-link.active {
-      border-bottom: 2px solid #14b8a6;
-      color: #0f766e !important;
-      font-weight: 600;
-    }
-
-    .doc-sidebar-item.active {
-      background-color: rgba(20, 184, 166, 0.16);
-      color: #0f766e !important;
-      font-weight: 600;
-    }
-
-    .doc-folder-chip.active {
-      background-color: #14b8a6;
-      color: #042f2e !important;
-      font-weight: 600;
-    }
-
-    body.dark-theme .nav-link.active,
-    body.dark-theme .tab-link.active,
-    body.dark-theme .doc-sidebar-item.active {
-      background-color: rgba(41, 227, 193, 0.15);
-      color: #5eead4 !important;
-    }
-
-    body.dark-theme .settings-tab-link.active,
-    body.dark-theme .filter-tab.active,
-    body.dark-theme .doc-folder-chip.active {
-      background-color: #29e3c1;
-      color: #042f2e !important;
-    }
-
-    /* Settings panel mapping */
-    .settings-panel { display: none; }
-    .settings-panel.active { display: block; }
-
-    /* Workspace subtabs mapping */
-    .ws-tab-panel { display: none; }
-    .ws-tab-panel.active { display: block; }
-
-    /* Left Sidebar widths & smooth transition */
-    #app-sidebar {
-      width: 260px;
-      flex-shrink: 0;
-      transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-    }
-
-    /* Sidebar collapsed styles */
-    #app-sidebar.collapsed {
-      width: 72px;
-    }
-    #app-sidebar.collapsed .brand-name,
-    #app-sidebar.collapsed .link-text,
-    #app-sidebar.collapsed .badge,
-    #app-sidebar.collapsed .firm-info,
-    #app-sidebar.collapsed .btn-logout {
-      display: none;
-    }
-    #app-sidebar.collapsed .sidebar-header {
-      justify-content: center;
-      padding-left: 0;
-      padding-right: 0;
-    }
-    #app-sidebar.collapsed .sidebar-collapse-btn {
-      transform: rotate(180deg);
-      position: absolute;
-      right: -14px;
-      top: 18px;
-      z-index: 50;
-    }
-    #app-sidebar.collapsed .nav-link {
-      justify-content: center;
-      padding: 12px;
-    }
-    #app-sidebar.collapsed .sidebar-footer {
-      padding: 16px 8px;
-      display: flex;
-      justify-content: center;
-    }
-
-    /* Mobile drawer states */
-    @media (max-width: 768px) {
-      #app-sidebar {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: -280px;
-        z-index: 50;
-        width: 280px;
-        transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-      #app-sidebar.drawer-open {
-        left: 0;
-      }
-      #sidebar-backdrop {
-        position: fixed;
-        inset: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 40;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-      }
-      #sidebar-backdrop.active {
-        opacity: 1;
-        pointer-events: auto;
-      }
-    }
-
-    .text-text-muted,
-    .text-gray-500,
-    .text-gray-600 {
-      color: var(--text-muted) !important;
-    }
-
-    .text-gray-700,
-    .card-subtitle,
-    .client-detail-label {
-      color: var(--text-secondary) !important;
-    }
-
-    .text-gray-900,
-    .client-detail-value,
-    .client-card-name,
-    .card-title {
-      color: var(--text-primary) !important;
-    }
-
-    .dark-theme .text-text-muted,
-    .dark-theme .text-gray-400,
-    .dark-theme .text-gray-500 {
-      color: var(--text-muted) !important;
-    }
-
-    .dark-theme .text-gray-300,
-    .dark-theme .text-gray-700 {
-      color: var(--text-secondary) !important;
-    }
-
-    .dark-theme .text-white,
-    .dark-theme .text-gray-900 {
-      color: var(--text-primary) !important;
-    }
-
-    .bg-background-light {
-      background-color: var(--bg-app) !important;
-    }
-
-    .border-gray-200,
-    .border-gray-100 {
-      border-color: var(--border) !important;
-    }
-
-    .bg-gray-50 {
-      background-color: #eef3f5 !important;
-    }
-
-    body.dark-theme .bg-gray-50,
-    body.dark-theme .bg-white {
-      background-color: var(--bg-card) !important;
-    }
-
-    .bg-primary {
-      background-color: var(--primary) !important;
-    }
-
-    .bg-primary\/10,
-    .bg-primary\/20 {
-      background-color: var(--primary-light) !important;
-    }
-
-    .text-primary {
-      color: var(--primary) !important;
-    }
-
-    .text-background-dark {
-      color: #0a1519 !important;
-    }
-
-    .border-primary\/30 {
-      border-color: rgba(20, 184, 166, 0.35) !important;
-    }
-
-    .hover\:text-primary:hover {
-      color: var(--primary-hover) !important;
-    }
-
-    .hover\:border-primary\/30:hover,
-    .hover\:border-primary\/50:hover,
-    .focus\:border-primary\/50:focus {
-      border-color: rgba(20, 184, 166, 0.55) !important;
-    }
-
-    .bg-card-dark,
-    .dark .dark\:bg-card-dark,
-    body.dark-theme .dark\:bg-card-dark {
-      background-color: var(--bg-card) !important;
-    }
-
-    .bg-background-dark,
-    .dark .dark\:bg-background-dark,
-    body.dark-theme .dark\:bg-background-dark {
-      background-color: var(--bg-app) !important;
-    }
-
-    .border-border-dark,
-    .dark .dark\:border-border-dark,
-    body.dark-theme .dark\:border-border-dark {
-      border-color: var(--border) !important;
-    }
-
-    .dark .dark\:text-gray-100,
-    .dark .dark\:text-white,
-    body.dark-theme .dark\:text-gray-100,
-    body.dark-theme .dark\:text-white {
-      color: var(--text-primary) !important;
-    }
-
-    .dark .dark\:text-gray-300,
-    .dark .dark\:text-gray-400,
-    body.dark-theme .dark\:text-gray-300,
-    body.dark-theme .dark\:text-gray-400 {
-      color: var(--text-secondary) !important;
-    }
-
-    body:not(.dark-theme) .bg-white {
-      background-color: var(--bg-card) !important;
-    }
-
-    body:not(.dark-theme) .text-white {
-      color: #ffffff !important;
-    }
-
-    input::placeholder,
-    textarea::placeholder,
-    .placeholder-text-muted::placeholder {
-      color: #64748b;
-      opacity: 1;
-    }
-
-    .tracking-tighter,
-    .tracking-tight {
-      letter-spacing: 0 !important;
-    }
-
-    .app-header {
-      min-height: 64px;
-      height: 64px;
-      gap: 18px;
-      padding: 0 24px;
-      background-color: var(--bg-card) !important;
-      border-color: var(--border) !important;
-    }
-
-    .header-left {
-      width: min(100%, 480px);
-      max-width: 480px;
-      flex: 0 1 480px;
-    }
-
-    .header-right {
-      gap: 8px;
-      margin-left: auto;
-      flex-shrink: 0;
-      justify-content: flex-end;
-      align-items: center;
-    }
-
-    .header-right > :not([hidden]) ~ :not([hidden]) {
-      margin-left: 0 !important;
-    }
-
-    .command-bar-trigger {
-      min-height: 40px;
-      height: 40px;
-      border-radius: 11px;
-      padding-inline: 16px !important;
-      background-color: #f3f7f8 !important;
-      border-color: #d7e0e5 !important;
-      color: var(--text-secondary) !important;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    }
-
-    .command-bar-trigger:hover,
-    .command-bar-trigger:focus-visible {
-      border-color: rgba(20, 184, 166, 0.65) !important;
-      box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
-      outline: none;
-    }
-
-    .header-btn,
-    .profile-btn {
-      min-width: 34px;
-      min-height: 34px;
-      height: 34px;
-      border-radius: 10px;
-    }
-
-    .header-btn {
-      width: 34px !important;
-      height: 34px !important;
-      background-color: var(--bg-card) !important;
-      border-color: var(--border) !important;
-      color: var(--text-secondary) !important;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
-    }
-
-    .header-btn:hover,
-    .profile-btn:hover {
-      background-color: #f4f7f8 !important;
-      color: var(--primary-hover) !important;
-    }
-
-    .header-btn svg,
-    .header-btn i {
-      width: 16px !important;
-      height: 16px !important;
-      stroke-width: 2;
-    }
-
-    .whatsapp-btn {
-      background-color: #ecfdf5 !important;
-      border-color: #22c55e !important;
-      color: #047857 !important;
-      width: auto !important;
-      min-width: 76px;
-      padding-inline: 11px;
-      font-size: 12px !important;
-      letter-spacing: 0;
-      gap: 7px !important;
-    }
-
-    .whatsapp-btn svg,
-    .whatsapp-btn i {
-      width: 15px !important;
-      height: 15px !important;
-    }
-
-    .notification-dropdown {
-      display: flex;
-      align-items: center;
-    }
-
-    .profile-name {
-      color: var(--text-primary) !important;
-    }
-
-    .profile-btn {
-      min-width: auto;
-      padding: 0 0 0 4px;
-      gap: 8px;
-      color: var(--text-primary) !important;
-      background-color: transparent !important;
-    }
-
-    .profile-avatar {
-      width: 34px !important;
-      height: 34px !important;
-      border-radius: 10px !important;
-    }
-
-    .kbd-shortcut {
-      font-size: 10px !important;
-      padding: 2px 7px !important;
-      border-radius: 7px !important;
-      color: var(--text-secondary) !important;
-    }
-
-    .dropdown-menu {
-      background-color: var(--bg-card) !important;
-      border-color: var(--border) !important;
-      color: var(--text-primary) !important;
-    }
-
-    .dropdown-header {
-      background-color: var(--bg-app) !important;
-      border-color: var(--border) !important;
-    }
-
-    #notifications-dropdown-menu {
-      width: min(360px, calc(100vw - 32px)) !important;
-      border-radius: 12px !important;
-      overflow: hidden;
-    }
-
-    #notifications-list {
-      padding: 8px !important;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .notification-item {
-      display: grid;
-      grid-template-columns: 36px minmax(0, 1fr);
-      gap: 10px;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-    }
-
-    .notification-item:hover {
-      background-color: var(--bg-app);
-      border-color: var(--border);
-    }
-
-    .notification-item.unread {
-      background-color: var(--primary-light);
-      border-color: rgba(20, 184, 166, 0.24);
-    }
-
-    .notification-icon-wrap {
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .notification-icon-wrap svg,
-    .notification-icon-wrap i {
-      width: 15px !important;
-      height: 15px !important;
-    }
-
-    .notification-content {
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .notification-title {
-      color: var(--text-primary);
-      font-size: 13px;
-      line-height: 1.3;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .notification-desc {
-      color: var(--text-secondary);
-      font-size: 12px;
-      line-height: 1.35;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .notification-time {
-      color: var(--text-muted);
-      font-size: 11px;
-      line-height: 1.3;
-      font-weight: 600;
-      margin-top: 2px;
-    }
-
-    .notification-critical {
-      background-color: rgba(220, 38, 38, 0.1);
-      color: #dc2626;
-    }
-
-    .notification-success {
-      background-color: rgba(21, 128, 61, 0.1);
-      color: #15803d;
-    }
-
-    .notification-warning {
-      background-color: rgba(180, 83, 9, 0.12);
-      color: #b45309;
-    }
-
-    .notification-info {
-      background-color: var(--primary-light);
-      color: var(--primary-hover);
-    }
-
-    .settings-action-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .settings-field-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .settings-option-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .settings-option-row:last-child {
-      border-bottom: 0;
-    }
-
-    .settings-option-title {
-      color: var(--text-primary);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .settings-option-desc {
-      color: var(--text-secondary);
-      font-size: 12px;
-      margin-top: 2px;
-    }
-
-    .settings-switch {
-      width: 42px;
-      height: 24px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background-color: #cbd5e1;
-      position: relative;
-      flex-shrink: 0;
-      transition: background-color 0.15s ease;
-    }
-
-    .settings-switch::after {
-      content: "";
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 16px;
-      height: 16px;
-      border-radius: 999px;
-      background-color: #ffffff;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.2);
-      transition: transform 0.15s ease;
-    }
-
-    .settings-switch[aria-pressed="true"] {
-      background-color: var(--primary);
-      border-color: var(--primary);
-    }
-
-    .settings-switch[aria-pressed="true"]::after {
-      transform: translateX(18px);
-    }
-
-    .settings-status-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 14px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background-color: var(--bg-app);
-    }
-
-    .settings-secondary-btn {
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      background-color: var(--bg-card);
-      font-weight: 700;
-      font-size: 13px;
-      padding: 10px 14px;
-      border-radius: 9px;
-    }
-
-    .settings-secondary-btn:hover {
-      color: var(--text-primary);
-      background-color: var(--bg-app);
-    }
-
-    .settings-primary-btn {
-      background-color: var(--primary);
-      color: #042f2e;
-      font-weight: 800;
-      font-size: 13px;
-      padding: 10px 14px;
-      border-radius: 9px;
-    }
-
-    @media (max-width: 768px) {
-      .settings-field-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .settings-option-row,
-      .settings-status-card {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-    }
-
-    body.dark-theme .sidebar-footer {
-      background-color: #071113 !important;
-      border-color: var(--border) !important;
-    }
-
-    body.dark-theme .firm-name-text,
-    body.dark-theme .firm-role-text {
-      color: var(--text-primary) !important;
-    }
-
-    body.dark-theme .firm-role-text {
-      color: var(--text-secondary) !important;
-    }
-
-    .command-bar-backdrop {
-      background-color: rgba(7, 17, 31, 0.58) !important;
-      backdrop-filter: blur(10px);
-    }
-
-    .command-bar-dialog,
-    .modal-dialog-standard {
-      background-color: var(--bg-card) !important;
-      border: 1px solid var(--border) !important;
-      color: var(--text-primary) !important;
-      box-shadow: 0 24px 80px rgba(7, 17, 31, 0.28);
-    }
-
-    .command-bar-input-wrap,
-    .command-bar-footer,
-    .modal-dialog-header {
-      background-color: var(--bg-app) !important;
-      border-color: var(--border) !important;
-    }
-
-    #command-bar-search-input {
-      color: var(--text-primary) !important;
-    }
-
-    .command-bar-results {
-      background-color: var(--bg-card) !important;
-    }
-
-    .command-result-group-title {
-      color: var(--text-muted) !important;
-      letter-spacing: 0.08em;
-    }
-
-    .command-result-item {
-      color: var(--text-primary) !important;
-    }
-
-    .command-result-item i,
-    .command-result-item svg {
-      color: var(--text-muted) !important;
-    }
-
-    .command-result-item:hover,
-    .command-result-item.selected {
-      background-color: var(--primary-light) !important;
-      color: var(--primary-hover) !important;
-    }
-
-    .command-result-item:hover i,
-    .command-result-item.selected i,
-    .command-result-item:hover svg,
-    .command-result-item.selected svg {
-      color: var(--primary-hover) !important;
-    }
-
-    .modal-dialog-header h3 {
-      color: var(--text-primary) !important;
-    }
-
-    .modal-dialog-standard,
-    .modal-dialog-standard label,
-    .modal-dialog-standard h3,
-    .modal-dialog-standard .text-white,
-    .modal-dialog-standard .text-text-muted {
-      color: var(--text-primary) !important;
-    }
-
-    .modal-dialog-standard label,
-    .modal-dialog-standard .text-text-muted {
-      color: var(--text-secondary) !important;
-    }
-
-    .modal-dialog-body,
-    .modal-actions {
-      background-color: var(--bg-card) !important;
-      border-color: var(--border) !important;
-    }
-
-    .modal-dialog-standard .form-input,
-    .modal-dialog-standard .form-select {
-      background-color: #eef3f5 !important;
-      border-color: var(--border) !important;
-      color: var(--text-primary) !important;
-      caret-color: var(--text-primary);
-      -webkit-text-fill-color: var(--text-primary);
-    }
-
-    .modal-dialog-standard .form-input::placeholder,
-    .modal-dialog-standard .form-select::placeholder {
-      color: #64748b !important;
-      opacity: 1;
-      -webkit-text-fill-color: #64748b;
-    }
-
-    .modal-dialog-standard option {
-      background-color: var(--bg-card);
-      color: var(--text-primary);
-    }
-
-    .modal-close-btn {
-      color: var(--text-secondary) !important;
-    }
-
-    .modal-close-btn:hover {
-      color: var(--text-primary) !important;
-    }
-
-    button,
-    a.header-btn {
-      color: inherit;
-    }
-
-    button:disabled,
-    button[aria-disabled="true"],
-    .btn-disabled {
-      background-color: #e2e8f0 !important;
-      border-color: #cbd5e1 !important;
-      color: #475569 !important;
-      cursor: not-allowed;
-      opacity: 1;
-    }
-
-    .border-green-500.bg-green-50,
-    .border-yellow-500.bg-yellow-50,
-    .border-blue-500.bg-blue-50 {
-      background-color: var(--bg-card) !important;
-    }
-
-    .border-green-500.text-green-600 {
-      border-color: #16a34a !important;
-      color: #15803d !important;
-    }
-
-    .border-yellow-500.text-yellow-600 {
-      border-color: #ca8a04 !important;
-      color: #a16207 !important;
-    }
-
-    .border-blue-500.text-blue-600 {
-      border-color: #2563eb !important;
-      color: #1d4ed8 !important;
-    }
-
-    .border-green-500.text-green-600:hover {
-      background-color: #dcfce7 !important;
-    }
-
-    .border-yellow-500.text-yellow-600:hover {
-      background-color: #fef9c3 !important;
-    }
-
-    .border-blue-500.text-blue-600:hover {
-      background-color: #dbeafe !important;
-    }
-
-    body.dark-theme .command-bar-trigger {
-      background-color: #0e1a1d !important;
-      border-color: #2a3f45 !important;
-      color: var(--text-secondary) !important;
-      box-shadow: none;
-    }
-
-    body.dark-theme .header-btn {
-      background-color: rgba(19, 35, 38, 0.8) !important;
-    }
-
-    body.dark-theme .whatsapp-btn {
-      background-color: rgba(20, 83, 45, 0.28) !important;
-      border-color: #22c55e !important;
-      color: #86efac !important;
-    }
-
-    body.dark-theme .modal-dialog-standard .form-input,
-    body.dark-theme .modal-dialog-standard .form-select {
-      background-color: #0e1a1d !important;
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary);
-    }
-
-    body.dark-theme .modal-dialog-standard .text-white,
-    body.dark-theme .modal-dialog-standard h3 {
-      color: var(--text-primary) !important;
-    }
-
-    body.dark-theme .command-bar-backdrop {
-      background-color: rgba(0, 0, 0, 0.68) !important;
-    }
-
-    body.dark-theme .border-green-500.text-green-600,
-    body.dark-theme .border-green-500.text-green-400 {
-      color: #86efac !important;
-      border-color: #22c55e !important;
-      background-color: rgba(20, 83, 45, 0.18) !important;
-    }
-
-    body.dark-theme .border-yellow-500.text-yellow-600,
-    body.dark-theme .border-yellow-500.text-yellow-400 {
-      color: #fde68a !important;
-      border-color: #f59e0b !important;
-      background-color: rgba(120, 53, 15, 0.22) !important;
-    }
-
-    body.dark-theme .border-blue-500.text-blue-600,
-    body.dark-theme .border-blue-500.text-blue-400 {
-      color: #bfdbfe !important;
-      border-color: #60a5fa !important;
-      background-color: rgba(30, 64, 175, 0.2) !important;
-    }
-
-    body.dark-theme .data-table tbody td,
-    body.dark-theme .data-table tbody td.text-text-muted {
-      color: var(--text-secondary) !important;
-    }
-
-    body.dark-theme .data-table thead,
-    body.dark-theme .data-table th,
-    body.dark-theme .data-table-header,
-    body.dark-theme .table-header {
-      background-color: #0e1a1d !important;
-      color: var(--text-primary) !important;
-      border-color: var(--border) !important;
-    }
-
-    body.dark-theme .data-table tbody tr,
-    body.dark-theme .data-table tbody {
-      background-color: var(--bg-card) !important;
-    }
-
-    @media (max-width: 1024px) {
-      .app-header {
-        padding: 0 18px;
-      }
-
-      .header-left {
-        max-width: none;
-      }
-
-      .whatsapp-btn .whatsapp-badge,
-      .kbd-shortcut {
-        display: none;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .app-header {
-        min-height: auto;
-        height: auto;
-        padding: 12px 14px;
-        flex-wrap: wrap;
-      }
-
-      .header-left {
-        flex-basis: 100%;
-        order: 2;
-      }
-
-      .header-right {
-        width: 100%;
-        justify-content: flex-end;
-        order: 1;
-      }
-    }
-
-    /* Cards & CRM containers layout definitions */
-    .card {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-    }
-    .card:hover {
-      border-color: rgba(41, 227, 193, 0.4);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-    .card-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-    .card-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .card-subtitle {
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-top: 4px;
-    }
-
-    /* Dynamic Badges styling */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      border-radius: 9999px;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-    .badge-accent {
-      background-color: rgba(41, 227, 193, 0.15);
-      color: #29e3c1;
-    }
-    .badge-success {
-      background-color: rgba(34, 197, 94, 0.15);
-      color: #22c55e;
-    }
-    .badge-warning {
-      background-color: rgba(234, 179, 8, 0.15);
-      color: #eab308;
-    }
-    .badge-error {
-      background-color: rgba(239, 68, 68, 0.15);
-      color: #ef4444;
-    }
-    .badge-info {
-      background-color: rgba(59, 130, 246, 0.15);
-      color: #3b82f6;
-    }
-    .badge-secondary {
-      background-color: rgba(156, 163, 175, 0.15);
-      color: #9ca3af;
-    }
-
-    /* Grid Layout for CRM Cards */
-    .clients-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
-    .client-card-crm {
-      cursor: pointer;
-    }
-    .client-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-    .client-card-name {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-    .client-card-details {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 16px;
-    }
-    .client-detail-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 4px;
-    }
-    .client-detail-label {
-      color: var(--text-secondary);
-    }
-    .client-detail-value {
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-
-    /* Dynamic CRM/Ledger Table View styling */
-    .data-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      text-align: left;
-    }
-    .data-table th {
-      padding: 14px 16px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border);
-      background-color: var(--bg-app);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .dark-theme .data-table th {
-      background-color: #0e1a1d;
-    }
-    .data-table td {
-      padding: 14px 16px;
-      font-size: 13.5px;
-      color: var(--text-primary);
-      border-bottom: 1px solid var(--border);
-      transition: background-color 0.15s ease;
-    }
-    .data-table tbody tr:hover td {
-      background-color: rgba(41, 227, 193, 0.04);
-    }
-    .data-table td .client-meta-wrap {
-      display: flex;
-      flex-direction: column;
-    }
-    .data-table td .client-name-cell {
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-    .data-table td .client-gstin-cell {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 2px;
-    }
-
-    /* Skeletons */
-    .skeleton-line {
-      height: 16px;
-      background-color: var(--border);
-      border-radius: 4px;
-      animation: pulse 1.5s infinite ease-in-out;
-    }
-    .w-75 { width: 75%; }
-    .w-50 { width: 50%; }
-    @keyframes pulse {
-      0% { opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { opacity: 0.6; }
-    }
-
-    /* Toast notifications style */
-    .toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .toast {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background-color: var(--bg-card);
-      color: var(--text-primary);
-      border: 1px solid var(--border);
-      padding: 12px 18px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      min-width: 250px;
-    }
-    .toast i, .toast svg {
-      color: var(--primary);
-    }
-    @keyframes toastIn {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    /* Health visualizer bar */
-    .health-visual-bar {
-      display: flex;
-      height: 8px;
-      border-radius: 4px;
-      overflow: hidden;
-      background-color: var(--border);
-      margin-top: 12px;
-    }
-    .health-bar-segment {
-      height: 100%;
-    }
-    .health-bar-segment.healthy { background-color: var(--success); }
-    .health-bar-segment.review { background-color: var(--warning); }
-    .health-bar-segment.critical { background-color: var(--error); }
-
-    /* Action items (Overview & Client Dashboard) */
-    .action-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .action-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background-color: var(--bg-app);
-      gap: 16px;
-    }
-    .action-item.border-error { border-left: 4px solid var(--error); }
-    .action-item.border-warning { border-left: 4px solid var(--warning); }
-    .action-item.border-primary { border-left: 4px solid var(--primary); }
-
-    .action-details {
-      display: flex;
-      flex-direction: column;
-    }
-    .action-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-    .action-desc {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 2px;
-    }
-
-    /* WhatsApp activity feed stream */
-    .activity-feed {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .feed-item {
-      display: flex;
-      gap: 12px;
-      position: relative;
-    }
-    .feed-item:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      left: 6px;
-      top: 18px;
-      bottom: -22px;
-      width: 2px;
-      background-color: var(--border);
-    }
-    .feed-marker {
-      width: 14px;
-      height: 14px;
-      border-radius: 9999px;
-      margin-top: 4px;
-      flex-shrink: 0;
-      border: 2px solid var(--bg-card);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .feed-content {
-      display: flex;
-      flex-direction: column;
-    }
-    .feed-text {
-      font-size: 13.5px;
-      color: var(--text-primary);
-    }
-    .feed-time {
-      font-size: 11px;
-      color: var(--text-secondary);
-      margin-top: 2px;
-    }
-
-    /* Settings User Row */
-    .user-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .user-item-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background-color: var(--bg-app);
-    }
-    .user-item-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .user-item-text {
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Spotlight Command Bar results text contrast */
-    .command-result-group-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: #8b9c9f;
-      padding: 8px 12px 4px 12px;
-      letter-spacing: 0.05em;
-    }
-    .command-result-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 12px;
-      border-radius: 8px;
-      font-size: 14px;
-      color: #f4fbfa;
-      cursor: pointer;
-      transition: background-color 0.15s ease, color 0.15s ease;
-    }
-    .command-result-item i, .command-result-item svg {
-      width: 16px;
-      height: 16px;
-      color: #8b9c9f;
-      flex-shrink: 0;
-    }
-    .command-result-item:hover, .command-result-item.selected {
-      background-color: rgba(41, 227, 193, 0.15);
-      color: #29e3c1;
-    }
-    .command-result-item:hover i, .command-result-item.selected i,
-    .command-result-item:hover svg, .command-result-item.selected svg {
-      color: #29e3c1;
-    }
-
-    body:not(.dark-theme) .command-result-item {
-      color: #111827;
-    }
-    body:not(.dark-theme) .command-result-item:hover, body:not(.dark-theme) .command-result-item.selected {
-      background-color: rgba(41, 227, 193, 0.1);
-      color: #14b8a6;
-    }
-
-    /* Helper Utilities */
-    .overflow-x {
-      overflow-x: auto;
-      width: 100%;
-    }
-    .form-input:focus, .form-select:focus {
-      border-color: rgba(41, 227, 193, 0.5) !important;
-      box-shadow: 0 0 0 2px rgba(41, 227, 193, 0.15) !important;
-    }
   </style>
   <link href="css/public-pages.css" rel="stylesheet">
-  <link href="css/console-shell.css" rel="stylesheet">
   <link href="css/dashboard-khata.css" rel="stylesheet">
 </head>
 <body class="bg-paper text-ink min-h-screen antialiased font-body">
@@ -1392,80 +120,80 @@
   <!-- ==========================================================================
        2. Console Layout Shell (Dashboard Workspace - Hidden until Authenticated)
        ========================================================================== -->
-  <div class="app-layout min-h-screen flex text-gray-900 dark:text-gray-100" id="console-layout" style="display: none;">
+  <div class="dashboard-shell app-layout" id="console-layout" style="display: none;">
     <!-- Sidebar mobile backdrop overlay -->
-    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+    <div class="dashboard-sidebar-backdrop sidebar-backdrop" id="sidebar-backdrop"></div>
 
     <!-- Left Sidebar -->
-    <aside class="app-sidebar border-r border-gray-200 dark:border-border-dark bg-white dark:bg-[#0a1114] flex flex-col h-screen transition-all duration-300 flex-shrink-0 z-40" id="app-sidebar" aria-label="Primary navigation">
-      <div class="sidebar-header flex items-center justify-between p-4 border-b border-gray-200 dark:border-border-dark h-16 flex-shrink-0">
-        <div class="flex items-center space-x-2 brand-logo">
-          <span class="material-icons text-primary">receipt_long</span>
-          <span class="font-bold text-lg tracking-tighter text-gray-900 dark:text-white brand-name">TaxBot <span class="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded font-semibold ml-1 brand-badge">Partner</span></span>
+    <aside class="dashboard-sidebar app-sidebar" id="app-sidebar" aria-label="Primary navigation">
+      <div class="dashboard-sidebar-header sidebar-header">
+        <div class="dashboard-brand brand-logo">
+          <span class="material-icons dashboard-brand-icon" aria-hidden="true">receipt_long</span>
+          <span class="dashboard-brand-name brand-name">TaxBot <span class="dashboard-brand-badge brand-badge">Partner</span></span>
         </div>
-        <button type="button" class="text-text-muted hover:text-primary transition-colors p-1 border border-gray-200 dark:border-border-dark rounded bg-white dark:bg-card-dark/50 sidebar-collapse-btn" id="sidebar-toggle" aria-label="Collapse sidebar" aria-pressed="false">
-          <i data-lucide="chevron-left" class="w-4 h-4"></i>
+        <button type="button" class="dashboard-icon-button sidebar-collapse-btn" id="sidebar-toggle" aria-label="Collapse sidebar" aria-pressed="false">
+          <i data-lucide="chevron-left" aria-hidden="true"></i>
         </button>
       </div>
 
       <!-- Navigation Menu -->
-      <nav class="sidebar-nav flex-grow overflow-y-auto p-4 space-y-1">
-        <ul class="space-y-1 nav-list">
+      <nav class="dashboard-sidebar-nav sidebar-nav" aria-label="Dashboard">
+        <ul class="dashboard-nav-list nav-list">
           <li>
-            <a href="#overview" class="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-muted dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-card-dark hover:text-primary transition-colors nav-link active" data-view="overview" id="nav-overview">
-              <i data-lucide="layout-dashboard" class="w-[18px] h-[18px] flex-shrink-0"></i>
+            <a href="#overview" class="dashboard-nav-link nav-link active" data-view="overview" id="nav-overview">
+              <i data-lucide="layout-dashboard" aria-hidden="true"></i>
               <span class="link-text">Overview</span>
             </a>
           </li>
           <li>
-            <a href="#clients" class="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-muted dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-card-dark hover:text-primary transition-colors nav-link" data-view="clients" id="nav-clients">
-              <i data-lucide="users" class="w-[18px] h-[18px] flex-shrink-0"></i>
+            <a href="#clients" class="dashboard-nav-link nav-link" data-view="clients" id="nav-clients">
+              <i data-lucide="users" aria-hidden="true"></i>
               <span class="link-text">Clients</span>
-              <span class="ml-auto bg-primary/20 text-primary text-xs font-semibold px-2 py-0.5 rounded-full badge badge-accent" id="clients-count">0</span>
+              <span class="dashboard-nav-count badge badge-accent" id="clients-count">0</span>
             </a>
           </li>
           <li>
-            <a href="#transactions" class="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-muted dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-card-dark hover:text-primary transition-colors nav-link" data-view="transactions" id="nav-transactions">
-              <i data-lucide="receipt" class="w-[18px] h-[18px] flex-shrink-0"></i>
+            <a href="#transactions" class="dashboard-nav-link nav-link" data-view="transactions" id="nav-transactions">
+              <i data-lucide="receipt" aria-hidden="true"></i>
               <span class="link-text">Transactions</span>
-              <span class="ml-auto bg-yellow-500/20 text-yellow-500 text-xs font-semibold px-2 py-0.5 rounded-full badge badge-warning" id="pending-transactions-badge">0</span>
+              <span class="dashboard-nav-count badge badge-warning" id="pending-transactions-badge">0</span>
             </a>
           </li>
           <li>
-            <a href="#documents" class="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-muted dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-card-dark hover:text-primary transition-colors nav-link" data-view="documents" id="nav-documents">
-              <i data-lucide="folder-open" class="w-[18px] h-[18px] flex-shrink-0"></i>
+            <a href="#documents" class="dashboard-nav-link nav-link" data-view="documents" id="nav-documents">
+              <i data-lucide="folder-open" aria-hidden="true"></i>
               <span class="link-text">Documents</span>
-              <span class="ml-auto bg-green-500/20 text-green-500 text-xs font-semibold px-2 py-0.5 rounded-full badge badge-success" id="documents-count-badge">0</span>
+              <span class="dashboard-nav-count badge badge-success" id="documents-count-badge">0</span>
             </a>
           </li>
           <li>
-            <a href="#gst" class="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-muted dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-card-dark hover:text-primary transition-colors nav-link" data-view="gst" id="nav-gst">
-              <i data-lucide="file-text" class="w-[18px] h-[18px] flex-shrink-0"></i>
+            <a href="#gst" class="dashboard-nav-link nav-link" data-view="gst" id="nav-gst">
+              <i data-lucide="file-text" aria-hidden="true"></i>
               <span class="link-text">GST Center</span>
             </a>
           </li>
           <li>
-            <a href="#insights" class="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-muted dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-card-dark hover:text-primary transition-colors nav-link" data-view="insights" id="nav-insights">
-              <i data-lucide="sparkles" class="w-[18px] h-[18px] flex-shrink-0"></i>
+            <a href="#insights" class="dashboard-nav-link nav-link" data-view="insights" id="nav-insights">
+              <i data-lucide="sparkles" aria-hidden="true"></i>
               <span class="link-text">AI Insights</span>
-              <span class="ml-auto bg-red-500/20 text-red-500 text-xs font-semibold px-2 py-0.5 rounded-full badge badge-error" id="insights-count-badge">0</span>
+              <span class="dashboard-nav-count badge badge-error" id="insights-count-badge">0</span>
             </a>
           </li>
           <li>
-            <a href="#exports" class="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-muted dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-card-dark hover:text-primary transition-colors nav-link" data-view="exports" id="nav-exports">
-              <i data-lucide="download" class="w-[18px] h-[18px] flex-shrink-0"></i>
+            <a href="#exports" class="dashboard-nav-link nav-link" data-view="exports" id="nav-exports">
+              <i data-lucide="download" aria-hidden="true"></i>
               <span class="link-text">Exports</span>
             </a>
           </li>
           <li>
-            <a href="#billing" class="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-muted dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-card-dark hover:text-primary transition-colors nav-link" data-view="billing" id="nav-billing">
-              <i data-lucide="credit-card" class="w-[18px] h-[18px] flex-shrink-0"></i>
+            <a href="#billing" class="dashboard-nav-link nav-link" data-view="billing" id="nav-billing">
+              <i data-lucide="credit-card" aria-hidden="true"></i>
               <span class="link-text">Billing</span>
             </a>
           </li>
           <li>
-            <a href="#settings" class="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-muted dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-card-dark hover:text-primary transition-colors nav-link" data-view="settings" id="nav-settings">
-              <i data-lucide="settings" class="w-[18px] h-[18px] flex-shrink-0"></i>
+            <a href="#settings" class="dashboard-nav-link nav-link" data-view="settings" id="nav-settings">
+              <i data-lucide="settings" aria-hidden="true"></i>
               <span class="link-text">Settings</span>
             </a>
           </li>
@@ -1473,70 +201,68 @@
       </nav>
 
       <!-- Firm Quick Profile -->
-      <div class="sidebar-footer p-4 border-t border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-[#071113] flex-shrink-0">
-        <div class="flex items-center space-x-3 firm-profile-mini">
-          <div class="w-9 h-9 rounded-lg bg-primary text-background-dark flex items-center justify-center font-bold text-sm firm-avatar" id="ca-avatar-letter">SS</div>
-          <div class="flex flex-col min-w-0 flex-grow firm-info">
-            <span class="text-sm font-semibold truncate text-gray-900 dark:text-white firm-name-text" id="ca-display-name">Sandeep Sharma</span>
-            <span class="text-xs text-text-muted truncate firm-role-text" id="ca-display-email">ca@taxbot.in</span>
+      <div class="dashboard-sidebar-footer sidebar-footer">
+        <div class="dashboard-firm-profile firm-profile-mini">
+          <div class="dashboard-avatar firm-avatar" id="ca-avatar-letter">SS</div>
+          <div class="dashboard-firm-copy firm-info">
+            <span class="dashboard-firm-name firm-name-text" id="ca-display-name">Sandeep Sharma</span>
+            <span class="dashboard-firm-email firm-role-text" id="ca-display-email">ca@taxbot.in</span>
           </div>
-          <button class="text-text-muted hover:text-red-500 transition-colors p-1.5 btn-logout" id="btn-logout" title="Log Out">
-            <i data-lucide="log-out" class="w-4 h-4"></i>
+          <button class="dashboard-icon-button btn-logout" id="btn-logout" title="Log Out" aria-label="Log out">
+            <i data-lucide="log-out" aria-hidden="true"></i>
           </button>
         </div>
       </div>
     </aside>
 
     <!-- Main Workspace -->
-    <div class="app-main flex flex-col flex-grow h-screen overflow-hidden">
+    <div class="dashboard-main app-main">
 
       <!-- Top Header Navigation -->
-      <header class="app-header h-16 bg-white dark:bg-card-dark border-b border-gray-200 dark:border-border-dark flex items-center justify-between px-6 flex-shrink-0 z-30">
-        <div class="header-left flex items-center w-full max-w-md gap-4">
-          <button type="button" class="mobile-menu-btn md:hidden text-text-muted hover:text-primary transition-colors p-2" id="mobile-menu-toggle" aria-label="Open navigation menu" aria-controls="app-sidebar" aria-expanded="false">
-            <i data-lucide="menu" class="w-5 h-5"></i>
+      <header class="dashboard-top-nav app-header">
+        <div class="dashboard-top-left header-left">
+          <button type="button" class="dashboard-icon-button mobile-menu-btn" id="mobile-menu-toggle" aria-label="Open navigation menu" aria-controls="app-sidebar" aria-expanded="false">
+            <i data-lucide="menu" aria-hidden="true"></i>
           </button>
-          <button type="button" class="command-bar-trigger w-full flex items-center space-x-3 px-4 py-2 border border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-[#0e1a1d] rounded-lg text-text-muted hover:border-primary/50 transition-colors text-sm" id="global-command-trigger" aria-haspopup="dialog" aria-controls="global-command-modal" aria-expanded="false">
-            <i data-lucide="search" class="w-4 h-4 search-icon"></i>
-            <span class="trigger-placeholder flex-grow text-left">Ask TaxBot anything...</span>
-            <kbd class="kbd-shortcut bg-white dark:bg-[#1a2b30] border border-gray-200 dark:border-border-dark rounded px-1.5 py-0.5 text-[10px]">Ctrl K</kbd>
+          <div class="dashboard-breadcrumb-area" id="dashboard-breadcrumb-area">
+            <nav class="dashboard-breadcrumb" id="dashboard-breadcrumb" aria-label="Breadcrumb"></nav>
+          </div>
+          <button type="button" class="dashboard-search command-bar-trigger" id="global-command-trigger" aria-label="Search and ask TaxBot" aria-haspopup="dialog" aria-controls="global-command-modal" aria-expanded="false">
+            <i data-lucide="search" class="search-icon" aria-hidden="true"></i>
+            <span class="trigger-placeholder">Ask TaxBot anything...</span>
+            <kbd class="kbd-shortcut">Ctrl K</kbd>
           </button>
         </div>
 
-        <div class="header-right flex items-center space-x-4">
-          <!-- Theme Toggle -->
-          <button type="button" class="header-btn w-9 h-9 flex items-center justify-center border border-gray-200 dark:border-border-dark rounded-lg text-text-muted hover:text-primary transition-colors bg-white dark:bg-card-dark/50" id="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
-            <i data-lucide="moon" id="theme-toggle-icon" class="w-4 h-4"></i>
-          </button>
-
+        <div class="dashboard-top-actions header-right">
           <!-- Notifications -->
-          <div class="notification-dropdown relative">
-            <button type="button" class="header-btn w-9 h-9 flex items-center justify-center border border-gray-200 dark:border-border-dark rounded-lg text-text-muted hover:text-primary transition-colors bg-white dark:bg-card-dark/50" id="notification-btn" aria-label="Notifications" aria-haspopup="true" aria-controls="notifications-dropdown-menu" aria-expanded="false">
-              <i data-lucide="bell" class="w-4 h-4"></i>
-              <span class="indicator-dot absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-card-dark"></span>
+          <div class="dashboard-notification-area notification-dropdown">
+            <button type="button" class="dashboard-icon-button header-btn" id="notification-btn" aria-label="Notifications" aria-haspopup="true" aria-controls="notifications-dropdown-menu" aria-expanded="false">
+              <i data-lucide="bell" aria-hidden="true"></i>
+              <span class="indicator-dot" aria-hidden="true"></span>
             </button>
-            <div class="dropdown-menu hidden absolute right-0 mt-2 w-80 bg-white dark:bg-card-dark border border-gray-200 dark:border-border-dark rounded-xl shadow-2xl z-50 overflow-hidden" id="notifications-dropdown-menu" aria-label="Notifications">
-              <div class="dropdown-header flex justify-between items-center px-4 py-3 border-b border-gray-200 dark:border-border-dark bg-gray-50 dark:bg-[#0e1a1d]">
-                <span class="font-bold text-gray-900 dark:text-white text-sm">Notifications</span>
-                <button type="button" class="text-xs text-primary font-semibold hover:underline btn-text" id="btn-mark-all-read">Mark all read</button>
+            <div class="dashboard-notification-menu dropdown-menu hidden" id="notifications-dropdown-menu" role="menu" aria-label="Notifications" tabindex="-1" hidden>
+              <div class="dashboard-notification-header dropdown-header">
+                <span>Notifications</span>
+                <button type="button" class="btn-text" id="btn-mark-all-read">Mark all read</button>
               </div>
-              <div class="dropdown-body max-h-80 overflow-y-auto p-2 space-y-1" id="notifications-list" role="list">
+              <div class="dashboard-notification-list dropdown-body" id="notifications-list" role="list">
                 <!-- Dynamic notification items -->
               </div>
             </div>
           </div>
 
           <!-- Quick WhatsApp Link -->
-          <a href="https://wa.me/919876543210" target="_blank" rel="noopener" class="header-btn w-auto px-3 h-9 flex items-center space-x-2 border border-green-500 rounded-lg text-green-600 dark:text-green-400 bg-green-55 dark:bg-green-950/20 hover:bg-green-100 dark:hover:bg-green-950/40 transition-colors whatsapp-btn" title="View WhatsApp Service Status">
-            <i data-lucide="message-square" class="w-4 h-4"></i>
-            <span class="text-xs font-bold uppercase tracking-wider whatsapp-badge">Live</span>
+          <a href="https://wa.me/919876543210" target="_blank" rel="noopener" class="dashboard-live-link header-btn whatsapp-btn" title="View WhatsApp Service Status">
+            <i data-lucide="message-square" aria-hidden="true"></i>
+            <span class="whatsapp-badge">Live</span>
           </a>
 
           <!-- User Profile Dropdown -->
-          <div class="profile-dropdown flex items-center space-x-2">
-            <button type="button" class="profile-btn flex items-center space-x-2 text-left" id="profile-menu-btn" aria-haspopup="menu" aria-controls="profile-menu" aria-expanded="false">
-              <div class="w-8 h-8 rounded-lg bg-primary text-background-dark flex items-center justify-center font-bold text-xs profile-avatar" id="ca-header-avatar-letter">S</div>
-              <span class="profile-name text-sm font-semibold hidden md:inline text-gray-900 dark:text-white" id="ca-display-header-name">Sandeep Sharma</span>
+          <div class="dashboard-profile profile-dropdown">
+            <button type="button" class="dashboard-profile-button profile-btn" id="profile-menu-btn" aria-haspopup="menu" aria-controls="profile-menu" aria-expanded="false">
+              <div class="dashboard-avatar profile-avatar" id="ca-header-avatar-letter">S</div>
+              <span class="dashboard-profile-name profile-name" id="ca-display-header-name">Sandeep Sharma</span>
             </button>
             <div class="shell-menu" id="profile-menu" role="menu" hidden>
               <div class="profile-menu-summary">
@@ -1559,10 +285,14 @@
       </header>
 
       <!-- Viewport Wrapper (Scrollable) -->
-      <main class="app-content flex-grow overflow-y-auto p-6 space-y-6" id="app-viewport">
+      <main class="dashboard-content app-content" id="app-viewport">
+        <div class="dashboard-content-container">
+          <div class="dashboard-page-header" id="dashboard-page-header" hidden>
+            <div class="dashboard-page-title-slot" id="dashboard-page-title-slot"></div>
+          </div>
 
         <!-- SCREEN 1: OVERVIEW DASHBOARD -->
-        <section id="view-overview" class="view-section active space-y-6 dashboard-overview">
+        <section id="view-overview" class="view-section active space-y-4 dashboard-overview">
           <div class="view-header flex justify-between items-center">
             <div>
               <p class="dashboard-label">Firm command</p>
@@ -1577,7 +307,7 @@
           </div>
 
           <!-- Top KPI Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 kpi-grid">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 kpi-grid">
             <div class="dashboard-card kpi-card">
               <div class="flex justify-between items-start mb-4 kpi-meta">
                 <span class="dashboard-label kpi-label">Active Clients</span>
@@ -1640,55 +370,55 @@
           </div>
 
           <!-- Financial Analytics Grid -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 analytics-grid">
-            <div class="dashboard-card chart-card">
-              <div class="card-header mb-4">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 analytics-grid">
+            <div class="dashboard-card chart-card lg:col-span-7">
+              <div class="card-header mb-3">
                 <h3 class="font-bold card-title">Sales & Expenses Trend</h3>
                 <p class="card-subtitle mt-1">Monthly flow of client transactions across the firm.</p>
               </div>
-              <div class="chart-container relative h-[280px] w-full">
+              <div class="chart-container relative h-[240px] w-full">
                 <canvas id="chart-sales-expenses"></canvas>
               </div>
             </div>
 
-            <div class="dashboard-card chart-card">
-              <div class="card-header mb-4">
+            <div class="dashboard-card chart-card lg:col-span-5">
+              <div class="card-header mb-3">
                 <h3 class="font-bold card-title">Expense Distribution</h3>
                 <p class="card-subtitle mt-1">Breakdown of consolidated firm expenses by category.</p>
               </div>
-              <div class="chart-container relative h-[280px] w-full">
+              <div class="chart-container relative h-[240px] w-full">
                 <canvas id="chart-expense-categories"></canvas>
               </div>
             </div>
           </div>
 
           <!-- Main Content Split -->
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 dashboard-split">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 dashboard-split">
             <!-- Left Area: Urgent Actions & Business Health -->
-            <div class="lg:col-span-2 space-y-6 split-left">
+            <div class="lg:col-span-8 space-y-4 split-left">
 
               <!-- Urgent Actions -->
               <div class="dashboard-card card-alert">
-                <div class="flex justify-between items-center pb-4 card-header overview-card-rule">
+                <div class="flex justify-between items-center pb-3 card-header overview-card-rule">
                   <h3 class="font-bold flex items-center space-x-2 card-title"><i data-lucide="alert-triangle" class="w-5 h-5"></i> <span>Urgent Actions Required</span></h3>
                   <span class="status-pill needs-review" id="kpi-urgent-actions-count">3 Action Items</span>
                 </div>
                 <div class="action-list">
-                  <div class="flex justify-between items-center py-4 action-item">
+                  <div class="flex justify-between items-center py-3 action-item">
                     <div class="action-details">
                       <span class="block text-sm font-semibold">GST ITC Mismatch Detected</span>
                       <span class="block text-xs mt-1">Verify ITC offsets against GSTR-2B logs for mismatched items.</span>
                     </div>
                     <button class="btn-khata-secondary px-3 py-1.5 text-xs btn-view-gst-mismatch">Reconcile</button>
                   </div>
-                  <div class="flex justify-between items-center py-4 action-item">
+                  <div class="flex justify-between items-center py-3 action-item">
                     <div class="action-details">
                       <span class="block text-sm font-semibold">Missing Expense Vouchers</span>
                       <span class="block text-xs mt-1">High-value cash files received via WhatsApp lack mapping tags.</span>
                     </div>
                     <button class="btn-khata-secondary px-3 py-1.5 text-xs btn-view-missing-docs">Request Files</button>
                   </div>
-                  <div class="flex justify-between items-center py-4 action-item">
+                  <div class="flex justify-between items-center py-3 action-item">
                     <div class="action-details">
                       <span class="block text-sm font-semibold">GSTR-1 Filing Deadline</span>
                       <span class="block text-xs mt-1">Reconciliation checks ready. 14 filings incomplete.</span>
@@ -1700,7 +430,7 @@
 
               <!-- Business Health Overview -->
               <div class="dashboard-card">
-                <div class="card-header mb-4">
+                <div class="card-header mb-3">
                   <h3 class="font-bold card-title">Business Health Directory</h3>
                   <p class="card-subtitle mt-1">AI-generated operational risk profiling for client accounts.</p>
                 </div>
@@ -1720,7 +450,7 @@
                     </div>
                   </div>
                   <div class="health-visual-bar" id="health-visual-bar-root">
-                    <!-- Dynamic segments filled in app.js -->
+                    <!-- Dynamic segments filled in console.js -->
                   </div>
                 </div>
               </div>
@@ -1728,11 +458,11 @@
             </div>
 
             <!-- Right Area: Recent Activity & Quick Actions -->
-            <div class="space-y-6 split-right">
+            <div class="lg:col-span-4 space-y-4 split-right">
 
               <!-- Quick Actions -->
               <div class="dashboard-card">
-                <div class="card-header mb-4">
+                <div class="card-header mb-3">
                   <h3 class="font-bold card-title">Quick Actions</h3>
                 </div>
                 <div class="grid grid-cols-2 gap-4 quick-actions-panel">
@@ -1757,7 +487,7 @@
 
               <!-- Recent Activity Feed -->
               <div class="dashboard-card">
-                <div class="card-header mb-4">
+                <div class="card-header mb-3">
                   <h3 class="font-bold card-title">Recent Activity</h3>
                 </div>
                 <div class="activity-feed space-y-4" id="overview-activity-feed">
@@ -1770,7 +500,7 @@
         </section>
 
         <!-- SCREEN 2: CLIENT MANAGEMENT -->
-        <section id="view-clients" class="view-section hidden space-y-6 dashboard-clients">
+        <section id="view-clients" class="view-section hidden space-y-4 dashboard-clients">
           <div class="view-header flex justify-between items-center">
             <div>
               <p class="dashboard-label">Client ledger</p>
@@ -1785,8 +515,8 @@
           </div>
 
           <!-- Filter / Toolbar Row -->
-          <div class="dashboard-card toolbar-card flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center space-x-3 px-3 py-2 flex-grow max-w-md toolbar-search">
+          <div class="dashboard-card toolbar-card clients-toolbar flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center space-x-3 px-3 py-2 flex-grow toolbar-search">
               <i data-lucide="search" class="w-4 h-4"></i>
               <input type="text" id="client-search" placeholder="Search clients by name, GSTIN, owner..." class="w-full border-0 bg-transparent p-0 text-sm focus:ring-0">
             </div>
@@ -1796,27 +526,21 @@
                 <button class="filter-tab" data-filter="needs-review">Needs Action</button>
                 <button class="filter-tab" data-filter="filed">Filed</button>
               </div>
-              <button class="btn-khata-secondary px-3 py-2 text-xs flex items-center space-x-1.5" id="client-sort-btn">
-                <i data-lucide="arrow-up-down" class="w-3.5 h-3.5"></i> <span>Sort</span>
-              </button>
-              <div class="layout-toggle">
-                <button class="active" id="layout-toggle-table" aria-label="Table View"><i data-lucide="list" class="w-4 h-4"></i></button>
-                <button id="layout-toggle-grid" aria-label="Grid View"><i data-lucide="grid" class="w-4 h-4"></i></button>
-              </div>
+              <span class="dashboard-label clients-result-count" id="clients-result-count">0 clients</span>
             </div>
           </div>
 
           <!-- Clients Table/Grid Container -->
-          <div id="clients-list-container" class="mt-6">
+          <div id="clients-list-container">
             <div class="dashboard-card overflow-x p-0">
               <table class="data-table dashboard-ledger-table">
                 <thead>
                   <tr>
-                    <th>Business Name</th>
+                    <th>Business</th>
+                    <th>Owner</th>
                     <th>GSTIN</th>
-                    <th>Owner / WhatsApp</th>
-                    <th>Active Plan</th>
-                    <th>Last Activity</th>
+                    <th>Plan</th>
+                    <th>Last Active</th>
                     <th class="numeric">Health</th>
                     <th>Status</th>
                   </tr>
@@ -1847,7 +571,7 @@
         </section>
 
         <!-- SCREEN 3: CLIENT WORKSPACE (360 VIEW) -->
-        <section id="view-client-workspace" class="view-section hidden space-y-6 dashboard-workspace">
+        <section id="view-client-workspace" class="view-section hidden space-y-4 dashboard-workspace">
           <div class="dashboard-card flex flex-col md:flex-row md:items-center justify-between gap-4 workspace-header">
             <div class="flex items-center workspace-title-area">
               <button class="btn-khata-secondary px-3 py-1.5 text-xs flex items-center space-x-1.5" id="btn-back-to-clients">
@@ -1873,7 +597,7 @@
           </div>
 
           <!-- Workspace KPIs -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="dashboard-card workspace-kpi-card">
               <div class="dashboard-label mb-1">Sales Revenue (Monthly)</div>
               <div class="workspace-kpi-value numeric" id="ws-kpi-sales">Rs. 0</div>
@@ -2109,7 +833,7 @@
         </section>
 
         <!-- SCREEN 4: TRANSACTIONS CENTER -->
-        <section id="view-transactions" class="view-section hidden space-y-6 dashboard-proof">
+        <section id="view-transactions" class="view-section hidden space-y-4 dashboard-transactions dashboard-proof">
           <div class="view-header flex flex-col md:flex-row md:justify-between md:items-center">
             <div>
               <p class="dashboard-label mb-1">Ledger review</p>
@@ -2117,18 +841,19 @@
               <p class="text-sm text-ink-soft">Review, adjust, and approve AI-extracted accounting entries globally.</p>
             </div>
             <div class="flex items-center gap-3 view-actions">
+              <span class="dashboard-label transactions-selection-count" id="transactions-selection-count">0 selected</span>
               <button class="btn-khata-secondary px-4 py-2 text-sm" id="btn-bulk-approve-transactions">Bulk Approve</button>
               <button class="btn-khata-primary px-4 py-2 text-sm" id="btn-export-transactions">Export CSV</button>
             </div>
           </div>
 
           <!-- Filters Row -->
-          <div class="dashboard-card toolbar-card flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center space-x-3 px-3 py-2 flex-grow max-w-md toolbar-search">
+          <div class="dashboard-card toolbar-card transactions-toolbar flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center space-x-3 px-3 py-2 flex-grow toolbar-search">
               <i data-lucide="search" class="w-4 h-4 text-ink-soft"></i>
               <input type="text" id="transactions-global-search" placeholder="Search transactions..." class="w-full border-0 bg-transparent p-0 text-sm focus:ring-0 text-ink">
             </div>
-            <div class="flex items-center gap-3 toolbar-actions">
+            <div class="flex flex-wrap items-center gap-3 toolbar-actions">
               <select id="tx-filter-client" class="px-3 py-2 text-sm dropdown-select">
                 <!-- Filled dynamically inside console.js -->
               </select>
@@ -2139,15 +864,23 @@
                 <option value="pdf">PDF Upload</option>
                 <option value="manual">Manual Entry</option>
               </select>
+              <select id="tx-filter-status" class="px-3 py-2 text-sm dropdown-select">
+                <option value="all">All Statuses</option>
+                <option value="review">Needs Review</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="draft">Draft</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              <span class="dashboard-label transactions-result-count" id="transactions-result-count">0 entries</span>
             </div>
           </div>
 
           <!-- Main Table Card -->
-          <div class="dashboard-card overflow-x p-0 mt-6">
-            <table class="data-table dashboard-ledger-table" id="global-transactions-table">
+          <div class="dashboard-card transactions-table-card overflow-x p-0">
+            <table class="data-table dashboard-ledger-table transactions-ledger-table" id="global-transactions-table">
               <thead>
                 <tr>
-                  <th style="width: 40px;"><input type="checkbox" id="select-all-transactions"></th>
+                  <th style="width: 40px;"><input type="checkbox" id="select-all-transactions" aria-label="Select all visible transactions"></th>
                   <th>Date</th>
                   <th>Client</th>
                   <th>Type</th>
@@ -2166,7 +899,7 @@
         </section>
 
         <!-- SCREEN 5: DOCUMENT CENTER -->
-        <section id="view-documents" class="view-section hidden space-y-6 dashboard-documents">
+        <section id="view-documents" class="view-section hidden space-y-4 dashboard-documents">
           <div class="view-header flex justify-between items-center">
             <div>
               <p class="dashboard-label">Document ledger</p>
@@ -2180,9 +913,9 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 document-split-layout">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 document-split-layout">
             <!-- Left: Document List & Tabs -->
-            <div class="lg:col-span-2 space-y-6 document-list-side">
+            <div class="lg:col-span-2 space-y-4 document-list-side">
               <div class="dashboard-card toolbar-card">
                 <div class="flex items-center space-x-3 px-3 py-2 toolbar-search">
                   <i data-lucide="search" class="w-4 h-4"></i>
@@ -2219,10 +952,9 @@
             <!-- Right: Document Detail & Preview Panel -->
             <div class="document-preview-side">
               <div class="dashboard-card min-h-[350px] flex flex-col justify-center items-center text-center sticky top-24" id="doc-preview-panel">
-                <div class="preview-empty-state space-y-4">
-                  <i data-lucide="file-text" class="w-12 h-12 mx-auto"></i>
-                  <h3 class="font-bold card-title">Select a document to preview</h3>
-                  <p class="card-subtitle leading-relaxed max-w-[220px]">Preview invoice data, listen to voice notes, or verify OCR extractions.</p>
+                <div class="dashboard-empty-state preview-empty-state">
+                  <p>Select a document to review parsed fields, or upload a file to start a new ledger entry.</p>
+                  <button class="btn-khata-primary dashboard-empty-action" id="btn-preview-upload-document">Upload Files</button>
                 </div>
               </div>
             </div>
@@ -2230,7 +962,7 @@
         </section>
 
         <!-- SCREEN 6: GST CENTER -->
-        <section id="view-gst" class="view-section hidden space-y-6 dashboard-gst">
+        <section id="view-gst" class="view-section hidden space-y-4 dashboard-gst">
           <div class="view-header flex justify-between items-center">
             <div>
               <p class="dashboard-label">GST ledger</p>
@@ -2243,7 +975,7 @@
           </div>
 
           <!-- Top GST KPIs -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="dashboard-card gst-kpi-card">
               <div class="dashboard-label mb-1">GST Liability (Total)</div>
               <div class="gst-kpi-value numeric" id="gst-total-liability-metric">Rs 0</div>
@@ -2267,10 +999,25 @@
           </div>
 
           <!-- Client GST Filing Table -->
-          <div class="dashboard-card overflow-hidden p-0 mt-6">
-            <div class="dashboard-panel-header flex justify-between items-center">
-              <h3 class="font-bold card-title">Filing Status Ledger</h3>
-              <input type="month" id="gst-period-picker" class="form-input">
+          <div class="dashboard-card overflow-hidden p-0">
+            <div class="dashboard-panel-header gst-ledger-header">
+              <div>
+                <h3 class="font-bold card-title">Filing Status Ledger</h3>
+                <p class="card-subtitle mt-1" id="gst-result-count">0 clients</p>
+              </div>
+              <div class="gst-ledger-controls">
+                <div class="toolbar-search">
+                  <i data-lucide="search" class="w-4 h-4"></i>
+                  <input type="text" id="gst-client-search" placeholder="Search client or GSTIN..." class="w-full border-0 bg-transparent p-0 text-sm focus:ring-0">
+                </div>
+                <select id="gst-status-filter" class="form-input dropdown-select" aria-label="Filter GST filing status">
+                  <option value="all">All status</option>
+                  <option value="ready">Ready</option>
+                  <option value="review">Needs review</option>
+                  <option value="filed">Filed</option>
+                </select>
+                <input type="month" id="gst-period-picker" class="form-input">
+              </div>
             </div>
             <div class="overflow-x">
             <table class="data-table dashboard-ledger-table" id="gst-center-table">
@@ -2293,7 +1040,7 @@
         </section>
 
         <!-- SCREEN 7: AI INSIGHTS -->
-        <section id="view-insights" class="view-section hidden space-y-6 dashboard-insights">
+        <section id="view-insights" class="view-section hidden space-y-4 dashboard-insights">
           <div class="view-header flex justify-between items-center">
             <div>
               <p class="dashboard-label">Review ledger</p>
@@ -2308,34 +1055,36 @@
           <!-- Severity Filter Chips -->
           <div class="dashboard-card toolbar-card">
             <div class="filter-group">
-              <button class="filter-tab active" data-severity="all">All Anomalies</button>
-              <button class="filter-tab" data-severity="high">High Severity</button>
-              <button class="filter-tab" data-severity="medium">Medium</button>
-              <button class="filter-tab" data-severity="low">Info</button>
+              <button class="filter-tab active" data-severity="all">All <span class="filter-count" id="insight-count-all">0</span></button>
+              <button class="filter-tab" data-severity="high">High <span class="filter-count" id="insight-count-high">0</span></button>
+              <button class="filter-tab" data-severity="medium">Medium <span class="filter-count" id="insight-count-medium">0</span></button>
+              <button class="filter-tab" data-severity="low">Info <span class="filter-count" id="insight-count-low">0</span></button>
             </div>
           </div>
 
           <!-- Insights Cards Stack -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 insights-grid" id="ai-insights-cards-container">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 insights-grid" id="ai-insights-cards-container">
             <!-- Dynamic Injection -->
           </div>
         </section>
 
         <!-- SCREEN 8: EXPORT CENTER -->
-        <section id="view-exports" class="view-section hidden space-y-6 dashboard-exports">
+        <section id="view-exports" class="view-section hidden space-y-4 dashboard-exports">
           <div class="view-header">
             <p class="dashboard-label">Export ledger</p>
             <h1 class="font-bold">Export Command Center</h1>
             <p class="text-sm">Generate accounting packages for traditional ERP systems in one click.</p>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 export-cards-grid mt-6">
+          <div id="exports-state" class="hidden"></div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 export-cards-grid">
 
             <div class="dashboard-card flex flex-col justify-between export-card">
               <div>
                 <div class="export-card-icon-wrap"><i data-lucide="file-output"></i></div>
                 <h3 class="font-bold export-card-title">Tally Prime XML Package</h3>
-                <p class="export-card-desc">Generates complete double-entry journals, sales receipts, purchase entries, and customer profiles mapped directly to Tally Prime standard configurations.</p>
+                <p class="export-card-desc">Double-entry journals, sales receipts, purchase entries, and customer ledgers mapped for Tally Prime.</p>
                 <div class="mt-4 space-y-1.5 export-form-group">
                   <label for="export-tally-client">Select Client</label>
                   <select id="export-tally-client" class="form-input">
@@ -2350,7 +1099,7 @@
               <div>
                 <div class="export-card-icon-wrap"><i data-lucide="table"></i></div>
                 <h3 class="font-bold export-card-title">GST Reconciliation Reports</h3>
-                <p class="export-card-desc">Produces detailed government-ready Excel worksheets summarizing Sales (GSTR-1 data), Purchase invoices matching GSTR-2B, and tax offset calculations.</p>
+                <p class="export-card-desc">Period workbook covering GSTR-1 sales, GSTR-2B purchase matching, ITC, and net tax calculations.</p>
                 <div class="mt-4 space-y-1.5 export-form-group">
                   <label for="export-gst-period">Select Period</label>
                   <select id="export-gst-period" class="form-input">
@@ -2366,7 +1115,7 @@
               <div>
                 <div class="export-card-icon-wrap"><i data-lucide="file-spreadsheet"></i></div>
                 <h3 class="font-bold export-card-title">General Ledger CSV dump</h3>
-                <p class="export-card-desc">Produces structured raw CSV feeds containing complete ledger records and invoice links. Designed for direct loading into ZoHo, Marg, or custom databases.</p>
+                <p class="export-card-desc">Raw ledger rows with transaction status, GST rate, source channel, amount, and linked client context.</p>
                 <div class="mt-4 space-y-1.5 export-form-group">
                   <label for="export-csv-client">Select Client</label>
                   <select id="export-csv-client" class="form-input">
@@ -2381,7 +1130,7 @@
               <div>
                 <div class="export-card-icon-wrap"><i data-lucide="book-open"></i></div>
                 <h3 class="font-bold export-card-title">Financial Statement Package</h3>
-                <p class="export-card-desc">Generates print-ready PDFs of Profit &amp; Loss Statements, Balance Sheets, and Cash Flow ledgers styled with custom firm letterheads.</p>
+                <p class="export-card-desc">PDF-ready profit and loss, balance sheet, and cash flow summaries for client review packs.</p>
                 <div class="mt-4 space-y-1.5 export-form-group">
                   <label for="export-report-template">Templates</label>
                   <select id="export-report-template" class="form-input">
@@ -2398,16 +1147,18 @@
         </section>
 
         <!-- SCREEN 9: BILLING -->
-        <section id="view-billing" class="view-section hidden space-y-6 dashboard-billing">
+        <section id="view-billing" class="view-section hidden space-y-4 dashboard-billing">
           <div class="view-header">
             <p class="dashboard-label">Billing ledger</p>
             <h1 class="font-bold">Billing &amp; Subscriptions</h1>
             <p class="text-sm">Manage client subscription limits, marginal cost structures, and firm billing tiers.</p>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 billing-container mt-6">
+          <div id="billing-state" class="hidden"></div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 billing-container">
             <!-- Left: Plan Details -->
-            <div class="lg:col-span-2 space-y-6 split-left">
+            <div class="lg:col-span-2 space-y-4 split-left">
               <div class="dashboard-card billing-main-card">
                 <div class="card-header pb-4 overview-card-rule mb-6">
                   <h3 class="font-bold card-title">Firm Subscription</h3>
@@ -2453,10 +1204,10 @@
             </div>
 
             <!-- Right: Upgrade & Savings Card -->
-            <div class="space-y-6 split-right">
+            <div class="space-y-4 split-right">
               <div class="dashboard-card enterprise-card">
                 <h3 class="font-bold">Enterprise Partner Upgrade</h3>
-                <p class="card-subtitle mt-3 leading-relaxed">Unlock unlimited client licenses, white-label WhatsApp interfaces (e.g., WhatsApp from your firm's brand number), and dedicated API hooks for ERP systems.</p>
+                <p class="card-subtitle mt-3 leading-relaxed">Unlimited client licenses, firm-branded WhatsApp capture, and dedicated API hooks for ERP systems.</p>
 
                 <div class="mt-6 space-y-3 upgrade-perks">
                   <div class="flex items-center space-x-2 text-sm"><i data-lucide="check" class="w-4 h-4"></i> <span>Unlimited Client Workspace licences</span></div>
@@ -2480,21 +1231,21 @@
             </div>
           </div>
 
-          <div class="settings-layout dashboard-card">
-            <div class="settings-tabs-side" aria-label="Settings sections">
-              <button class="settings-tab-link active" data-settings-tab="firm">Firm Profile</button>
-              <button class="settings-tab-link" data-settings-tab="users">Users &amp; Permissions</button>
-              <button class="settings-tab-link" data-settings-tab="notifications">Notifications</button>
-              <button class="settings-tab-link" data-settings-tab="integrations">Integrations</button>
-              <button class="settings-tab-link" data-settings-tab="gst-settings">GST Settings</button>
-              <button class="settings-tab-link" data-settings-tab="api">API Access</button>
-              <button class="settings-tab-link" data-settings-tab="audit-trail">Audit Trail</button>
+          <div class="settings-layout">
+            <div class="settings-tabs-side dashboard-card" aria-label="Settings sections" role="tablist">
+              <button class="settings-tab-link active" data-settings-tab="firm" role="tab" aria-selected="true" aria-controls="settings-panel-firm">Firm Profile</button>
+              <button class="settings-tab-link" data-settings-tab="users" role="tab" aria-selected="false" aria-controls="settings-panel-users">Users &amp; Permissions</button>
+              <button class="settings-tab-link" data-settings-tab="notifications" role="tab" aria-selected="false" aria-controls="settings-panel-notifications">Notifications</button>
+              <button class="settings-tab-link" data-settings-tab="integrations" role="tab" aria-selected="false" aria-controls="settings-panel-integrations">Integrations</button>
+              <button class="settings-tab-link" data-settings-tab="gst-settings" role="tab" aria-selected="false" aria-controls="settings-panel-gst-settings">GST Settings</button>
+              <button class="settings-tab-link" data-settings-tab="api" role="tab" aria-selected="false" aria-controls="settings-panel-api">API Access</button>
+              <button class="settings-tab-link" data-settings-tab="audit-trail" role="tab" aria-selected="false" aria-controls="settings-panel-audit-trail">Audit Trail</button>
             </div>
 
             <div class="settings-content-side">
 
               <!-- Tab Panel: Firm -->
-              <div class="settings-panel active" id="settings-panel-firm">
+              <div class="settings-panel dashboard-card active" id="settings-panel-firm" role="tabpanel">
                 <div class="dashboard-panel-header">
                   <div>
                     <p class="dashboard-label">Firm details</p>
@@ -2527,7 +1278,7 @@
               </div>
 
               <!-- Tab Panel: Users -->
-              <div class="settings-panel" id="settings-panel-users">
+              <div class="settings-panel dashboard-card" id="settings-panel-users" role="tabpanel">
                 <div class="dashboard-panel-header">
                   <div>
                     <p class="dashboard-label">Access control</p>
@@ -2559,7 +1310,7 @@
               </div>
 
               <!-- Tab Panel: Notifications -->
-              <div class="settings-panel" id="settings-panel-notifications">
+              <div class="settings-panel dashboard-card" id="settings-panel-notifications" role="tabpanel">
                 <div class="dashboard-panel-header">
                   <div>
                     <p class="dashboard-label">Alert routing</p>
@@ -2597,7 +1348,7 @@
               </div>
 
               <!-- Tab Panel: Integrations -->
-              <div class="settings-panel" id="settings-panel-integrations">
+              <div class="settings-panel dashboard-card" id="settings-panel-integrations" role="tabpanel">
                 <div class="dashboard-panel-header">
                   <div>
                     <p class="dashboard-label">Connected systems</p>
@@ -2631,7 +1382,7 @@
               </div>
 
               <!-- Tab Panel: GST Settings -->
-              <div class="settings-panel" id="settings-panel-gst-settings">
+              <div class="settings-panel dashboard-card" id="settings-panel-gst-settings" role="tabpanel">
                 <div class="dashboard-panel-header">
                   <div>
                     <p class="dashboard-label">GST portal</p>
@@ -2665,7 +1416,7 @@
               </div>
 
               <!-- Tab Panel: API -->
-              <div class="settings-panel" id="settings-panel-api">
+              <div class="settings-panel dashboard-card" id="settings-panel-api" role="tabpanel">
                 <div class="dashboard-panel-header">
                   <div>
                     <p class="dashboard-label">Developer access</p>
@@ -2694,7 +1445,7 @@
               </div>
 
               <!-- Tab Panel: Audit Trail -->
-              <div class="settings-panel" id="settings-panel-audit-trail">
+              <div class="settings-panel dashboard-card" id="settings-panel-audit-trail" role="tabpanel">
                 <div class="dashboard-panel-header">
                   <div>
                     <p class="dashboard-label">Activity ledger</p>
@@ -2722,72 +1473,73 @@
           </div>
         </section>
 
+        </div>
       </main>
     </div>
   </div>
 
   <!-- GLOBAL AI COMMAND BAR (RAYCAST / SPOTLIGHT STYLE MODAL) -->
-  <div class="command-bar-backdrop fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/60 backdrop-blur-sm hidden" id="global-command-modal" role="dialog" aria-modal="true" aria-label="Ask TaxBot">
-    <div class="bg-card-dark border border-border-dark rounded-2xl max-w-2xl w-full mt-24 overflow-hidden shadow-2xl flex flex-col command-bar-dialog">
-      <div class="flex items-center px-4 py-3 border-b border-border-dark bg-[#0e1a1d] command-bar-input-wrap">
-        <i data-lucide="sparkles" class="text-primary w-5 h-5 mr-3 ai-sparkles-icon"></i>
-        <input type="text" id="command-bar-search-input" placeholder="Ask TaxBot anything... (e.g. 'Show clients with GST due')" autocomplete="off" class="flex-grow bg-transparent border-0 text-white placeholder-text-muted focus:ring-0 focus:outline-none text-sm p-0">
-        <kbd class="kbd-esc bg-[#1a2b30] border border-border-dark rounded px-1.5 py-0.5 text-[10px] text-text-muted">ESC</kbd>
+  <div class="command-bar-backdrop fixed inset-0 z-50 flex items-start justify-center p-4 hidden" id="global-command-modal" role="dialog" aria-modal="true" aria-label="Ask TaxBot">
+    <div class="border max-w-2xl w-full mt-24 overflow-hidden flex flex-col command-bar-dialog">
+      <div class="flex items-center px-4 py-3 border-b command-bar-input-wrap">
+        <i data-lucide="sparkles" class="w-5 h-5 mr-3 ai-sparkles-icon"></i>
+        <input type="text" id="command-bar-search-input" placeholder="Ask TaxBot anything... (e.g. 'Show clients with GST due')" autocomplete="off" class="flex-grow border-0 focus:ring-0 focus:outline-none text-sm" role="combobox" aria-controls="command-bar-suggestions-list" aria-expanded="false" aria-activedescendant="">
+        <kbd class="kbd-esc border px-1.5 py-0.5 text-[10px]">ESC</kbd>
       </div>
-      <div class="max-h-96 overflow-y-auto p-2 space-y-1 command-bar-results" id="command-bar-suggestions-list">
+      <div class="max-h-96 overflow-y-auto p-2 space-y-1 command-bar-results" id="command-bar-suggestions-list" role="listbox">
         <!-- JS inserts suggestions -->
       </div>
-      <div class="px-4 py-3 border-t border-border-dark bg-[#0e1a1d] text-xs text-text-muted flex justify-between items-center command-bar-footer">
-        <span>Use <kbd class="bg-[#1a2b30] border border-border-dark rounded px-1 py-0.5 font-mono">&uarr;</kbd> <kbd class="bg-[#1a2b30] border border-border-dark rounded px-1 py-0.5 font-mono">&darr;</kbd> to navigate, <kbd class="bg-[#1a2b30] border border-border-dark rounded px-1 py-0.5 font-mono">Enter</kbd> to execute, <kbd class="bg-[#1a2b30] border border-border-dark rounded px-1 py-0.5 font-mono">Esc</kbd> to close.</span>
+      <div class="px-4 py-3 border-t text-xs flex justify-between items-center command-bar-footer">
+        <span>Use <kbd class="border px-1 py-0.5 font-mono">&uarr;</kbd> <kbd class="border px-1 py-0.5 font-mono">&darr;</kbd> to navigate, <kbd class="border px-1 py-0.5 font-mono">Enter</kbd> to execute, <kbd class="border px-1 py-0.5 font-mono">Esc</kbd> to close.</span>
         <span>Powered by TaxBot AI</span>
       </div>
     </div>
   </div>
 
   <!-- ADD CLIENT MODAL -->
-  <div class="command-bar-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden" id="add-client-modal">
-    <div class="bg-card-dark border border-border-dark rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl flex flex-col modal-dialog-standard">
-      <div class="flex items-center justify-between px-6 py-4 border-b border-border-dark bg-[#0e1a1d] modal-dialog-header">
-        <h3 class="font-bold text-lg text-white">Link New Client Business</h3>
-        <button class="text-text-muted hover:text-white transition-colors modal-close-btn" id="btn-close-add-client"><i data-lucide="x" class="w-5 h-5"></i></button>
+  <div class="command-bar-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 hidden" id="add-client-modal">
+    <div class="border max-w-lg w-full overflow-hidden flex flex-col modal-dialog-standard">
+      <div class="flex items-center justify-between px-6 py-4 border-b modal-dialog-header">
+        <h3 class="font-bold text-lg">Link New Client Business</h3>
+        <button class="modal-close-btn dashboard-icon-button" id="btn-close-add-client" aria-label="Close add client dialog"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <form id="form-add-client" class="p-6 space-y-4 modal-dialog-body mt-4">
         <div>
-          <label for="new-client-owner" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">Owner/Client Full Name</label>
-          <input type="text" id="new-client-owner" placeholder="Rajesh Patel" required class="w-full bg-[#0e1a1d] border border-border-dark rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50 text-white form-input">
+          <label for="new-client-owner" class="field-label">Owner/Client Full Name</label>
+          <input type="text" id="new-client-owner" placeholder="Rajesh Patel" required class="w-full form-input field-input">
         </div>
         <div>
-          <label for="new-client-phone" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">WhatsApp Number (with Country Code)</label>
-          <input type="tel" id="new-client-phone" placeholder="919876543210" required class="w-full bg-[#0e1a1d] border border-border-dark rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50 text-white form-input">
+          <label for="new-client-phone" class="field-label">WhatsApp Number (with Country Code)</label>
+          <input type="tel" id="new-client-phone" placeholder="919876543210" required class="w-full form-input field-input">
         </div>
         <div>
-          <label for="new-client-name" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">Business / Shop Name</label>
-          <input type="text" id="new-client-name" placeholder="Patel Kirana Store" required class="w-full bg-[#0e1a1d] border border-border-dark rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50 text-white form-input">
+          <label for="new-client-name" class="field-label">Business / Shop Name</label>
+          <input type="text" id="new-client-name" placeholder="Patel Kirana Store" required class="w-full form-input field-input">
         </div>
         <div>
-          <label for="new-client-gstin" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">GSTIN (15-digit)</label>
-          <input type="text" id="new-client-gstin" placeholder="27AAAAA1111A1Z1" class="w-full bg-[#0e1a1d] border border-border-dark rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50 text-white form-input">
+          <label for="new-client-gstin" class="field-label">GSTIN (15-digit)</label>
+          <input type="text" id="new-client-gstin" placeholder="27AAAAA1111A1Z1" class="w-full form-input field-input">
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-16 form-grid-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 form-grid-2">
           <div>
-            <label for="new-client-plan" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">Pricing Plan</label>
-            <select id="new-client-plan" class="w-full bg-[#0e1a1d] border border-border-dark rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50 text-white form-select">
+            <label for="new-client-plan" class="field-label">Pricing Plan</label>
+            <select id="new-client-plan" class="w-full form-select field-input">
               <option value="trial">Trial Plan (14d)</option>
               <option value="starter">Starter Plan</option>
               <option value="pro" selected>Pro Reseller Plan (&#8377;100/mo)</option>
             </select>
           </div>
           <div>
-            <label for="new-client-gst-registered" class="block text-xs font-bold text-text-muted uppercase mb-2 tracking-wider">GST Registered?</label>
-            <select id="new-client-gst-registered" class="w-full bg-[#0e1a1d] border border-border-dark rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50 text-white form-select">
+            <label for="new-client-gst-registered" class="field-label">GST Registered?</label>
+            <select id="new-client-gst-registered" class="w-full form-select field-input">
               <option value="true" selected>Yes</option>
               <option value="false">No</option>
             </select>
           </div>
         </div>
-        <div class="flex justify-end space-x-3 pt-6 border-t border-border-dark modal-actions">
-          <button type="button" class="border border-border-dark px-4 py-2 rounded-lg text-sm font-semibold hover:bg-card-dark transition-colors text-text-muted hover:text-white" id="btn-cancel-add-client">Cancel</button>
-          <button type="submit" class="bg-primary text-background-dark font-semibold px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity">Link &amp; Authorize Ledger</button>
+        <div class="flex justify-end space-x-3 pt-6 border-t modal-actions">
+          <button type="button" class="btn-khata-secondary px-4 py-2 text-sm" id="btn-cancel-add-client">Cancel</button>
+          <button type="submit" class="btn-khata-primary px-4 py-2 text-sm">Link &amp; Authorize Ledger</button>
         </div>
       </form>
     </div>
