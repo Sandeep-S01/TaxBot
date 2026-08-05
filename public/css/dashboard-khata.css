@@ -4791,3 +4791,199 @@ body.shell-drawer-open {
     padding: 14px;
   }
 }
+
+/* Phase 9: responsive layout hardening */
+#console-layout :is(.view-section, .dashboard-card, .toolbar-card, .chart-card, .dashboard-panel-header, .view-header, .toolbar-actions, .view-actions) {
+  min-width: 0;
+}
+
+#console-layout :is(.dashboard-overview, .dashboard-clients, .dashboard-transactions, .dashboard-documents, .dashboard-gst, .dashboard-insights, .dashboard-exports, .dashboard-billing, .dashboard-settings) {
+  min-width: 0;
+}
+
+#console-layout .dashboard-ledger-table {
+  table-layout: auto;
+}
+
+#console-layout .overflow-x {
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 1180px) {
+  #console-layout .dashboard-content {
+    padding: 20px !important;
+  }
+
+  #console-layout .dashboard-content-container {
+    gap: 20px;
+  }
+
+  #console-layout .dashboard-exports .export-card,
+  #console-layout .dashboard-billing .billing-main-card,
+  #console-layout .dashboard-billing .enterprise-card,
+  #console-layout .dashboard-settings .settings-panel {
+    padding: 20px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  #console-layout .view-header {
+    align-items: flex-start !important;
+    flex-direction: column;
+  }
+
+  #console-layout .view-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  #console-layout .view-actions > * {
+    min-width: 0;
+  }
+
+  #console-layout .dashboard-top-left {
+    max-width: none;
+  }
+
+  #console-layout .dashboard-search.command-bar-trigger {
+    width: 100%;
+    min-width: 0;
+  }
+
+  #console-layout .dashboard-overview .grid.grid-cols-1.lg\:grid-cols-12,
+  #console-layout .dashboard-overview .dashboard-split,
+  #console-layout .dashboard-documents .document-split-layout,
+  #console-layout .dashboard-billing .billing-container {
+    grid-template-columns: 1fr !important;
+  }
+
+  #console-layout .dashboard-documents #doc-preview-panel {
+    position: static !important;
+    min-height: 320px;
+  }
+
+  #console-layout .dashboard-settings .settings-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  #console-layout .dashboard-content,
+  #console-layout #app-viewport,
+  #console-layout .app-content {
+    padding: 14px !important;
+  }
+
+  #console-layout .dashboard-content-container {
+    gap: 14px;
+  }
+
+  #console-layout :is(.dashboard-card, .toolbar-card, .chart-card, .settings-panel) {
+    padding: 16px !important;
+  }
+
+  #console-layout .dashboard-card:has(.dashboard-ledger-table),
+  #console-layout :is(.transactions-table-card, .clients-table-card) {
+    padding: 0 !important;
+  }
+
+  #console-layout .dashboard-top-nav {
+    min-height: 54px !important;
+  }
+
+  #console-layout .dashboard-search.command-bar-trigger {
+    max-width: none;
+    flex: 1 1 auto;
+    padding-inline: 10px !important;
+  }
+
+  #console-layout .dashboard-top-actions {
+    flex: 0 0 auto;
+  }
+
+  #console-layout .dashboard-top-nav .dashboard-icon-button,
+  #console-layout .dashboard-top-nav .dashboard-live-link {
+    width: 36px !important;
+    min-width: 36px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+  }
+
+  #console-layout h1 {
+    font-size: 20px !important;
+  }
+
+  #console-layout :is(.card-title, .dashboard-panel-header h3, .export-card-title, .insight-title) {
+    font-size: 15px !important;
+  }
+
+  #console-layout :is(.view-actions button, .toolbar-actions select, .toolbar-actions button, .btn-khata-primary, .btn-khata-secondary, .btn-khata-whatsapp) {
+    min-height: 38px !important;
+  }
+
+  #console-layout .dashboard-overview .chart-container,
+  #console-layout .dashboard-workspace .chart-container {
+    height: 220px !important;
+    padding: 12px;
+  }
+
+  #console-layout .dashboard-documents .preview-header-meta,
+  #console-layout .dashboard-insights .insight-header,
+  #console-layout .dashboard-insights .insight-rec-box,
+  #console-layout .dashboard-settings .settings-option-row,
+  #console-layout .dashboard-settings .settings-status-card,
+  #console-layout .dashboard-settings .user-item-row {
+    align-items: flex-start;
+    grid-template-columns: 1fr;
+  }
+
+  #console-layout .dashboard-documents .form-grid-2,
+  #console-layout .dashboard-settings .settings-field-grid,
+  #console-layout .dashboard-settings .form-grid-2,
+  #console-layout .dashboard-billing .reseller-tiers,
+  #console-layout .dashboard-exports .export-cards-grid,
+  #console-layout .dashboard-insights .insights-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  #console-layout .dashboard-insights .insight-client-name {
+    max-width: 100%;
+  }
+
+  #console-layout .dashboard-settings .settings-tabs-side {
+    top: auto;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  #console-layout .dashboard-content,
+  #console-layout #app-viewport,
+  #console-layout .app-content {
+    padding: 12px !important;
+  }
+
+  #console-layout .mobile-menu-btn,
+  #console-layout .dashboard-top-nav .dashboard-icon-button,
+  #console-layout .dashboard-top-nav .dashboard-live-link {
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+  }
+
+  #console-layout .dashboard-avatar.profile-avatar {
+    width: 34px !important;
+    height: 34px !important;
+    flex-basis: 34px !important;
+  }
+
+  #console-layout .dashboard-search.command-bar-trigger {
+    min-height: 34px !important;
+  }
+
+  #console-layout .dashboard-ledger-table th,
+  #console-layout .dashboard-ledger-table td {
+    padding-inline: 12px !important;
+  }
+}
