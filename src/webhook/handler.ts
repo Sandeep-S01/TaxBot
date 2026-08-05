@@ -9,6 +9,7 @@ import { sendMessage } from '../whatsapp/send';
 import { WhatsAppIncomingNotification, WhatsAppMessage } from '../types';
 import { claimInboundMessage, updateInboundMessageStatus } from '../db/inboundMessages';
 import { hashIdentifier, summarizeHttpError } from '../utils/privacy';
+import { buildHelpText } from '../handlers/commands/help';
 
 /**
  * Handle incoming POST requests from WhatsApp webhook
@@ -69,6 +70,7 @@ function logWebhookSummary(body: WhatsAppIncomingNotification) {
  */
 async function processIncomingMessage(phone: string, contactName: string, message: WhatsAppMessage) {
   const metaMessageId = message.id;
+  let stage = 'claiming inbound message';
 
   try {
     const claim = await claimInboundMessage(metaMessageId, phone, message.type);
@@ -81,11 +83,14 @@ async function processIncomingMessage(phone: string, contactName: string, messag
       return;
     }
 
+    stage = 'marking inbound message as processing';
     await updateInboundMessageStatus(metaMessageId, 'processing');
 
     // 1. Identify or register the client
+    stage = 'loading client';
     let client = await getClientByPhone(phone);
     if (!client) {
+      stage = 'creating client';
       console.log('[Webhook] New registration: creating client', { phoneHash: hashIdentifier(phone) });
       client = await createClient(phone, contactName);
       
@@ -100,9 +105,11 @@ async function processIncomingMessage(phone: string, contactName: string, messag
       }
     }
 
+    stage = 'linking inbound message to client';
     await updateInboundMessageStatus(metaMessageId, 'processing', { client_id: client.id });
 
     // 2. Route based on message type
+    stage = `routing ${message.type} message`;
     switch (message.type) {
       case 'text':
         if (message.text?.body) {
@@ -146,11 +153,13 @@ async function processIncomingMessage(phone: string, contactName: string, messag
         );
     }
 
+    stage = 'marking inbound message as processed';
     await updateInboundMessageStatus(metaMessageId, 'processed', { client_id: client.id });
   } catch (error: any) {
     console.error('[Webhook] Error processing message:', {
       phoneHash: hashIdentifier(phone),
       messageId: metaMessageId,
+      stage,
       error: summarizeHttpError(error),
     });
     try {
@@ -161,12 +170,32 @@ async function processIncomingMessage(phone: string, contactName: string, messag
       console.error('Failed to persist inbound message failure status:', statusErr);
     }
     try {
-      await sendMessage(
-        phone,
-        'An error occurred while processing your request. Please try again in a few moments.'
-      );
+      const helpFallback = buildHelpFallback(message, contactName);
+      if (helpFallback) {
+        try {
+          await sendMessage(phone, helpFallback);
+          return;
+        } catch (helpSendErr) {
+          console.error('[Webhook] Failed to dispatch help fallback to client:', summarizeHttpError(helpSendErr));
+        }
+      }
+
+      await sendMessage(phone, 'An error occurred while processing your request. Please try again in a few moments.');
     } catch (sendErr) {
       console.error('[Webhook] Failed to dispatch error response to client:', summarizeHttpError(sendErr));
     }
   }
+}
+
+function buildHelpFallback(message: WhatsAppMessage, contactName: string): string | null {
+  if (message.type !== 'text') {
+    return null;
+  }
+
+  const lowerText = message.text?.body?.trim().toLowerCase();
+  if (!lowerText || !['help', 'commands', 'hello', 'hi'].includes(lowerText)) {
+    return null;
+  }
+
+  return buildHelpText(contactName || 'valued customer');
 }

@@ -2,11 +2,10 @@ import { Client } from '../../types';
 import { sendMessage } from '../../whatsapp/send';
 
 /**
- * Executes the "help" command, displaying instructions and manual commands.
+ * Builds the "help" command copy for WhatsApp.
  */
-export async function executeHelp(client: Client): Promise<void> {
-  const name = client.name || 'valued customer';
-  const helpText = `Hello ${name}! Here is what you can do with TaxBot:
+export function buildHelpText(name: string = 'valued customer'): string {
+  return `Hello ${name}! Here is what you can do with TaxBot:
 
 *Receipt / Invoice Parsing*
 Upload an image of a bill, receipt, or invoice. I will extract the date, vendor, taxable value, GST rate, and category for review.
@@ -33,6 +32,13 @@ Just ask me any general tax or GST query in Hindi or English.
 Example: "What is the last date for GSTR-3B?" or "GST input tax credit kaise claim kare?"
 
 TaxBot assists bookkeeping and GST summary preparation. CA review is recommended before filing.`;
+}
+
+/**
+ * Executes the "help" command, displaying instructions and manual commands.
+ */
+export async function executeHelp(client: Client): Promise<void> {
+  const helpText = buildHelpText(client.name || 'valued customer');
 
   await sendMessage(client.phone, helpText);
 }
