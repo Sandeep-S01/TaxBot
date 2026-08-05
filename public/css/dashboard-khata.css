@@ -1,17 +1,21 @@
 /* Digital Khata dashboard layer. Scoped to the authenticated console only. */
 
 #console-layout {
-  --dash-paper: #f7f8f3;
-  --dash-paper-dim: #eef1e8;
+  --dash-paper: #f8f8f4;
+  --dash-paper-dim: #eef2ea;
   --dash-surface: #ffffff;
-  --dash-surface-soft: #fbfcf8;
+  --dash-surface-soft: #fcfcf8;
   --dash-ink: #202820;
   --dash-ink-soft: #5f6b60;
-  --dash-rule: #d7dccf;
-  --dash-rule-strong: #c6cdbd;
+  --dash-rule: #dfe3d8;
+  --dash-rule-strong: #cbd3c5;
   --dash-stamp: #b23a2e;
   --dash-sage: #476552;
   --dash-shadow-card: 0 1px 2px rgb(32 40 32 / 0.04);
+  --dash-shadow-raised: 0 8px 24px rgb(32 40 32 / 0.07);
+  --dash-radius-sm: 7px;
+  --dash-radius-md: 10px;
+  --dash-radius-lg: 12px;
   --dash-text-xs: 11px;
   --dash-text-sm: 13px;
   --dash-text-md: 14px;
@@ -3187,6 +3191,108 @@ body.shell-drawer-open {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+/* Design-system consolidation: shared dashboard primitives */
+#console-layout :is(.dashboard-card, .toolbar-card, .card, .chart-card, .settings-panel) {
+  border-color: var(--dash-rule) !important;
+  border-radius: var(--dash-radius-md) !important;
+  background: var(--dash-surface) !important;
+  box-shadow: var(--dash-shadow-card) !important;
+}
+
+#console-layout :is(.dashboard-card, .toolbar-card, .chart-card):hover {
+  border-color: var(--dash-rule-strong);
+}
+
+#console-layout :is(h1, .dashboard-page-title-slot) {
+  color: var(--dash-ink) !important;
+  font-size: var(--dash-title-lg) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+}
+
+#console-layout :is(.card-title, .dashboard-panel-header h3, .settings-option-title, .notification-title) {
+  color: var(--dash-ink) !important;
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.015em;
+}
+
+#console-layout :is(.dashboard-label, .kpi-label, .field-label, th, .clients-result-count, .transactions-result-count, .transactions-selection-count) {
+  color: var(--dash-ink-soft) !important;
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+#console-layout :is(p, .card-subtitle, .dashboard-empty-state p, .dashboard-error-state p, .notification-desc, .settings-option-desc) {
+  color: var(--dash-ink-soft) !important;
+  font-weight: 400;
+}
+
+#console-layout :is(.btn-khata-primary, .btn-khata-secondary, .dropdown-select, .field-input, .form-input, .form-select, .command-bar-trigger) {
+  border-radius: var(--dash-radius-sm) !important;
+  font-size: var(--dash-text-sm) !important;
+}
+
+#console-layout :is(.btn-khata-primary, .btn-khata-secondary) {
+  min-height: 38px;
+  font-weight: 600 !important;
+}
+
+#console-layout :is(.field-input, .form-input, .form-select, .dropdown-select) {
+  border-color: var(--dash-rule) !important;
+  background-color: var(--dash-surface) !important;
+  color: var(--dash-ink) !important;
+  font-weight: 400;
+}
+
+#console-layout :is(.field-input, .form-input, .form-select, .dropdown-select):focus {
+  border-color: rgb(71 101 82 / 0.48) !important;
+  box-shadow: 0 0 0 3px rgb(71 101 82 / 0.08) !important;
+}
+
+#console-layout :is(.badge, .status-pill) {
+  min-height: 22px;
+  border-radius: 999px !important;
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.03em;
+}
+
+#console-layout .dashboard-ledger-table {
+  color: var(--dash-ink-soft);
+  font-size: var(--dash-text-sm);
+}
+
+#console-layout .dashboard-ledger-table th {
+  background: var(--dash-surface-soft);
+  color: var(--dash-ink-soft) !important;
+}
+
+#console-layout .dashboard-ledger-table td {
+  border-color: var(--dash-rule) !important;
+  color: var(--dash-ink-soft);
+}
+
+#console-layout .dashboard-ledger-table :is(strong, .numeric strong) {
+  color: var(--dash-ink);
+  font-weight: 600;
+}
+
+#console-layout :is(.dashboard-empty-state, .dashboard-error-state) {
+  border-radius: var(--dash-radius-md);
+  color: var(--dash-ink-soft);
+}
+
+#console-layout :is(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline-color: rgb(71 101 82 / 0.72) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
