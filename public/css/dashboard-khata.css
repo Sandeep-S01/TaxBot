@@ -3179,6 +3179,267 @@ body.shell-drawer-open {
   min-width: 680px;
 }
 
+/* Phase 7: exports, billing, and settings polish */
+#console-layout .dashboard-exports .export-cards-grid {
+  gap: 18px !important;
+}
+
+#console-layout .dashboard-exports .export-card {
+  min-height: 248px;
+  padding: 20px !important;
+  border-radius: var(--dash-radius-lg) !important;
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+#console-layout .dashboard-exports .export-card:hover {
+  border-color: rgb(71 101 82 / 0.32) !important;
+  box-shadow: var(--dash-shadow-raised) !important;
+  transform: translateY(-1px);
+}
+
+#console-layout .dashboard-exports .export-card-icon-wrap {
+  width: 34px;
+  height: 34px;
+  margin-bottom: 14px;
+  border-radius: var(--dash-radius-sm);
+  background: rgb(71 101 82 / .08);
+}
+
+#console-layout .dashboard-exports .export-card-title {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.015em;
+}
+
+#console-layout .dashboard-exports .export-card-desc {
+  max-width: 56ch;
+  font-size: var(--dash-text-sm) !important;
+}
+
+#console-layout .dashboard-exports .export-form-group label {
+  font-size: 10px !important;
+  letter-spacing: .06em;
+}
+
+#console-layout .dashboard-exports .form-input {
+  min-height: 38px !important;
+  border-radius: var(--dash-radius-sm) !important;
+  font-size: var(--dash-text-sm) !important;
+}
+
+#console-layout .dashboard-exports .export-card button {
+  margin-top: 20px !important;
+  min-height: 38px !important;
+}
+
+#console-layout .dashboard-billing .billing-container {
+  gap: 18px !important;
+}
+
+#console-layout .dashboard-billing .billing-main-card,
+#console-layout .dashboard-billing .enterprise-card {
+  padding: 22px !important;
+  border-radius: var(--dash-radius-lg) !important;
+}
+
+#console-layout .dashboard-billing .billing-rate {
+  margin-top: 14px;
+  font-size: clamp(24px, 2.2vw, 30px) !important;
+  letter-spacing: -0.045em;
+}
+
+#console-layout .dashboard-billing .plan-hero-badge {
+  border-color: rgb(71 101 82 / 0.24);
+  background: rgb(71 101 82 / 0.08);
+}
+
+#console-layout .dashboard-billing .progress-labels {
+  font-size: 10px !important;
+  letter-spacing: .05em;
+}
+
+#console-layout .dashboard-billing .progress-bar-wrap {
+  height: 9px;
+  background: var(--dash-surface-soft);
+}
+
+#console-layout .dashboard-billing .reseller-pricing {
+  margin-top: 26px;
+  padding-top: 22px;
+}
+
+#console-layout .dashboard-billing .section-sub-title,
+#console-layout .dashboard-billing .enterprise-card h3 {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+#console-layout .dashboard-billing .reseller-tiers {
+  gap: 12px !important;
+}
+
+#console-layout .dashboard-billing .reseller-tier-card {
+  padding: 15px;
+  background: var(--dash-surface-soft);
+  border-radius: var(--dash-radius-sm);
+  text-align: left;
+}
+
+#console-layout .dashboard-billing .reseller-tier-card.active {
+  background: rgb(71 101 82 / 0.07) !important;
+  border-color: rgb(71 101 82 / 0.34) !important;
+  box-shadow: inset 3px 0 0 var(--dash-sage) !important;
+}
+
+#console-layout .dashboard-billing .tier-volume {
+  font-size: 10px;
+  letter-spacing: .06em;
+}
+
+#console-layout .dashboard-billing .tier-rate {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#console-layout .dashboard-billing .enterprise-card {
+  background: linear-gradient(180deg, var(--dash-surface), var(--dash-surface-soft)) !important;
+}
+
+#console-layout .dashboard-billing .upgrade-perks {
+  display: grid;
+  gap: 10px;
+}
+
+#console-layout .dashboard-billing .upgrade-perks > div {
+  align-items: flex-start;
+}
+
+#console-layout .dashboard-billing .upgrade-perks span {
+  color: var(--dash-ink-soft) !important;
+  font-size: var(--dash-text-sm);
+  line-height: 1.4;
+}
+
+#console-layout .dashboard-settings .settings-layout {
+  grid-template-columns: 228px minmax(0, 1fr);
+  gap: 18px;
+}
+
+#console-layout .dashboard-settings .settings-tabs-side {
+  gap: 4px;
+  padding: 7px;
+  background: var(--dash-surface-soft);
+  border-radius: var(--dash-radius-md);
+}
+
+#console-layout .dashboard-settings .settings-tab-link {
+  min-height: 36px;
+  padding: 8px 10px;
+  border-radius: var(--dash-radius-sm);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .055em;
+}
+
+#console-layout .dashboard-settings .settings-tab-link:hover {
+  background: var(--dash-surface) !important;
+}
+
+#console-layout .dashboard-settings .settings-tab-link.active {
+  background: rgb(71 101 82 / 0.1) !important;
+  border-color: rgb(71 101 82 / 0.26) !important;
+  color: var(--dash-ink) !important;
+}
+
+#console-layout .dashboard-settings .settings-panel {
+  min-height: 500px;
+  padding: 22px !important;
+  border-radius: var(--dash-radius-lg) !important;
+}
+
+#console-layout .dashboard-settings .dashboard-panel-header {
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+}
+
+#console-layout .dashboard-settings .dashboard-panel-header h3 {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 17px !important;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+#console-layout .dashboard-settings .settings-form,
+#console-layout .dashboard-settings .settings-stack,
+#console-layout .dashboard-settings #settings-notification-options {
+  gap: 14px;
+}
+
+#console-layout .dashboard-settings .field-label {
+  font-size: 10px !important;
+  font-weight: 600;
+  letter-spacing: .06em;
+}
+
+#console-layout .dashboard-settings .field-input,
+#console-layout .dashboard-settings select.field-input {
+  min-height: 38px;
+  border-radius: var(--dash-radius-sm);
+  font-size: var(--dash-text-sm);
+}
+
+#console-layout .dashboard-settings .settings-primary-btn,
+#console-layout .dashboard-settings .settings-secondary-btn {
+  min-height: 38px;
+  border-radius: var(--dash-radius-sm);
+  font-size: var(--dash-text-sm);
+  font-weight: 600;
+}
+
+#console-layout .dashboard-settings .settings-option-row,
+#console-layout .dashboard-settings .settings-status-card,
+#console-layout .dashboard-settings .user-item-row {
+  padding: 13px 0;
+}
+
+#console-layout .dashboard-settings .settings-status-card {
+  background: var(--dash-surface-soft);
+  border-radius: var(--dash-radius-sm);
+}
+
+#console-layout .dashboard-settings .settings-option-title,
+#console-layout .dashboard-settings .user-item-text strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#console-layout .dashboard-settings .firm-avatar {
+  width: 36px;
+  height: 36px;
+  flex-basis: 36px;
+  border-radius: var(--dash-radius-sm);
+}
+
+#console-layout .dashboard-settings .settings-switch {
+  width: 42px;
+  height: 24px;
+  flex-basis: 42px;
+}
+
+#console-layout .dashboard-settings .settings-switch::after {
+  top: 4px;
+  left: 4px;
+  width: 14px;
+  height: 14px;
+}
+
+#console-layout .dashboard-settings .settings-switch[aria-pressed="true"]::after {
+  transform: translateX(18px);
+}
+
 .command-bar-backdrop {
   background: rgb(35 42 36 / .32) !important;
   backdrop-filter: none !important;
