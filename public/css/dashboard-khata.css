@@ -3864,6 +3864,141 @@ body.shell-drawer-open {
   }
 }
 
+/* Phase 2 shell finalization: sidebar and top chrome */
+#console-layout .dashboard-sidebar {
+  background: linear-gradient(180deg, var(--dash-surface), var(--dash-paper-dim)) !important;
+  box-shadow: 1px 0 0 rgb(203 211 197 / 0.62);
+}
+
+#console-layout .dashboard-sidebar-header,
+#console-layout .dashboard-sidebar-footer {
+  background: rgb(252 252 248 / 0.92) !important;
+}
+
+#console-layout .dashboard-brand-name {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+#console-layout .dashboard-nav-link {
+  font-weight: 500;
+}
+
+#console-layout .dashboard-sidebar .dashboard-nav-link.active {
+  font-weight: 600;
+}
+
+#console-layout .dashboard-sidebar .dashboard-nav-link:hover,
+#console-layout .dashboard-sidebar .dashboard-nav-link.active {
+  background: rgb(255 255 255 / 0.7) !important;
+  box-shadow: inset 0 0 0 1px rgb(203 211 197 / 0.62);
+}
+
+#console-layout .dashboard-sidebar .dashboard-nav-link:hover::before,
+#console-layout .dashboard-sidebar .dashboard-nav-link.active::before {
+  height: 16px;
+}
+
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-list,
+#console-layout #app-sidebar.collapsed .dashboard-nav-list {
+  gap: 8px;
+}
+
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-link,
+#console-layout #app-sidebar.collapsed .dashboard-nav-link {
+  width: 48px;
+  min-height: 48px;
+}
+
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-link::before,
+#console-layout #app-sidebar.collapsed .dashboard-nav-link::before {
+  bottom: 7px;
+  width: 18px;
+}
+
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-count:not(.badge-error),
+#console-layout #app-sidebar.collapsed .dashboard-nav-count:not(.badge-error) {
+  top: 8px;
+  right: 8px;
+  width: 7px;
+  min-width: 7px;
+  height: 7px;
+  min-height: 7px;
+  padding: 0 !important;
+  overflow: hidden;
+  border-color: var(--dash-surface) !important;
+  background: var(--dash-sage) !important;
+  color: transparent !important;
+}
+
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-avatar,
+#console-layout #app-sidebar.collapsed .dashboard-avatar {
+  width: 40px;
+  height: 40px;
+  flex-basis: 40px;
+  font-size: 11px;
+}
+
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-sidebar-footer,
+#console-layout #app-sidebar.collapsed .dashboard-sidebar-footer {
+  min-height: 68px;
+}
+
+#console-layout .dashboard-top-nav {
+  border-bottom-color: var(--dash-rule-strong) !important;
+  background: rgb(248 248 244 / 0.96) !important;
+}
+
+#console-layout .dashboard-search.command-bar-trigger {
+  width: min(100%, 460px);
+  border-color: var(--dash-rule);
+  background: rgb(255 255 255 / 0.72);
+}
+
+#console-layout .dashboard-search .trigger-placeholder {
+  color: var(--dash-ink-soft);
+  font-weight: 400;
+}
+
+#console-layout .dashboard-search.command-bar-trigger:hover .trigger-placeholder,
+#console-layout .dashboard-search.command-bar-trigger:focus-visible .trigger-placeholder {
+  color: var(--dash-ink);
+}
+
+#console-layout .dashboard-top-nav .dashboard-icon-button,
+#console-layout .dashboard-top-nav .dashboard-live-link,
+#console-layout .dashboard-top-nav .dashboard-profile-button {
+  border-color: var(--dash-rule);
+  background: rgb(255 255 255 / 0.72);
+}
+
+#console-layout .dashboard-top-nav .dashboard-icon-button:hover,
+#console-layout .dashboard-top-nav .dashboard-live-link:hover,
+#console-layout .dashboard-top-nav .dashboard-profile-button:hover,
+#console-layout .dashboard-profile-button[aria-expanded="true"] {
+  border-color: rgb(71 101 82 / 0.34) !important;
+  background: var(--dash-surface) !important;
+}
+
+#console-layout .dashboard-live-link {
+  color: var(--dash-ink-soft) !important;
+}
+
+#console-layout .dashboard-live-link:hover {
+  color: var(--dash-sage) !important;
+}
+
+#console-layout .dashboard-notification-menu,
+#console-layout .shell-menu {
+  border-radius: var(--dash-radius-md) !important;
+  box-shadow: var(--dash-shadow-raised) !important;
+}
+
+#console-layout .profile-menu-name,
+#console-layout .profile-menu-item {
+  font-weight: 600;
+}
+
 /* Phase 5: overview KPI and chart refinement */
 #console-layout .dashboard-overview > .flex:first-child {
   margin-bottom: 22px;
