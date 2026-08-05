@@ -3,6 +3,7 @@
 
   const STORAGE_KEY = 'taxbot_sidebar_collapsed';
   const desktopQuery = window.matchMedia('(min-width: 769px)');
+  const SIDEBAR_TRANSITION_MS = 300;
 
   function readCollapsedPreference() {
     try {
@@ -22,6 +23,7 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('app-sidebar');
+    const layout = document.getElementById('console-layout');
     const collapseButton = document.getElementById('sidebar-toggle');
     const mobileMenuButton = document.getElementById('mobile-menu-toggle');
     const backdrop = document.getElementById('sidebar-backdrop');
@@ -33,7 +35,7 @@
     const notificationMenu = document.getElementById('notifications-dropdown-menu');
     const navLinks = Array.from(document.querySelectorAll('#app-sidebar .nav-link'));
 
-    if (!sidebar || !collapseButton || !mobileMenuButton || !backdrop) return;
+    if (!sidebar || !layout || !collapseButton || !mobileMenuButton || !backdrop) return;
 
     function getFocusable(container) {
       return Array.from(container.querySelectorAll([
@@ -51,10 +53,12 @@
 
     function applyCollapsedState(collapsed) {
       const active = desktopQuery.matches && collapsed;
+      layout.classList.toggle('sidebar-collapsed', active);
       sidebar.classList.toggle('collapsed', active);
       collapseButton.setAttribute('aria-pressed', String(active));
       collapseButton.setAttribute('aria-label', active ? 'Expand sidebar' : 'Collapse sidebar');
       collapseButton.title = active ? 'Expand sidebar' : 'Collapse sidebar';
+      window.setTimeout(() => window.dispatchEvent(new Event('resize')), SIDEBAR_TRANSITION_MS);
     }
 
     navLinks.forEach((link) => {

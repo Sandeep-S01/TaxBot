@@ -10,7 +10,7 @@
   --dash-sage: var(--sage);
   --khata-sidebar-expanded: 248px;
   --khata-sidebar-collapsed: 78px;
-  --khata-sidebar-transition: 240ms cubic-bezier(0.2, 0.84, 0.32, 1);
+  --khata-sidebar-transition: 300ms ease-in-out;
   background: var(--dash-paper) !important;
   color: var(--dash-ink) !important;
   font-family: 'Inter', sans-serif !important;
@@ -290,6 +290,7 @@
   min-width: 0;
   height: 100vh;
   overflow: hidden;
+  transition: margin-left var(--khata-sidebar-transition), width var(--khata-sidebar-transition);
 }
 
 #console-layout .dashboard-top-nav {
@@ -725,19 +726,27 @@ body.shell-drawer-open {
   overflow: hidden;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar,
 #console-layout #app-sidebar.collapsed {
   flex-basis: var(--khata-sidebar-collapsed);
   width: var(--khata-sidebar-collapsed);
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-brand,
 #console-layout #app-sidebar.collapsed .dashboard-brand {
   justify-content: center;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-brand-icon,
 #console-layout #app-sidebar.collapsed .dashboard-brand-icon {
   font-size: 28px;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-brand-name,
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-brand-badge,
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-link .link-text,
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-firm-copy,
+#console-layout.sidebar-collapsed #app-sidebar .btn-logout,
 #console-layout #app-sidebar.collapsed .dashboard-brand-name,
 #console-layout #app-sidebar.collapsed .dashboard-brand-badge,
 #console-layout #app-sidebar.collapsed .dashboard-nav-link .link-text,
@@ -750,25 +759,32 @@ body.shell-drawer-open {
   overflow: hidden;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-sidebar-header,
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-sidebar-footer,
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-link,
 #console-layout #app-sidebar.collapsed .dashboard-sidebar-header,
 #console-layout #app-sidebar.collapsed .dashboard-sidebar-footer,
 #console-layout #app-sidebar.collapsed .dashboard-nav-link {
   justify-content: center;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-sidebar-header,
 #console-layout #app-sidebar.collapsed .dashboard-sidebar-header {
   padding-inline: 12px !important;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-sidebar-nav,
 #console-layout #app-sidebar.collapsed .dashboard-sidebar-nav {
   overflow: visible;
   padding: 20px 12px !important;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-list,
 #console-layout #app-sidebar.collapsed .dashboard-nav-list {
   gap: 12px;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-link,
 #console-layout #app-sidebar.collapsed .dashboard-nav-link {
   width: 54px;
   min-height: 54px;
@@ -778,6 +794,7 @@ body.shell-drawer-open {
   overflow: visible;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-link::before,
 #console-layout #app-sidebar.collapsed .dashboard-nav-link::before {
   left: 50%;
   top: auto;
@@ -788,6 +805,7 @@ body.shell-drawer-open {
   border-radius: 999px;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-link::after,
 #console-layout #app-sidebar.collapsed .dashboard-nav-link::after {
   content: attr(data-nav-label);
   position: absolute;
@@ -810,18 +828,24 @@ body.shell-drawer-open {
   z-index: 90;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-link:hover,
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-link:focus-visible,
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-link.active,
 #console-layout #app-sidebar.collapsed .dashboard-nav-link:hover,
 #console-layout #app-sidebar.collapsed .dashboard-nav-link:focus-visible,
 #console-layout #app-sidebar.collapsed .dashboard-nav-link.active {
   transform: none;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-link:hover::after,
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-link:focus-visible::after,
 #console-layout #app-sidebar.collapsed .dashboard-nav-link:hover::after,
 #console-layout #app-sidebar.collapsed .dashboard-nav-link:focus-visible::after {
   opacity: 1;
   transform: translateY(-50%) translateX(0);
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-count,
 #console-layout #app-sidebar.collapsed .dashboard-nav-count {
   position: absolute;
   top: 5px;
@@ -839,15 +863,18 @@ body.shell-drawer-open {
   font-size: 10px;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-sidebar-footer,
 #console-layout #app-sidebar.collapsed .dashboard-sidebar-footer {
   min-height: 82px;
   padding: 12px !important;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-firm-profile,
 #console-layout #app-sidebar.collapsed .dashboard-firm-profile {
   justify-content: center;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-avatar,
 #console-layout #app-sidebar.collapsed .dashboard-avatar {
   width: 48px;
   height: 48px;
@@ -855,6 +882,8 @@ body.shell-drawer-open {
   border-radius: 10px;
 }
 
+#console-layout.sidebar-collapsed #app-sidebar .sidebar-collapse-btn i,
+#console-layout.sidebar-collapsed #app-sidebar .sidebar-collapse-btn svg,
 #console-layout #app-sidebar.collapsed .sidebar-collapse-btn i,
 #console-layout #app-sidebar.collapsed .sidebar-collapse-btn svg {
   transform: rotate(180deg);
