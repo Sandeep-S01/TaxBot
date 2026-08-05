@@ -2419,7 +2419,9 @@ body.shell-drawer-open {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 18px;
+  padding: 18px 20px;
+  background: var(--dash-surface-soft);
 }
 
 #console-layout .dashboard-gst .gst-ledger-controls {
@@ -2436,60 +2438,122 @@ body.shell-drawer-open {
   min-height: 38px;
   gap: 10px;
   padding: 0 12px;
-  background: #fff;
+  background: var(--dash-surface);
   border: 1px solid var(--dash-rule);
-  border-radius: 8px;
+  border-radius: var(--dash-radius-sm);
   color: var(--dash-ink-soft);
+}
+
+#console-layout .dashboard-gst .toolbar-search svg {
+  width: 15px !important;
+  height: 15px !important;
 }
 
 #console-layout .dashboard-gst .toolbar-search input {
   color: var(--dash-ink) !important;
+  font-size: var(--dash-text-sm) !important;
+  font-weight: 400;
   outline: none;
 }
 
 #console-layout .dashboard-gst .dropdown-select {
   min-width: 132px;
+  min-height: 38px !important;
+  border-radius: var(--dash-radius-sm) !important;
+  font-size: var(--dash-text-sm) !important;
 }
 
 #console-layout .dashboard-gst .gst-kpi-card {
-  padding: 16px !important;
-  transition: border-color .18s ease, transform .18s ease;
+  position: relative;
+  min-height: 126px;
+  padding: 18px !important;
+  overflow: hidden;
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+#console-layout .dashboard-gst .gst-kpi-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: rgb(71 101 82 / 0.24);
 }
 
 #console-layout .dashboard-gst .gst-kpi-card:hover {
-  border-color: var(--dash-ink) !important;
-  transform: translateY(-2px);
+  border-color: rgb(71 101 82 / 0.32) !important;
+  box-shadow: var(--dash-shadow-raised) !important;
+  transform: translateY(-1px);
 }
 
 #console-layout .dashboard-gst .gst-kpi-value {
   display: block;
-  margin-top: 6px;
+  margin-top: 10px;
   color: var(--dash-ink) !important;
-  font-size: 22px !important;
+  font-size: 24px !important;
   font-weight: 600 !important;
   line-height: 1.1;
+  letter-spacing: -0.04em;
 }
 
 #console-layout .dashboard-gst .gst-kpi-sub {
   color: var(--dash-ink-soft) !important;
   font-size: 12px !important;
+  line-height: 1.4;
 }
 
 #console-layout .dashboard-gst #gst-period-picker {
   width: auto;
   min-width: 150px;
-  min-height: 36px !important;
+  min-height: 38px !important;
   font-family: 'IBM Plex Mono', monospace !important;
   font-size: 12px;
+}
+
+#console-layout .dashboard-gst #gst-center-table th {
+  padding-inline: 16px !important;
+}
+
+#console-layout .dashboard-gst #gst-center-table td {
+  padding: 12px 16px !important;
 }
 
 #console-layout .dashboard-gst #gst-center-table code {
   color: var(--dash-ink-soft) !important;
   font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 10px;
+  letter-spacing: 0.03em;
+}
+
+#console-layout .dashboard-gst .gst-client-cell {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+#console-layout .dashboard-gst .gst-client-cell strong {
+  color: var(--dash-ink);
+  font-size: var(--dash-text-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+#console-layout .dashboard-gst .gst-money-cell {
+  color: var(--dash-ink-soft) !important;
+  font-size: 12px !important;
+}
+
+#console-layout .dashboard-gst .gst-net-cell strong {
+  color: var(--dash-ink);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 #console-layout .dashboard-gst .btn-gst-file-action {
   min-height: 34px;
+  min-width: 88px;
+  border-radius: var(--dash-radius-sm) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
   white-space: nowrap;
 }
 

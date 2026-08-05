@@ -1591,11 +1591,16 @@ async function renderGSTCenter() {
       tbody.innerHTML = renderTableEmptyState(6, 'No clients match these GST filters. Clear search or change status.');
     } else {
       tbody.innerHTML = rows.map(client => `
-        <tr class="ledger-row">
-          <td><strong>${escapeHtml(client.businessName || client.clientName || 'Unknown Client')}</strong><br><code style="font-size:12px;color:var(--ink-soft);">${escapeHtml(client.gstin || 'N/A')}</code></td>
-          <td class="numeric">Rs ${client.outwardTaxable.toLocaleString('en-IN')}</td>
-          <td class="numeric">Rs ${client.inwardTaxable.toLocaleString('en-IN')}</td>
-          <td class="numeric"><strong>Rs ${client.netLiability.toLocaleString('en-IN')}</strong></td>
+        <tr class="ledger-row gst-client-row">
+          <td>
+            <div class="gst-client-cell">
+              <strong>${escapeHtml(client.businessName || client.clientName || 'Unknown Client')}</strong>
+              <code>${escapeHtml(client.gstin || 'N/A')}</code>
+            </div>
+          </td>
+          <td class="numeric gst-money-cell">Rs ${client.outwardTaxable.toLocaleString('en-IN')}</td>
+          <td class="numeric gst-money-cell">Rs ${client.inwardTaxable.toLocaleString('en-IN')}</td>
+          <td class="numeric gst-net-cell"><strong>Rs ${client.netLiability.toLocaleString('en-IN')}</strong></td>
           <td>${renderStatusPill(client.filedStatus)}</td>
           <td>
             <button class="${client.filedStatus === 'Ready' ? 'btn-khata-primary' : 'btn-khata-secondary'} px-3 py-1.5 text-xs btn-gst-file-action" data-client-id="${client.clientId}">
