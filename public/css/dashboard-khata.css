@@ -3295,6 +3295,176 @@ body.shell-drawer-open {
   outline-color: rgb(71 101 82 / 0.72) !important;
 }
 
+/* Phase 3: base component normalization */
+#console-layout :is(.dashboard-card, .toolbar-card, .card, .chart-card) {
+  border-width: 1px !important;
+  border-color: var(--dash-rule) !important;
+  border-radius: var(--dash-radius-md) !important;
+  background: var(--dash-surface) !important;
+  box-shadow: var(--dash-shadow-card) !important;
+}
+
+#console-layout .dashboard-card {
+  padding: 22px;
+}
+
+#console-layout .toolbar-card {
+  padding: 14px !important;
+}
+
+#console-layout :is(.card-title, .dashboard-panel-header h3) {
+  font-size: var(--dash-title-sm) !important;
+  line-height: 1.25 !important;
+}
+
+#console-layout :is(.card-subtitle, .view-header p:not(.dashboard-label), .dashboard-panel-header p:not(.dashboard-label)) {
+  font-size: var(--dash-text-sm) !important;
+  line-height: 1.45;
+}
+
+#console-layout :is(.command-bar-trigger, .toolbar-search, .dropdown-select, .form-input, .form-select, .field-input, input[type="month"], textarea) {
+  min-height: 38px !important;
+  border-color: var(--dash-rule) !important;
+  border-radius: var(--dash-radius-sm) !important;
+  background: var(--dash-surface) !important;
+  color: var(--dash-ink) !important;
+  font-size: var(--dash-text-sm) !important;
+  font-weight: 400 !important;
+  box-shadow: none !important;
+}
+
+#console-layout :is(.command-bar-trigger, .toolbar-search):focus-within,
+#console-layout :is(.dropdown-select, .form-input, .form-select, .field-input, input[type="month"], textarea):focus {
+  border-color: rgb(71 101 82 / 0.46) !important;
+  box-shadow: 0 0 0 3px rgb(71 101 82 / 0.08) !important;
+  outline: none !important;
+}
+
+#console-layout :is(.btn-khata-primary, .btn-khata-secondary, .btn-khata-whatsapp) {
+  min-height: 38px !important;
+  border-radius: var(--dash-radius-sm) !important;
+  font-size: var(--dash-text-sm) !important;
+  font-weight: 600 !important;
+  line-height: 1.2;
+}
+
+#console-layout .btn-khata-primary {
+  background: var(--dash-ink) !important;
+  border-color: var(--dash-ink) !important;
+  color: var(--dash-paper) !important;
+}
+
+#console-layout .btn-khata-primary:hover {
+  background: var(--dash-stamp) !important;
+  border-color: var(--dash-stamp) !important;
+}
+
+#console-layout .btn-khata-secondary {
+  background: var(--dash-surface) !important;
+  border-color: var(--dash-rule-strong) !important;
+  color: var(--dash-ink) !important;
+}
+
+#console-layout .btn-khata-secondary:hover {
+  background: var(--dash-surface-soft) !important;
+  border-color: rgb(71 101 82 / 0.34) !important;
+}
+
+#console-layout .btn-khata-whatsapp {
+  background: rgb(71 101 82 / 0.07) !important;
+  border-color: rgb(71 101 82 / 0.24) !important;
+  color: var(--dash-sage) !important;
+}
+
+#console-layout .dashboard-ledger-table {
+  background: var(--dash-surface) !important;
+  color: var(--dash-ink-soft) !important;
+  font-size: var(--dash-text-sm) !important;
+}
+
+#console-layout .dashboard-ledger-table th {
+  padding: 11px 14px !important;
+  background: var(--dash-surface-soft) !important;
+  border-bottom: 1px solid var(--dash-rule) !important;
+  color: var(--dash-ink-soft) !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+}
+
+#console-layout .dashboard-ledger-table td {
+  padding: 11px 14px !important;
+  border-top: 1px solid var(--dash-rule) !important;
+  color: var(--dash-ink-soft) !important;
+  font-size: var(--dash-text-sm) !important;
+  line-height: 1.42;
+}
+
+#console-layout .dashboard-ledger-table tbody tr:hover td {
+  background: rgb(71 101 82 / 0.045) !important;
+}
+
+#console-layout .status-pill {
+  min-height: 22px !important;
+  padding: 4px 8px !important;
+  border: 1px solid transparent;
+  font-size: 10px !important;
+  line-height: 1 !important;
+}
+
+#console-layout .status-pill.needs-review {
+  border-color: rgb(178 58 46 / 0.22);
+  background: rgb(178 58 46 / 0.08);
+}
+
+#console-layout .status-pill.confirmed {
+  border-color: rgb(71 101 82 / 0.22);
+  background: rgb(71 101 82 / 0.08);
+}
+
+#console-layout .status-pill.draft,
+#console-layout .status-pill.rejected {
+  border-color: var(--dash-rule);
+  background: var(--dash-surface-soft);
+}
+
+#console-layout .status-pill.rejected {
+  color: var(--dash-stamp);
+}
+
+#console-layout :is(.dashboard-empty-state, .dashboard-error-state) {
+  min-height: 104px;
+  padding: 22px;
+  border: 1px dashed var(--dash-rule);
+  background: var(--dash-surface-soft);
+}
+
+#console-layout .dashboard-error-state {
+  border-style: solid;
+  border-color: rgb(178 58 46 / 0.24);
+  background: rgb(178 58 46 / 0.04);
+}
+
+#console-layout :is(.dashboard-empty-state p, .dashboard-error-state p) {
+  max-width: 38rem;
+  margin: 0;
+  font-size: var(--dash-text-sm) !important;
+  line-height: 1.45;
+}
+
+#console-layout .skeleton-row,
+#console-layout .skeleton-line {
+  border-radius: var(--dash-radius-sm);
+  background: linear-gradient(90deg, var(--dash-paper-dim), var(--dash-surface-soft), var(--dash-paper-dim));
+  background-size: 180% 100%;
+  animation: skeletonSweep 1.4s ease-in-out infinite;
+}
+
+@keyframes skeletonSweep {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
