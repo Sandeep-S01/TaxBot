@@ -1,14 +1,6 @@
-/* Digital Khata public/auth design-system layer. */
+@import url("./tokens.css");
 
-:root {
-  --paper: #F3EEDF;
-  --paper-dim: #EAE3CD;
-  --ink: #232A24;
-  --ink-soft: #5B6459;
-  --rule: #CBBFA0;
-  --stamp: #B23A2E;
-  --sage: #4B6350;
-}
+/* Digital Khata public/auth design-system layer. */
 
 html {
   scroll-behavior: smooth;
@@ -18,7 +10,9 @@ body {
   min-width: 0;
   background: var(--paper) !important;
   color: var(--ink) !important;
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line-height);
   text-rendering: optimizeLegibility;
 }
 
@@ -26,7 +20,7 @@ button,
 input,
 select,
 textarea {
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--font-body) !important;
 }
 
 h1,
@@ -35,7 +29,7 @@ h3,
 .font-display,
 .brand-name {
   color: var(--ink) !important;
-  font-family: 'Bricolage Grotesque', sans-serif !important;
+  font-family: var(--font-heading) !important;
   letter-spacing: 0 !important;
 }
 
@@ -85,7 +79,10 @@ h3,
   padding: 0.75rem 1rem;
   background: #fff;
   color: var(--ink);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-body);
+  font-size: var(--type-input-size);
+  line-height: var(--type-input-line-height);
+  font-weight: var(--type-input-weight);
   transition: border-color .15s;
 }
 
@@ -104,9 +101,11 @@ h3,
   display: block;
   margin-bottom: 0.5rem;
   color: var(--ink-soft);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
+  font-family: var(--type-label-font);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-line-height);
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-letter-spacing);
   text-transform: uppercase;
 }
 
@@ -541,4 +540,76 @@ body :is(.rounded-2xl, .rounded-xl) {
   #auth-layout .brand-logo > span:not(.material-icons) {
     font-size: 1.5rem !important;
   }
+}
+
+/* --------------------------------------------------------------------------
+   Phase 4 design-system icon normalization
+   -------------------------------------------------------------------------- */
+.material-icons,
+.material-symbols-outlined {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  font-size: var(--icon-size-2xl);
+  line-height: 1;
+  vertical-align: -0.125em;
+  font-weight: normal;
+  font-style: normal;
+  flex-shrink: 0;
+}
+
+#main :is(.material-icons, .material-symbols-outlined) {
+  font-size: var(--icon-size-xl);
+}
+
+#main :is(a, button) :is(.material-icons, .material-symbols-outlined) {
+  font-size: var(--icon-inline-size);
+}
+
+#auth-layout .brand-logo > .material-icons {
+  width: var(--icon-size-brand-lg);
+  height: var(--icon-size-brand-lg);
+  font-size: var(--icon-size-brand-lg) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Phase 8 design-system forms
+   -------------------------------------------------------------------------- */
+.field-input {
+  min-height: var(--form-field-height-md);
+  padding: var(--form-field-padding-y) var(--form-field-padding-x);
+  border-color: var(--form-input-border);
+  border-radius: var(--form-input-radius);
+  background: var(--form-input-bg);
+  color: var(--form-input-text);
+  box-shadow: var(--form-input-shadow);
+}
+
+.field-input:hover:not(:disabled) {
+  border-color: var(--border-strong);
+}
+
+.field-input:focus,
+.field-input:focus-visible {
+  border-color: var(--form-input-focus-border) !important;
+  box-shadow: var(--form-input-focus-ring) !important;
+}
+
+.field-input:disabled,
+.field-input[readonly] {
+  cursor: not-allowed;
+  background: var(--form-input-disabled-bg);
+  color: var(--form-input-disabled-text);
+  opacity: 0.78;
+}
+
+.field-label {
+  color: var(--form-label-color);
+  font-family: var(--form-label-font);
+  font-size: var(--form-label-size);
+  line-height: var(--form-label-line-height);
+  font-weight: var(--form-label-weight);
+  letter-spacing: var(--form-label-letter-spacing);
 }
