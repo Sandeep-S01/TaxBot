@@ -8,14 +8,21 @@ let chartExpenseCategories = null;
 let chartWsGstTrend = null;
 
 function getDashboardChartTokens() {
-  const styles = getComputedStyle(document.documentElement);
+  const dashboardRoot = document.getElementById('console-layout') || document.documentElement;
+  const styles = getComputedStyle(dashboardRoot);
+  const rootStyles = dashboardRoot === document.documentElement ? styles : getComputedStyle(document.documentElement);
+  const readToken = (dashboardToken, rootToken, fallback) => (
+    styles.getPropertyValue(dashboardToken).trim()
+    || rootStyles.getPropertyValue(rootToken).trim()
+    || fallback
+  );
   return {
-    ink: styles.getPropertyValue('--ink').trim() || '#232A24',
-    inkSoft: styles.getPropertyValue('--ink-soft').trim() || '#5B6459',
-    rule: styles.getPropertyValue('--rule').trim() || '#CBBFA0',
-    paper: styles.getPropertyValue('--paper').trim() || '#F3EEDF',
-    stamp: styles.getPropertyValue('--stamp').trim() || '#B23A2E',
-    sage: styles.getPropertyValue('--sage').trim() || '#4B6350',
+    ink: readToken('--dash-ink', '--ink', '#202820'),
+    inkSoft: readToken('--dash-ink-soft', '--ink-soft', '#5F6B60'),
+    rule: readToken('--dash-rule', '--rule', '#D7DCCF'),
+    paper: readToken('--dash-paper', '--paper', '#F7F8F3'),
+    stamp: readToken('--dash-stamp', '--stamp', '#B23A2E'),
+    sage: readToken('--dash-sage', '--sage', '#476552'),
   };
 }
 
