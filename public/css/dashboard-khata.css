@@ -1861,23 +1861,69 @@ body.shell-drawer-open {
 }
 
 #console-layout .dashboard-transactions .transactions-toolbar {
-  padding: 16px !important;
+  padding: 14px !important;
+  border-radius: 10px;
 }
 
 #console-layout .dashboard-transactions .transactions-toolbar .toolbar-search {
   max-width: none;
+  min-height: 38px;
+  border-radius: 8px;
+  background: var(--dash-surface-soft);
+  border-color: var(--dash-rule);
+}
+
+#console-layout .dashboard-transactions .transactions-toolbar .toolbar-search svg {
+  width: 15px !important;
+  height: 15px !important;
+  color: var(--dash-ink-soft);
+}
+
+#console-layout .dashboard-transactions .transactions-toolbar .toolbar-search input {
+  color: var(--dash-ink);
+  font-size: 13px !important;
+  font-weight: 450;
+}
+
+#console-layout .dashboard-transactions .transactions-toolbar .toolbar-search input::placeholder {
+  color: rgb(95 107 96 / 0.72);
+}
+
+#console-layout .dashboard-transactions .toolbar-actions {
+  gap: 10px !important;
+}
+
+#console-layout .dashboard-transactions .dropdown-select {
+  min-height: 36px;
+  border-radius: 8px;
+  border-color: var(--dash-rule);
+  background-color: var(--dash-surface);
+  color: var(--dash-ink);
+  font-size: 12px !important;
+  font-weight: 500;
 }
 
 #console-layout .dashboard-transactions .transactions-result-count,
 #console-layout .dashboard-transactions .transactions-selection-count {
   display: inline-flex;
   align-items: center;
-  min-height: 40px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--dash-rule);
+  border-radius: 8px;
+  background: var(--dash-surface-soft);
   white-space: nowrap;
+}
+
+#console-layout .dashboard-transactions .transactions-selection-count {
+  border-color: rgb(71 101 82 / 0.24);
+  background: rgb(71 101 82 / 0.07);
+  color: var(--dash-sage);
 }
 
 #console-layout .dashboard-transactions .transactions-table-card {
   overflow: hidden;
+  border-radius: 10px;
 }
 
 #console-layout .dashboard-transactions .transactions-ledger-table {
@@ -1885,27 +1931,76 @@ body.shell-drawer-open {
 }
 
 #console-layout .dashboard-transactions .transactions-ledger-table th {
-  padding: 10px 12px !important;
+  padding: 11px 14px !important;
+  background: var(--dash-surface-soft);
+  color: var(--dash-ink-soft);
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
 }
 
 #console-layout .dashboard-transactions .transactions-ledger-table td {
-  padding: 9px 12px !important;
+  padding: 11px 14px !important;
+  color: var(--dash-ink-soft);
+  font-size: 13px;
+  vertical-align: middle;
 }
 
 #console-layout .dashboard-transactions .transactions-ledger-table input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   accent-color: var(--dash-ink);
 }
 
+#console-layout .dashboard-transactions .transactions-ledger-table tbody tr {
+  transition: background-color .16s ease;
+}
+
+#console-layout .dashboard-transactions .transactions-ledger-table tbody tr:hover td {
+  background: rgb(71 101 82 / 0.045);
+}
+
+#console-layout .dashboard-transactions .transaction-date-cell {
+  color: var(--dash-ink-soft);
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 10px;
+  letter-spacing: 0.03em;
+}
+
+#console-layout .dashboard-transactions .transaction-client-cell {
+  color: var(--dash-ink);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+#console-layout .dashboard-transactions .transaction-category-cell {
+  display: inline-block;
+  max-width: 180px;
+  overflow: hidden;
+  color: var(--dash-ink-soft);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#console-layout .dashboard-transactions .transactions-ledger-table .numeric strong {
+  color: var(--dash-ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#console-layout .dashboard-transactions .transactions-ledger-table .rejected-amount {
+  color: var(--dash-stamp) !important;
+}
+
 #console-layout .dashboard-transactions .transaction-row:focus-visible td {
-  background: var(--dash-paper-dim) !important;
-  outline: 2px solid var(--dash-ink);
+  background: rgb(71 101 82 / 0.08) !important;
+  outline: 2px solid rgb(71 101 82 / 0.34);
   outline-offset: -2px;
 }
 
 #console-layout .dashboard-transactions .transaction-row:has(.tx-checkbox:checked) td {
-  background: var(--dash-paper-dim) !important;
+  background: rgb(71 101 82 / 0.08) !important;
 }
 
 #console-layout .dashboard-workspace .workspace-header {

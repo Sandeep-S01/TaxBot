@@ -1237,11 +1237,11 @@ function renderTransactions() {
         return `
           <tr class="ledger-row transaction-row" tabindex="0" data-tx-id="${t.id}" aria-label="Transaction for ${escapeHtml(t.clientName || 'client')} worth ${amount}">
             <td><input type="checkbox" class="tx-checkbox" data-tx-id="${t.id}" aria-label="Select transaction for ${escapeHtml(t.clientName || 'client')}"></td>
-            <td class="numeric">${escapeHtml(t.date || '-')}</td>
-            <td><strong>${escapeHtml(t.clientName || '-')}</strong></td>
+            <td class="numeric transaction-date-cell">${escapeHtml(t.date || '-')}</td>
+            <td><strong class="transaction-client-cell">${escapeHtml(t.clientName || '-')}</strong></td>
             <td>${renderStatusPill(t.type === 'Sale' ? 'Confirmed' : 'Draft', t.type || 'Draft')}</td>
             <td>${renderSourcePill(t.source)}</td>
-            <td>${escapeHtml(t.category || '-')}</td>
+            <td><span class="transaction-category-cell">${escapeHtml(t.category || '-')}</span></td>
             <td class="numeric">${escapeHtml(t.gstRate || '-')}</td>
             <td class="numeric"><strong class="${isRejected ? 'rejected-amount' : ''}">${amount}</strong></td>
             <td>${renderStatusPill(t.status)}</td>
