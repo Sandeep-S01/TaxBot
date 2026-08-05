@@ -6,7 +6,7 @@
 <link href="css/tailwind.css" rel="stylesheet">
 <link href="css/public-pages.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
         html { scroll-behavior: smooth; }
         body { font-family: 'Inter', sans-serif; background: #F3EEDF; color: #232A24; }
@@ -24,7 +24,7 @@
         .stamp { transform: rotate(-7deg); mix-blend-mode: multiply; }
         .ledger-row + .ledger-row { border-top: 1px solid #CBBFA0; }
         [data-state="success"]::after {
-            content: '✓'; font-family: 'Inter', sans-serif; font-size: 13px;
+            content: 'done'; font-family: 'Material Icons'; font-size: 13px;
             margin-left: 6px; color: #4B6350; animation: fadeIn .3s ease;
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
@@ -45,18 +45,6 @@
 <div class="hidden md:flex space-x-8 font-mono text-xs uppercase tracking-wider">
 <a class="hover:text-stamp transition-colors text-ink-soft" href="#workflow">Workflow</a>
 <a class="hover:text-stamp transition-colors text-ink-soft" href="#product">Product</a>
-<div class="wrap">
-<div class="flex justify-between items-center h-16">
-<div class="flex items-center space-x-2 group cursor-pointer">
-<svg class="text-stamp" width="26" height="26" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-<rect x="1" y="1" width="26" height="26" rx="5" stroke="currentColor" stroke-width="1.5"></rect>
-<path d="M8 14.5L12 18L20 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-<span class="font-display font-bold text-xl tracking-tight">TaxBot</span>
-</div>
-<div class="hidden md:flex space-x-8 font-mono text-xs uppercase tracking-wider">
-<a class="hover:text-stamp transition-colors text-ink-soft" href="#workflow">Workflow</a>
-<a class="hover:text-stamp transition-colors text-ink-soft" href="#product">Product</a>
 <a class="hover:text-stamp transition-colors text-ink-soft" href="#trust">Trust</a>
 <a class="hover:text-stamp transition-colors text-ink-soft" href="#pricing">Pricing</a>
 <a class="hover:text-stamp transition-colors text-ink-soft" href="#cas">For CAs</a>
@@ -65,7 +53,7 @@
 <a class="btn-interact hidden sm:block text-sm font-medium text-ink-soft hover:text-stamp transition-colors" href="console.html">Login</a>
 <a class="btn-interact bg-ink text-paper text-sm font-semibold px-4 py-2 rounded hover:bg-stamp transition-colors" href="https://wa.me/919876543210" target="_blank" rel="noopener">Start on WhatsApp</a>
 <button class="md:hidden text-ink p-2" id="mobile-menu-button" aria-label="Open menu">
-<i data-lucide="menu" class="w-6 h-6"></i>
+<span class="material-icons">menu</span>
 </button>
 </div>
 </div>
@@ -75,7 +63,7 @@
 <div class="fixed inset-0 z-[60] bg-paper hidden transform translate-x-full transition-transform duration-300" id="mobile-menu">
 <div class="flex justify-end p-6">
 <button class="text-ink" id="mobile-menu-close" aria-label="Close menu">
-<i data-lucide="x" class="w-8 h-8"></i>
+<span class="material-icons text-3xl">close</span>
 </button>
 </div>
 <div class="flex flex-col items-center space-y-8 pt-10 px-6 font-display">
@@ -106,6 +94,44 @@ TaxBot converts WhatsApp receipts, invoices, PDFs, text, and voice notes into re
 </p>
 <div class="flex flex-col sm:flex-row gap-4">
 <a class="btn-interact bg-stamp text-paper font-semibold px-8 py-4 rounded flex items-center justify-center gap-2" href="https://wa.me/919876543210" target="_blank" rel="noopener">
+<span>Send your first bill</span>
+<span class="material-icons text-sm" aria-hidden="true">arrow_forward</span>
+</a>
+<a class="btn-interact border border-ink font-semibold px-8 py-4 rounded flex items-center justify-center gap-2 hover:bg-paper-dim transition-colors" href="#workflow">
+<span>See the workflow</span>
+<span class="material-icons text-sm" aria-hidden="true">arrow_downward</span>
+</a>
+</div>
+</div>
+</section>
+
+<section class="wrap pb-24 anchor-offset" id="product">
+<div class="bg-white rounded-lg border border-rule shadow-sm overflow-hidden">
+<div class="flex items-center justify-between px-5 py-3 border-b border-rule bg-paper-dim">
+<span class="font-mono text-xs uppercase tracking-widest text-ink-soft">Live capture workflow</span>
+<span class="font-mono text-xs text-ink-soft">Review-safe draft</span>
+</div>
+<div class="p-6 sm:p-8 grid md:grid-cols-2 gap-10">
+<div class="space-y-4">
+<div class="bg-paper-dim p-2 rounded border border-rule inline-block">
+<img alt="Receipt scan" class="rounded h-28 w-auto object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqy7EJkE97ohMSwaXG2M2SWBkha7kxw8uvCQdvJ4FQv4AVbiMgxkfAT7NWRfe53uScKVNS0LpFeXGTUmJLYN_LeoPmjQiw_qFfRRtBEzeKQinjXx74eQ8ZOqt-YFrrwRGN0vaq6m_zFyKTcCX77nuBziwY5jYgVfbW-CH9Egs9B9v8mIb7mkvk331b6NEDBf5ofu9wyKipKbc3pLsWkbSYlLyOHDXCUR0i9trt8bEfo9No4jQ3iSrDhg">
+</div>
+<div class="bg-sage/10 text-sage px-3 py-2 rounded rounded-tl-none inline-block text-sm max-w-[85%] border border-sage/25">
+Petrol bill for delivery vehicle.
+</div>
+<div class="bg-paper-dim px-3 py-2 rounded rounded-tr-none inline-block text-sm max-w-[90%] border border-rule ml-auto block text-ink-soft">
+Draft entry created. I found vendor, amount, category, and GST review status.
+</div>
+<div class="mt-6 flex items-center bg-white rounded-full px-4 py-2 border border-rule">
+<span class="material-icons text-ink-soft text-sm mr-2" aria-hidden="true">add</span>
+<span class="text-sm text-ink-soft flex-grow">Message TaxBot...</span>
+<span class="material-icons text-ink-soft text-sm ml-2" aria-hidden="true">mic</span>
+</div>
+</div>
+<div class="border-t md:border-t-0 md:border-l border-rule pt-6 md:pt-0 md:pl-10">
+<span class="font-mono text-xs uppercase tracking-widest text-ink-soft">Structured output</span>
+<h3 class="text-2xl font-display font-bold mb-6 mt-2 leading-tight">A ledger row your CA can verify before filing.</h3>
+<div class="font-mono text-sm">
 <div class="ledger-row flex justify-between py-3 group/field cursor-pointer hover:bg-paper-dim transition-colors" onclick="this.setAttribute('data-state','success'); setTimeout(()=&gt;this.removeAttribute('data-state'),2000)">
 <span class="text-ink-soft">Source</span>
 <span class="font-medium">WhatsApp image</span>
@@ -340,67 +366,6 @@ The intelligent ledger for modern businesses. Automate your bookkeeping directly
 <a href="#" class="hover:text-stamp transition-colors">Terms</a>
 <a href="#" class="hover:text-stamp transition-colors">Privacy</a>
 <a href="#" class="hover:text-stamp transition-colors">Cookies</a>
-<div class="wrap">
-<div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-12">
-<div class="md:col-span-4 space-y-4">
-<div class="flex items-center gap-2">
-<svg class="text-stamp" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-<rect x="1" y="1" width="26" height="26" rx="5" stroke="currentColor" stroke-width="1.5"></rect>
-<path d="M8 14.5L12 18L20 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-<span class="font-display font-bold text-xl">TaxBot</span>
-</div>
-<p class="text-sm text-ink-soft leading-relaxed max-w-xs">
-The intelligent ledger for modern businesses. Automate your bookkeeping directly from WhatsApp with AI-powered extraction and CA-ready workflows.
-</p>
-<div class="flex gap-4 pt-1">
-<a href="#" class="text-ink-soft hover:text-stamp transition-colors" aria-label="Website"><span class="material-icons text-xl">public</span></a>
-<a href="#" class="text-ink-soft hover:text-stamp transition-colors" aria-label="Email"><span class="material-icons text-xl">alternate_email</span></a>
-</div>
-</div>
-<div class="md:col-span-2">
-<h4 class="font-mono text-xs uppercase tracking-widest mb-5">Product</h4>
-<ul class="space-y-3 text-sm text-ink-soft">
-<li><a href="#product" class="hover:text-stamp transition-colors">Features</a></li>
-<li><a href="#" class="hover:text-stamp transition-colors">Integrations</a></li>
-<li><a href="#pricing" class="hover:text-stamp transition-colors">Pricing</a></li>
-<li><a href="#trust" class="hover:text-stamp transition-colors">Security</a></li>
-</ul>
-</div>
-<div class="md:col-span-2">
-<h4 class="font-mono text-xs uppercase tracking-widest mb-5">Workflow</h4>
-<ul class="space-y-3 text-sm text-ink-soft">
-<li><a href="#product" class="hover:text-stamp transition-colors">Live capture</a></li>
-<li><a href="#workflow" class="hover:text-stamp transition-colors">GST summaries</a></li>
-<li><a href="#workflow" class="hover:text-stamp transition-colors">Tally export</a></li>
-<li><a href="#cas" class="hover:text-stamp transition-colors">For CAs</a></li>
-</ul>
-</div>
-<div class="md:col-span-2">
-<h4 class="font-mono text-xs uppercase tracking-widest mb-5">Company</h4>
-<ul class="space-y-3 text-sm text-ink-soft">
-<li><a href="#" class="hover:text-stamp transition-colors">About us</a></li>
-<li><a href="#" class="hover:text-stamp transition-colors">Careers</a></li>
-<li><a href="#" class="hover:text-stamp transition-colors">Blog</a></li>
-<li><a href="#" class="hover:text-stamp transition-colors">Contact</a></li>
-</ul>
-</div>
-<div class="md:col-span-2">
-<h4 class="font-mono text-xs uppercase tracking-widest mb-5">Support</h4>
-<ul class="space-y-3 text-sm text-ink-soft">
-<li><a href="#" class="hover:text-stamp transition-colors">Help center</a></li>
-<li><a href="#" class="hover:text-stamp transition-colors">Documentation</a></li>
-<li><a href="#" class="hover:text-stamp transition-colors">Terms</a></li>
-<li><a href="#" class="hover:text-stamp transition-colors">Privacy</a></li>
-</ul>
-</div>
-</div>
-<div class="border-t border-rule flex flex-col md:flex-row justify-between items-center gap-4 pt-6">
-<p class="font-mono text-xs text-ink-soft">© <span id="copyright-year"></span> TaxBot. All rights reserved.</p>
-<div class="flex gap-8 font-mono text-xs uppercase tracking-wider text-ink-soft">
-<a href="#" class="hover:text-stamp transition-colors">Terms</a>
-<a href="#" class="hover:text-stamp transition-colors">Privacy</a>
-<a href="#" class="hover:text-stamp transition-colors">Cookies</a>
 </div>
 </div>
 </div>
@@ -430,8 +395,5 @@ menu.querySelectorAll('a').forEach(link => {
         setTimeout(() => menu.classList.add('hidden'), 300);
     });
 });
-if (window.lucide) {
-    lucide.createIcons();
-}
 </script>
 </body></html>
