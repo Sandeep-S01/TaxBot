@@ -1385,12 +1385,35 @@ body.shell-drawer-open {
 }
 
 #console-layout .dashboard-overview .card-alert {
-  border-color: var(--dash-stamp) !important;
+  border-color: rgb(178 58 46 / 0.28) !important;
+  background:
+    linear-gradient(90deg, rgb(178 58 46 / 0.05), transparent 42%),
+    var(--dash-surface);
 }
 
 #console-layout .dashboard-overview .card-alert .card-title,
 #console-layout .dashboard-overview .card-alert .card-title svg {
   color: var(--dash-stamp) !important;
+}
+
+#console-layout .dashboard-overview .card-alert .card-title {
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+#console-layout .dashboard-overview .card-alert .card-title svg {
+  width: 17px !important;
+  height: 17px !important;
+  stroke-width: 2;
+}
+
+#console-layout .dashboard-overview .card-alert .status-pill {
+  border-color: rgb(178 58 46 / 0.34);
+  background: rgb(178 58 46 / 0.08);
+  color: var(--dash-stamp);
+  font-size: 11px;
+  font-weight: 600;
 }
 
 #console-layout .dashboard-overview .action-list .action-item + .action-item {
@@ -1399,6 +1422,12 @@ body.shell-drawer-open {
 
 #console-layout .dashboard-overview .action-item {
   gap: 16px;
+  min-height: 70px;
+  padding-block: 14px !important;
+}
+
+#console-layout .dashboard-overview .action-details {
+  min-width: 0;
 }
 
 #console-layout .dashboard-overview .action-details span:first-child,
@@ -1407,9 +1436,37 @@ body.shell-drawer-open {
   color: var(--dash-ink) !important;
 }
 
+#console-layout .dashboard-overview .action-details span:first-child {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+}
+
+#console-layout .dashboard-overview .action-details span:last-child {
+  color: var(--dash-ink-soft);
+  font-size: 12px !important;
+  line-height: 1.45;
+}
+
+#console-layout .dashboard-overview .action-item button {
+  min-width: 104px;
+  border-radius: 7px;
+  font-size: 11px !important;
+  font-weight: 600;
+}
+
+#console-layout .dashboard-overview .health-overview-container {
+  display: grid;
+  gap: 16px;
+}
+
+#console-layout .dashboard-overview .health-breakdown {
+  gap: 12px !important;
+}
+
 #console-layout .dashboard-overview .health-metric-card {
-  padding: 12px;
-  background: var(--dash-paper-dim);
+  padding: 14px 12px;
+  background: var(--dash-surface-soft);
   border: 1px solid var(--dash-rule);
   border-radius: 8px;
   text-align: center;
@@ -1427,14 +1484,16 @@ body.shell-drawer-open {
   font-family: 'IBM Plex Mono', monospace !important;
   letter-spacing: .04em;
   text-transform: uppercase;
+  color: var(--dash-ink-soft);
+  font-size: 10px !important;
 }
 
 #console-layout .dashboard-overview .health-visual-bar {
   display: flex;
-  height: 12px;
-  margin-top: 16px;
+  height: 10px;
+  margin-top: 0;
   overflow: hidden;
-  background: var(--dash-paper-dim);
+  background: var(--dash-surface-soft);
   border: 1px solid var(--dash-rule);
   border-radius: 999px;
 }
@@ -1457,67 +1516,71 @@ body.shell-drawer-open {
 
 #console-layout .dashboard-overview .quick-action-btn {
   display: flex;
-  min-height: 96px;
+  min-height: 88px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 16px;
-  background: #fff;
+  gap: 9px;
+  padding: 14px 12px;
+  background: var(--dash-surface-soft);
   border: 1px solid var(--dash-rule);
   border-radius: 8px;
   color: var(--dash-ink);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   text-align: center;
-  transition: background-color .18s ease, border-color .18s ease;
+  transition: background-color .18s ease, border-color .18s ease, transform .18s ease, box-shadow .18s ease;
 }
 
 #console-layout .dashboard-overview .quick-action-btn:hover {
-  background: var(--dash-paper-dim);
-  border-color: var(--dash-ink);
+  transform: translateY(-1px);
+  background: var(--dash-surface);
+  border-color: rgb(71 101 82 / 0.38);
+  box-shadow: 0 8px 20px rgb(32 40 32 / 0.07);
 }
 
 #console-layout .dashboard-overview .quick-action-icon {
   display: inline-flex;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   align-items: center;
   justify-content: center;
-  background: rgb(75 99 80 / .1);
+  background: rgb(71 101 82 / .09);
   border: 1px solid var(--dash-rule);
-  border-radius: 999px;
+  border-radius: 8px;
   color: var(--dash-sage);
 }
 
 #console-layout .dashboard-overview .quick-action-icon svg {
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
+  stroke-width: 1.9;
 }
 
 #console-layout .dashboard-overview .activity-feed {
   display: grid;
-  gap: 12px;
+  gap: 0;
 }
 
 #console-layout .dashboard-overview .feed-item {
   display: grid;
-  grid-template-columns: 12px minmax(0, 1fr);
+  grid-template-columns: 16px minmax(0, 1fr);
   gap: 12px;
-  padding-top: 14px;
+  padding: 13px 0;
   border-top: 1px solid var(--dash-rule);
 }
 
 #console-layout .dashboard-overview .feed-item:first-child {
-  padding-top: 0;
   border-top: 0;
 }
 
 #console-layout .dashboard-overview .feed-marker {
-  width: 8px;
-  height: 8px;
-  margin-top: 6px;
+  width: 9px;
+  height: 9px;
+  margin-top: 7px;
+  border: 2px solid var(--dash-surface);
   border-radius: 999px;
+  box-shadow: 0 0 0 1px var(--dash-rule);
 }
 
 #console-layout .dashboard-overview .feed-marker-confirmed {
@@ -1533,10 +1596,23 @@ body.shell-drawer-open {
   line-height: 1.45;
 }
 
+#console-layout .dashboard-overview .feed-text strong {
+  font-weight: 600;
+}
+
+#console-layout .dashboard-overview .feed-amount {
+  font-weight: 600;
+  color: var(--dash-ink);
+}
+
 #console-layout .dashboard-overview .feed-time {
   display: block;
-  margin-top: 4px;
+  margin-top: 5px;
   font-family: 'IBM Plex Mono', monospace !important;
+  color: var(--dash-ink-soft);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 #console-layout .dashboard-clients .filter-group,

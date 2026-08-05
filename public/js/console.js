@@ -614,7 +614,7 @@ function renderOverview() {
       <div class="feed-item">
         <div class="feed-marker ${t.type === 'Sale' ? 'feed-marker-confirmed' : 'feed-marker-draft'}"></div>
         <div class="feed-content">
-          <p class="feed-text"><strong>${t.clientName}</strong> logged a ${t.type.toLowerCase()} of Rs ${Math.abs(t.amount).toLocaleString('en-IN')} - ${t.category}</p>
+          <p class="feed-text"><strong>${t.clientName}</strong> logged a ${t.type.toLowerCase()} of <span class="feed-amount">Rs ${Math.abs(t.amount).toLocaleString('en-IN')}</span> - ${t.category}</p>
           <span class="feed-time">${t.date} via ${t.source}</span>
         </div>
       </div>
