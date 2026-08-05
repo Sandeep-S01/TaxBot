@@ -1722,9 +1722,9 @@ function renderAIInsights(filterSeverity = 'all') {
     <div class="dashboard-card insight-card severity-${ins.severity}">
       <div class="insight-header">
         ${renderStatusPill(ins.severity, ins.severity === 'high' ? 'High severity' : (ins.severity === 'medium' ? 'Medium' : 'Info'))}
-        <strong>${escapeHtml(ins.clientName || 'Client')}</strong>
+        <strong class="insight-client-name">${escapeHtml(ins.clientName || 'Client')}</strong>
       </div>
-      <h3>${escapeHtml(ins.title || 'Review item')}</h3>
+      <h3 class="insight-title">${escapeHtml(ins.title || 'Review item')}</h3>
       <p class="card-subtitle">${escapeHtml(ins.desc || '')}</p>
       <div class="insight-rec-box">
         <span class="insight-rec-text"><strong>Recommended:</strong> ${escapeHtml(ins.suggestion || 'Review the source entries before filing.')}</span>
