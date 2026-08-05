@@ -1,20 +1,30 @@
 /* Digital Khata dashboard layer. Scoped to the authenticated console only. */
 
 #console-layout {
-  --dash-paper: var(--paper);
-  --dash-paper-dim: var(--paper-dim);
-  --dash-ink: var(--ink);
-  --dash-ink-soft: var(--ink-soft);
-  --dash-rule: var(--rule);
-  --dash-stamp: var(--stamp);
-  --dash-sage: var(--sage);
-  --khata-sidebar-expanded: 248px;
-  --khata-sidebar-collapsed: 78px;
+  --dash-paper: #f7f8f3;
+  --dash-paper-dim: #eef1e8;
+  --dash-surface: #ffffff;
+  --dash-surface-soft: #fbfcf8;
+  --dash-ink: #202820;
+  --dash-ink-soft: #5f6b60;
+  --dash-rule: #d7dccf;
+  --dash-rule-strong: #c6cdbd;
+  --dash-stamp: #b23a2e;
+  --dash-sage: #476552;
+  --dash-shadow-card: 0 1px 2px rgb(32 40 32 / 0.04);
+  --dash-text-xs: 11px;
+  --dash-text-sm: 13px;
+  --dash-text-md: 14px;
+  --dash-title-sm: 16px;
+  --dash-title-md: 20px;
+  --dash-title-lg: 22px;
+  --khata-sidebar-expanded: 244px;
+  --khata-sidebar-collapsed: 76px;
   --khata-sidebar-transition: 300ms ease-in-out;
   background: var(--dash-paper) !important;
   color: var(--dash-ink) !important;
   font-family: 'Inter', sans-serif !important;
-  font-size: 14px;
+  font-size: var(--dash-text-md);
 }
 
 #console-layout .settings-panel,
@@ -47,11 +57,11 @@
   width: var(--khata-sidebar-expanded);
   height: 100vh;
   min-width: 0;
-  background: linear-gradient(180deg, var(--dash-paper), var(--dash-paper-dim)) !important;
+  background: linear-gradient(180deg, var(--dash-surface-soft), var(--dash-paper-dim)) !important;
   border-right: 1px solid var(--dash-rule) !important;
   color: var(--dash-ink) !important;
   transition: width var(--khata-sidebar-transition), transform var(--khata-sidebar-transition);
-  box-shadow: 2px 0 10px rgb(35 42 36 / 0.05);
+  box-shadow: 1px 0 0 rgb(215 220 207 / 0.55);
   overflow: visible;
   z-index: 40;
 }
@@ -67,22 +77,22 @@
 #console-layout .dashboard-sidebar-header {
   position: relative;
   justify-content: space-between;
-  min-height: 64px;
-  padding: 0 16px !important;
+  min-height: 62px;
+  padding: 0 14px !important;
   border-bottom: 1px solid var(--dash-rule);
-  background: var(--dash-paper) !important;
+  background: var(--dash-surface-soft) !important;
 }
 
 #console-layout .dashboard-brand {
   display: flex;
   align-items: center;
   min-width: 0;
-  gap: 10px;
+  gap: 9px;
 }
 
 #console-layout .dashboard-brand-icon {
   color: var(--dash-stamp) !important;
-  font-size: 26px;
+  font-size: 24px;
 }
 
 #console-layout .dashboard-brand-name {
@@ -92,8 +102,8 @@
   gap: 8px;
   color: var(--dash-ink) !important;
   font-family: 'Bricolage Grotesque', sans-serif !important;
-  font-size: 18px;
-  font-weight: 800;
+  font-size: 17px;
+  font-weight: 700;
   line-height: 1;
 }
 
@@ -102,13 +112,13 @@
   align-items: center;
   min-height: 18px;
   padding: 2px 7px;
-  background: rgb(75 99 80 / .12);
-  border: 1px solid rgb(75 99 80 / .18);
+  background: rgb(71 101 82 / .1);
+  border: 1px solid rgb(71 101 82 / .16);
   border-radius: 999px;
   color: var(--dash-sage) !important;
   font-family: 'IBM Plex Mono', monospace !important;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: .02em;
 }
 
@@ -116,7 +126,7 @@
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
-  padding: 14px 12px !important;
+  padding: 16px 12px !important;
   scrollbar-gutter: stable;
 }
 
@@ -132,7 +142,7 @@
 #console-layout .dashboard-nav-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -141,24 +151,24 @@
 #console-layout .dashboard-nav-link {
   display: flex;
   align-items: center;
-  min-height: 42px;
-  gap: 12px;
-  padding: 10px 14px;
-  border-radius: 10px !important;
+  min-height: 40px;
+  gap: 11px;
+  padding: 9px 12px;
+  border-radius: 8px !important;
   position: relative;
   overflow: hidden;
   transition: background var(--khata-sidebar-transition), color var(--khata-sidebar-transition), transform var(--khata-sidebar-transition);
   color: var(--dash-ink-soft) !important;
-  font-size: 14px;
-  font-weight: 650;
+  font-size: var(--dash-text-sm);
+  font-weight: 600;
   line-height: 1.2;
   text-decoration: none;
 }
 
 #console-layout .dashboard-nav-link svg {
-  width: 18px;
-  height: 18px;
-  flex: 0 0 18px;
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
   transition: transform var(--khata-sidebar-transition);
 }
 
@@ -168,7 +178,7 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 3px;
+  width: 2px;
   height: 0;
   border-radius: 0 4px 4px 0;
   background: var(--dash-stamp);
@@ -186,25 +196,25 @@
 
 #console-layout .dashboard-sidebar .dashboard-nav-link:hover,
 #console-layout .dashboard-sidebar .dashboard-nav-link.active {
-  background: #fff !important;
+  background: rgb(255 255 255 / 0.78) !important;
   color: var(--dash-ink) !important;
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.8), 0 10px 22px rgb(35 42 36 / 0.04);
-  transform: translateX(2px);
+  box-shadow: inset 0 0 0 1px rgb(215 220 207 / 0.74);
+  transform: none;
 }
 
 #console-layout .dashboard-sidebar .dashboard-nav-link.active {
-  font-weight: 800;
+  font-weight: 700;
 }
 
 #console-layout .dashboard-sidebar .dashboard-nav-link:hover::before,
 #console-layout .dashboard-sidebar .dashboard-nav-link.active::before {
-  height: 22px;
+  height: 18px;
   opacity: 1;
 }
 
 #console-layout .dashboard-sidebar .dashboard-nav-link:hover svg,
 #console-layout .dashboard-sidebar .dashboard-nav-link.active svg {
-  transform: translateX(1px);
+  transform: none;
 }
 
 #console-layout .dashboard-nav-count {
@@ -223,7 +233,7 @@
   background: var(--dash-paper-dim);
   color: var(--dash-ink-soft) !important;
   font-family: 'IBM Plex Mono', monospace !important;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   line-height: 1;
 }
@@ -235,16 +245,16 @@
 }
 
 #console-layout .badge-success {
-  background: rgb(75 99 80 / .1) !important;
+  background: rgb(71 101 82 / .1) !important;
   border-color: transparent !important;
   color: var(--dash-sage) !important;
 }
 
 #console-layout .dashboard-sidebar-footer {
-  min-height: 72px;
-  padding: 14px 16px !important;
+  min-height: 68px;
+  padding: 12px 14px !important;
   border-top: 1px solid var(--dash-rule);
-  background: var(--dash-paper) !important;
+  background: var(--dash-surface-soft) !important;
 }
 
 #console-layout .dashboard-firm-profile {
@@ -274,13 +284,13 @@
 #console-layout .dashboard-firm-name,
 #console-layout .dashboard-profile-name {
   color: var(--dash-ink) !important;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: var(--dash-text-sm);
+  font-weight: 600;
 }
 
 #console-layout .dashboard-firm-email {
   color: var(--dash-ink-soft) !important;
-  font-size: 12px;
+  font-size: var(--dash-text-xs);
 }
 
 #console-layout .dashboard-main {
@@ -299,7 +309,7 @@
   gap: 16px;
   padding: 0 24px !important;
   border-bottom: 1px solid var(--dash-rule) !important;
-  background: var(--dash-paper) !important;
+  background: var(--dash-surface-soft) !important;
   z-index: 30;
 }
 
@@ -336,9 +346,9 @@
   gap: 8px;
   color: var(--dash-ink-soft);
   font-family: 'IBM Plex Mono', monospace !important;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: .08em;
+  letter-spacing: .04em;
   line-height: 1;
   text-transform: uppercase;
 }
@@ -377,8 +387,8 @@
 #console-layout .dashboard-page-title-slot {
   color: var(--dash-ink);
   font-family: 'Bricolage Grotesque', sans-serif !important;
-  font-size: 20px;
-  font-weight: 800;
+  font-size: var(--dash-title-md);
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -415,7 +425,7 @@
   min-width: 40px !important;
   min-height: 40px !important;
   padding: 0 !important;
-  background: #fff !important;
+  background: var(--dash-surface) !important;
   border: 1px solid var(--dash-rule) !important;
   border-radius: 8px !important;
   color: var(--dash-ink) !important;
@@ -428,7 +438,7 @@
 
 #console-layout .dashboard-icon-button:hover,
 #console-layout .dashboard-icon-button:focus-visible {
-  background: var(--dash-paper-dim) !important;
+  background: var(--dash-surface-soft) !important;
   color: var(--dash-ink) !important;
 }
 
@@ -465,10 +475,10 @@
   right: 0;
   width: min(368px, calc(100vw - 24px)) !important;
   overflow: hidden;
-  background: #fff !important;
+  background: var(--dash-surface) !important;
   border: 1px solid var(--dash-rule) !important;
   border-radius: 8px !important;
-  box-shadow: none !important;
+  box-shadow: var(--dash-shadow-card) !important;
   z-index: 50;
 }
 
@@ -478,7 +488,7 @@
   justify-content: space-between;
   min-height: 48px;
   padding: 0 14px !important;
-  background: var(--dash-paper-dim) !important;
+  background: var(--dash-surface-soft) !important;
   border-bottom: 1px solid var(--dash-rule) !important;
   color: var(--dash-ink) !important;
   font-weight: 700;
@@ -518,7 +528,7 @@
 
 #console-layout .notification-item:hover,
 #console-layout .notification-item.unread {
-  background: var(--dash-paper-dim) !important;
+  background: var(--dash-surface-soft) !important;
   border-color: var(--dash-rule) !important;
 }
 
@@ -609,7 +619,7 @@
   right: 0;
   width: min(280px, calc(100vw - 24px));
   overflow: hidden;
-  background: #fff;
+  background: var(--dash-surface);
   border: 1px solid var(--dash-rule);
   border-radius: 8px;
   color: var(--dash-ink);
@@ -739,7 +749,7 @@ body.shell-drawer-open {
 
 #console-layout.sidebar-collapsed #app-sidebar .dashboard-brand-icon,
 #console-layout #app-sidebar.collapsed .dashboard-brand-icon {
-  font-size: 28px;
+  font-size: 25px;
 }
 
 #console-layout.sidebar-collapsed #app-sidebar .dashboard-brand-name,
@@ -776,20 +786,20 @@ body.shell-drawer-open {
 #console-layout.sidebar-collapsed #app-sidebar .dashboard-sidebar-nav,
 #console-layout #app-sidebar.collapsed .dashboard-sidebar-nav {
   overflow: visible;
-  padding: 20px 12px !important;
+  padding: 18px 12px !important;
 }
 
 #console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-list,
 #console-layout #app-sidebar.collapsed .dashboard-nav-list {
-  gap: 12px;
+  gap: 10px;
 }
 
 #console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-link,
 #console-layout #app-sidebar.collapsed .dashboard-nav-link {
-  width: 54px;
-  min-height: 54px;
+  width: 50px;
+  min-height: 50px;
   padding-inline: 0 !important;
-  border-radius: 10px !important;
+  border-radius: 8px !important;
   justify-content: center;
   overflow: visible;
 }
@@ -798,10 +808,10 @@ body.shell-drawer-open {
 #console-layout #app-sidebar.collapsed .dashboard-nav-link::before {
   left: 50%;
   top: auto;
-  bottom: 7px;
+  bottom: 6px;
   transform: translateX(-50%);
-  width: 22px;
-  height: 3px;
+  width: 20px;
+  height: 2px;
   border-radius: 999px;
 }
 
@@ -812,14 +822,14 @@ body.shell-drawer-open {
   left: calc(100% + 12px);
   top: 50%;
   transform: translateY(-50%);
-  padding: 8px 10px;
+  padding: 7px 9px;
   border: 1px solid var(--dash-rule);
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 10px 24px rgb(35 42 36 / 0.12);
+  border-radius: 8px;
+  background: var(--dash-surface);
+  box-shadow: 0 8px 18px rgb(32 40 32 / 0.12);
   color: var(--dash-ink);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
   line-height: 1;
   white-space: nowrap;
   opacity: 0;
@@ -850,22 +860,29 @@ body.shell-drawer-open {
   position: absolute;
   top: 5px;
   right: 5px;
-  min-width: 20px;
-  min-height: 20px;
+  min-width: 18px;
+  min-height: 18px;
   padding: 0 5px !important;
   margin-left: 0;
   opacity: 1;
   max-width: none;
   pointer-events: none;
-  border: 2px solid #fff !important;
+  border: 1px solid var(--dash-rule) !important;
+  background: var(--dash-surface) !important;
+  color: var(--dash-ink-soft) !important;
+  font-size: 10px;
+}
+
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-count.badge-error,
+#console-layout #app-sidebar.collapsed .dashboard-nav-count.badge-error {
+  border-color: #fff !important;
   background: var(--dash-stamp) !important;
   color: #fff !important;
-  font-size: 10px;
 }
 
 #console-layout.sidebar-collapsed #app-sidebar .dashboard-sidebar-footer,
 #console-layout #app-sidebar.collapsed .dashboard-sidebar-footer {
-  min-height: 82px;
+  min-height: 76px;
   padding: 12px !important;
 }
 
@@ -876,10 +893,10 @@ body.shell-drawer-open {
 
 #console-layout.sidebar-collapsed #app-sidebar .dashboard-avatar,
 #console-layout #app-sidebar.collapsed .dashboard-avatar {
-  width: 48px;
-  height: 48px;
-  flex-basis: 48px;
-  border-radius: 10px;
+  width: 44px;
+  height: 44px;
+  flex-basis: 44px;
+  border-radius: 8px;
 }
 
 #console-layout.sidebar-collapsed #app-sidebar .sidebar-collapse-btn i,
@@ -904,15 +921,17 @@ body.shell-drawer-open {
 }
 
 #console-layout h1 {
-  font-size: 24px !important;
-  line-height: 1.15 !important;
+  font-size: var(--dash-title-lg) !important;
+  font-weight: 700 !important;
+  line-height: 1.18 !important;
 }
 
 #console-layout h2,
 #console-layout h3,
 #console-layout .card-title {
-  font-size: 18px !important;
-  line-height: 1.25 !important;
+  font-size: var(--dash-title-sm) !important;
+  font-weight: 700 !important;
+  line-height: 1.28 !important;
 }
 
 #console-layout :is(.kpi-label, .field-label, th, .dashboard-label, .badge, .kbd-shortcut, code) {
@@ -933,7 +952,7 @@ body.shell-drawer-open {
 }
 
 #console-layout .bg-white {
-  background: #fff !important;
+  background: var(--dash-surface) !important;
 }
 
 #console-layout :is(.bg-background-light, .bg-gray-50) {
@@ -941,14 +960,14 @@ body.shell-drawer-open {
 }
 
 #console-layout #app-sidebar {
-  background: linear-gradient(180deg, var(--dash-paper), var(--dash-paper-dim)) !important;
+  background: linear-gradient(180deg, var(--dash-surface-soft), var(--dash-paper-dim)) !important;
   border-color: var(--dash-rule) !important;
 }
 
 #console-layout .sidebar-header,
 #console-layout .sidebar-footer,
 #console-layout .app-header {
-  background: var(--dash-paper) !important;
+  background: var(--dash-surface-soft) !important;
   border-color: var(--dash-rule) !important;
 }
 
@@ -972,24 +991,24 @@ body.shell-drawer-open {
 
 #console-layout .nav-link {
   color: var(--dash-ink-soft) !important;
-  border-radius: 4px !important;
+  border-radius: 8px !important;
 }
 
 #console-layout .nav-link:hover,
 #console-layout .nav-link.active {
-  background: rgb(255 255 255 / .52) !important;
+  background: var(--dash-surface) !important;
   color: var(--dash-ink) !important;
 }
 
 #console-layout .nav-link .badge,
 #console-layout :is(#clients-count, #pending-transactions-badge, #documents-count-badge, #insights-count-badge) {
-  background: #fff !important;
+  background: var(--dash-surface) !important;
   border: 1px solid var(--dash-rule) !important;
   color: var(--dash-ink-soft) !important;
 }
 
 #console-layout .header-btn {
-  background: #fff !important;
+  background: var(--dash-surface) !important;
   border-color: var(--dash-rule) !important;
   color: var(--dash-ink) !important;
 }
@@ -1001,14 +1020,14 @@ body.shell-drawer-open {
 }
 
 #console-layout .whatsapp-btn:hover {
-  background: rgb(75 99 80 / .1) !important;
+  background: rgb(71 101 82 / .1) !important;
 }
 
 #console-layout :is(.dashboard-card, .toolbar-card, .card, .chart-card) {
-  background: #fff !important;
+  background: var(--dash-surface) !important;
   border: 1px solid var(--dash-rule) !important;
   border-radius: 8px !important;
-  box-shadow: none !important;
+  box-shadow: var(--dash-shadow-card) !important;
   color: var(--dash-ink) !important;
 }
 
@@ -1025,7 +1044,7 @@ body.shell-drawer-open {
 #console-layout :is(.dropdown-select, .form-input, .form-select, input[type="month"], textarea) {
   min-height: 40px !important;
   width: 100%;
-  background: #fff !important;
+  background: var(--dash-surface) !important;
   border: 1px solid var(--dash-rule) !important;
   border-radius: 4px !important;
   padding: 9px 12px;
@@ -1078,7 +1097,7 @@ body.shell-drawer-open {
   border: 1px solid var(--dash-ink) !important;
   border-radius: 4px !important;
   color: var(--dash-paper) !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
 }
 
 #console-layout .btn-khata-primary:hover {
@@ -1092,7 +1111,7 @@ body.shell-drawer-open {
   border: 1px solid var(--dash-ink) !important;
   border-radius: 4px !important;
   color: var(--dash-ink) !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
 }
 
 #console-layout .btn-khata-secondary:hover {
@@ -1105,7 +1124,7 @@ body.shell-drawer-open {
   border: 1px solid var(--dash-sage) !important;
   border-radius: 4px !important;
   color: var(--dash-sage) !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
 }
 
 #console-layout .btn-khata-whatsapp:hover {
@@ -1155,9 +1174,9 @@ body.shell-drawer-open {
   border-bottom: 2px solid var(--dash-ink) !important;
   color: var(--dash-ink-soft) !important;
   font-family: 'IBM Plex Mono', monospace !important;
-  font-size: 12px !important;
+  font-size: 11px !important;
   font-weight: 600 !important;
-  letter-spacing: .1em !important;
+  letter-spacing: .06em !important;
   line-height: 1.25;
   text-align: left;
   text-transform: uppercase;
@@ -1303,9 +1322,9 @@ body.shell-drawer-open {
 #console-layout .dashboard-label {
   color: var(--dash-ink-soft) !important;
   font-family: 'IBM Plex Mono', monospace !important;
-  font-size: 12px !important;
+  font-size: 11px !important;
   font-weight: 600 !important;
-  letter-spacing: .12em !important;
+  letter-spacing: .06em !important;
   line-height: 1.4;
   text-transform: uppercase;
 }
@@ -1333,8 +1352,8 @@ body.shell-drawer-open {
 
 #console-layout .dashboard-overview .kpi-value {
   color: var(--dash-ink) !important;
-  font-size: 24px !important;
-  font-weight: 700 !important;
+  font-size: 22px !important;
+  font-weight: 600 !important;
   line-height: 1.1;
 }
 
@@ -1398,8 +1417,8 @@ body.shell-drawer-open {
 
 #console-layout .dashboard-overview .metric-value {
   color: var(--dash-ink) !important;
-  font-size: 22px !important;
-  font-weight: 700 !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
   line-height: 1.1;
 }
 
@@ -1536,9 +1555,9 @@ body.shell-drawer-open {
   border-right: 1px solid var(--dash-rule);
   color: var(--dash-ink-soft);
   font-family: 'IBM Plex Mono', monospace !important;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: .06em;
+  letter-spacing: .04em;
   text-transform: uppercase;
 }
 
@@ -1753,7 +1772,7 @@ body.shell-drawer-open {
 
 #console-layout .dashboard-workspace .workspace-client-name {
   color: var(--dash-ink) !important;
-  font-size: 22px !important;
+  font-size: 20px !important;
   line-height: 1.15;
 }
 
@@ -1775,8 +1794,8 @@ body.shell-drawer-open {
   display: block;
   margin-top: 6px;
   color: var(--dash-ink) !important;
-  font-size: 24px !important;
-  font-weight: 700 !important;
+  font-size: 22px !important;
+  font-weight: 600 !important;
   line-height: 1.1;
 }
 
@@ -1802,9 +1821,9 @@ body.shell-drawer-open {
   border-bottom: 2px solid transparent;
   color: var(--dash-ink-soft);
   font-family: 'IBM Plex Mono', monospace !important;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: .06em;
+  letter-spacing: .04em;
   text-transform: uppercase;
   transition: color .18s ease, border-color .18s ease;
   white-space: nowrap;
@@ -2142,8 +2161,8 @@ body.shell-drawer-open {
   display: block;
   margin-top: 6px;
   color: var(--dash-ink) !important;
-  font-size: 24px !important;
-  font-weight: 700 !important;
+  font-size: 22px !important;
+  font-weight: 600 !important;
   line-height: 1.1;
 }
 
@@ -2322,7 +2341,7 @@ body.shell-drawer-open {
   margin-top: 0 !important;
   color: var(--dash-ink) !important;
   font-family: 'Bricolage Grotesque', sans-serif !important;
-  font-size: 18px !important;
+  font-size: 16px !important;
   font-weight: 700;
   line-height: 1.2;
 }
@@ -2366,8 +2385,8 @@ body.shell-drawer-open {
 #console-layout .dashboard-billing .billing-rate {
   margin-top: 16px;
   color: var(--dash-ink) !important;
-  font-size: 28px !important;
-  font-weight: 700 !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
   line-height: 1.1;
 }
 
@@ -2790,7 +2809,7 @@ body.shell-drawer-open {
   font-family: 'IBM Plex Mono', monospace !important;
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: .1em;
+  letter-spacing: .06em;
   line-height: 1.4;
   text-transform: uppercase;
 }
@@ -2822,8 +2841,8 @@ body.shell-drawer-open {
   color: var(--ink-soft) !important;
   font-family: 'IBM Plex Mono', monospace !important;
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .1em;
+  font-weight: 600;
+  letter-spacing: .06em;
   text-transform: uppercase;
 }
 
@@ -3305,5 +3324,195 @@ body.shell-drawer-open {
 
   #console-layout .dashboard-workspace .tab-link {
     padding-bottom: 10px;
+  }
+}
+
+/* Phase 4: dashboard header refinement */
+#console-layout .dashboard-top-nav {
+  min-height: 58px;
+  padding: 0 20px;
+  gap: 12px;
+  background: rgb(247 248 243 / 0.94);
+  backdrop-filter: blur(14px);
+}
+
+#console-layout .dashboard-top-left {
+  gap: 10px;
+  min-width: 0;
+}
+
+#console-layout .dashboard-top-actions {
+  gap: 8px;
+}
+
+#console-layout .dashboard-breadcrumb-area {
+  min-width: 124px;
+  max-width: 230px;
+}
+
+#console-layout .dashboard-breadcrumb {
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+#console-layout .dashboard-search.command-bar-trigger {
+  width: min(100%, 500px);
+  min-height: 38px;
+  border-radius: 7px;
+  border-color: var(--dash-rule-strong);
+  background: rgb(255 255 255 / 0.88);
+  box-shadow: 0 1px 1px rgb(32 40 32 / 0.03);
+}
+
+#console-layout .dashboard-search.command-bar-trigger:hover {
+  border-color: rgb(71 101 82 / 0.42);
+  background: var(--dash-surface);
+}
+
+#console-layout .dashboard-search .search-icon,
+#console-layout .dashboard-search svg {
+  width: 15px;
+  height: 15px;
+}
+
+#console-layout .dashboard-search .trigger-placeholder {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dash-ink);
+}
+
+#console-layout .dashboard-search .kbd-shortcut {
+  min-height: 24px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--dash-ink-soft);
+  background: var(--dash-surface-soft);
+  border-color: var(--dash-rule);
+}
+
+#console-layout .dashboard-top-nav .dashboard-icon-button,
+#console-layout .dashboard-top-nav .dashboard-live-link,
+#console-layout .dashboard-top-nav .dashboard-profile-button {
+  min-height: 38px;
+  border-radius: 8px;
+  border-color: var(--dash-rule-strong);
+  background: rgb(255 255 255 / 0.8);
+  box-shadow: 0 1px 1px rgb(32 40 32 / 0.03);
+}
+
+#console-layout .dashboard-top-nav .dashboard-icon-button {
+  width: 38px;
+  height: 38px;
+}
+
+#console-layout .dashboard-top-nav .dashboard-icon-button svg,
+#console-layout .dashboard-top-nav .dashboard-live-link svg {
+  width: 18px;
+  height: 18px;
+}
+
+#console-layout .dashboard-live-link {
+  gap: 7px;
+  padding: 0 11px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+#console-layout .dashboard-profile-button {
+  gap: 9px;
+  padding: 4px 7px 4px 4px;
+}
+
+#console-layout .dashboard-top-nav .dashboard-avatar.profile-avatar {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+#console-layout .dashboard-profile-name {
+  max-width: 132px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+#console-layout .indicator-dot {
+  width: 7px;
+  height: 7px;
+  top: 8px;
+  right: 8px;
+}
+
+#console-layout .dashboard-notification-menu {
+  width: min(340px, calc(100vw - 24px));
+  border-color: var(--dash-rule-strong);
+  box-shadow: 0 18px 44px rgb(32 40 32 / 0.14);
+}
+
+#console-layout .dashboard-notification-header {
+  min-height: 44px;
+  padding: 10px 14px;
+}
+
+#console-layout .dashboard-notification-header h3 {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#console-layout .dashboard-notification-item {
+  padding: 12px 14px;
+}
+
+#console-layout .dashboard-notification-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#console-layout .dashboard-notification-text {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+@media (max-width: 1024px) {
+  #console-layout .dashboard-breadcrumb-area {
+    max-width: 180px;
+  }
+
+  #console-layout .dashboard-search.command-bar-trigger {
+    width: min(100%, 420px);
+  }
+}
+
+@media (max-width: 768px) {
+  #console-layout .dashboard-top-nav {
+    min-height: 56px;
+    padding: 0 10px;
+    gap: 8px;
+  }
+
+  #console-layout .dashboard-top-left {
+    gap: 7px;
+  }
+
+  #console-layout .dashboard-search.command-bar-trigger {
+    min-height: 36px;
+    border-radius: 7px;
+  }
+
+  #console-layout .dashboard-search .trigger-placeholder {
+    font-size: 12px;
+  }
+
+  #console-layout .dashboard-top-nav .dashboard-icon-button {
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
   }
 }
