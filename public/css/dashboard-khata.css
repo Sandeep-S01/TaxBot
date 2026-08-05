@@ -4716,6 +4716,41 @@ body.shell-drawer-open {
   max-width: 100%;
 }
 
+#console-layout .chart-container {
+  position: relative;
+  min-width: 0;
+}
+
+#console-layout .chart-container.is-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#console-layout .chart-container .chart-empty-state {
+  display: flex;
+  width: 100%;
+  min-height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+#console-layout .chart-container .dashboard-empty-state {
+  width: 100%;
+  min-height: 170px;
+  border: 0;
+  background: transparent;
+}
+
+#console-layout .chart-container .dashboard-empty-state p {
+  max-width: 24rem;
+  font-size: 13px !important;
+}
+
+#console-layout .chart-card canvas[hidden] {
+  display: none !important;
+}
+
 @media (max-width: 1280px) {
   #console-layout .dashboard-overview .kpi-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;

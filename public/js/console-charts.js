@@ -84,6 +84,28 @@ function getExpenseCategoryData(transactions) {
   };
 }
 
+function setChartEmptyState(canvas, message, isEmpty) {
+  if (!canvas || !canvas.parentElement) return;
+  const container = canvas.parentElement;
+  let emptyState = container.querySelector('.chart-empty-state');
+
+  container.classList.toggle('is-empty', Boolean(isEmpty));
+  canvas.hidden = Boolean(isEmpty);
+
+  if (!isEmpty) {
+    if (emptyState) emptyState.remove();
+    return;
+  }
+
+  if (!emptyState) {
+    emptyState = document.createElement('div');
+    emptyState.className = 'chart-empty-state';
+    emptyState.setAttribute('role', 'status');
+    container.appendChild(emptyState);
+  }
+  emptyState.innerHTML = renderEmptyState(message);
+}
+
 function getMonthlyGstTrendData(clientTx) {
   const months = [];
   const salesGstByMonth = {};
@@ -141,6 +163,11 @@ function renderOverviewCharts() {
       chartSalesExpenses.destroy();
     }
 
+    const hasTrendData = trendData.sales.concat(trendData.expenses).some(value => Number(value) > 0);
+    setChartEmptyState(ctxTrend, 'No sales or expense trend data yet. New client transactions will populate this chart.', !hasTrendData);
+    if (!hasTrendData) {
+      chartSalesExpenses = null;
+    } else {
     const chartTokens = getDashboardChartTokens();
     const textColor = chartTokens.inkSoft;
     const gridColor = chartTokens.rule;
@@ -190,6 +217,7 @@ function renderOverviewCharts() {
         },
       },
     });
+    }
   }
 
   const ctxCat = document.getElementById('chart-expense-categories');
@@ -202,14 +230,10 @@ function renderOverviewCharts() {
     const textColor = chartTokens.inkSoft;
 
     if (expenseCatData.labels.length === 0) {
-      const ctx = ctxCat.getContext('2d');
-      ctx.clearRect(0, 0, ctxCat.width, ctxCat.height);
-      ctx.fillStyle = textColor;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.font = '14px Inter';
-      ctx.fillText('No expense data available', ctxCat.width / 2, ctxCat.height / 2);
+      setChartEmptyState(ctxCat, 'No expense category data yet. Parsed expense entries will appear here after review.', true);
+      chartExpenseCategories = null;
     } else {
+      setChartEmptyState(ctxCat, '', false);
       chartExpenseCategories = new Chart(ctxCat, {
         type: 'doughnut',
         data: {
@@ -255,6 +279,13 @@ function renderClientWorkspaceGstChart(clientId, cTx) {
   }
 
   const gstTrend = getMonthlyGstTrendData(cTx);
+  const hasGstTrendData = gstTrend.salesTax.concat(gstTrend.purchaseTax).some(value => Number(value) > 0);
+  setChartEmptyState(ctxGst, 'No GST trend data yet. Approved sales and purchase entries will populate this chart.', !hasGstTrendData);
+  if (!hasGstTrendData) {
+    chartWsGstTrend = null;
+    return;
+  }
+
   const chartTokens = getDashboardChartTokens();
   const textColor = chartTokens.inkSoft;
   const gridColor = chartTokens.rule;
