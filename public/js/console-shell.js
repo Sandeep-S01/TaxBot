@@ -111,6 +111,10 @@
     applyCollapsedState(readCollapsedPreference());
     setDrawerOpen(false);
 
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+
     collapseButton.addEventListener('click', () => {
       const collapsed = !sidebar.classList.contains('collapsed');
       applyCollapsedState(collapsed);
@@ -120,7 +124,9 @@
     mobileMenuButton.addEventListener('click', () => {
       setDrawerOpen(!sidebar.classList.contains('drawer-open'));
     });
+
     backdrop.addEventListener('click', () => setDrawerOpen(false, true));
+
     navLinks.forEach((link) => {
       link.addEventListener('click', () => setDrawerOpen(false));
     });
@@ -158,6 +164,7 @@
     });
 
     document.addEventListener('click', () => setProfileOpen(false));
+
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Tab' && sidebar.classList.contains('drawer-open')) {
         const focusable = getFocusable(sidebar);

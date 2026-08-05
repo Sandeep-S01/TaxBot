@@ -22,9 +22,9 @@
   --dash-title-sm: 16px;
   --dash-title-md: 20px;
   --dash-title-lg: 22px;
-  --khata-sidebar-expanded: 244px;
-  --khata-sidebar-collapsed: 76px;
-  --khata-sidebar-transition: 300ms ease-in-out;
+  --khata-sidebar-expanded: 240px;
+  --khata-sidebar-collapsed: 64px;
+  --khata-sidebar-transition: 200ms cubic-bezier(0.16, 1, 0.3, 1);
   background: var(--dash-paper) !important;
   color: var(--dash-ink) !important;
   font-family: 'Inter', sans-serif !important;
@@ -307,8 +307,10 @@
   transition: margin-left var(--khata-sidebar-transition), width var(--khata-sidebar-transition);
 }
 
+
 #console-layout .dashboard-top-nav {
-  min-height: 64px;
+  min-height: 56px;
+  height: 56px;
   justify-content: space-between;
   gap: 16px;
   padding: 0 24px !important;
@@ -349,16 +351,10 @@
   min-width: 0;
   gap: 8px;
   color: var(--dash-ink-soft);
-  font-family: 'IBM Plex Mono', monospace !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: .04em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-#console-layout .dashboard-breadcrumb-item {
-  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -859,40 +855,44 @@ body.shell-drawer-open {
   transform: translateY(-50%) translateX(0);
 }
 
-#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-count,
-#console-layout #app-sidebar.collapsed .dashboard-nav-count {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  min-width: 18px;
-  min-height: 18px;
-  padding: 0 5px !important;
-  margin-left: 0;
-  opacity: 1;
-  max-width: none;
-  pointer-events: none;
-  border: 1px solid var(--dash-rule) !important;
-  background: var(--dash-surface) !important;
-  color: var(--dash-ink-soft) !important;
-  font-size: 10px;
+#console-layout.sidebar-collapsed #sidebar-toggle svg,
+#console-layout #app-sidebar.collapsed #sidebar-toggle svg {
+  transform: rotate(180deg) !important;
+  transition: transform var(--khata-sidebar-transition) !important;
 }
 
-#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-count.badge-error,
-#console-layout #app-sidebar.collapsed .dashboard-nav-count.badge-error {
-  border-color: #fff !important;
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-count,
+#console-layout #app-sidebar.collapsed .dashboard-nav-count {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  width: 6px !important;
+  height: 6px !important;
+  min-width: 6px !important;
+  min-height: 6px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  overflow: hidden !important;
+  text-indent: -9999px !important;
+  border: none !important;
   background: var(--dash-stamp) !important;
-  color: #fff !important;
+  box-shadow: 0 0 0 2px var(--dash-surface-soft) !important;
 }
 
 #console-layout.sidebar-collapsed #app-sidebar .dashboard-sidebar-footer,
 #console-layout #app-sidebar.collapsed .dashboard-sidebar-footer {
-  min-height: 76px;
-  padding: 12px !important;
+  min-height: 64px;
+  padding: 12px 8px !important;
+  justify-content: center !important;
 }
 
 #console-layout.sidebar-collapsed #app-sidebar .dashboard-firm-profile,
 #console-layout #app-sidebar.collapsed .dashboard-firm-profile {
-  justify-content: center;
+  justify-content: center !important;
+  width: 100% !important;
+}
 }
 
 #console-layout.sidebar-collapsed #app-sidebar .dashboard-avatar,
@@ -914,45 +914,36 @@ body.shell-drawer-open {
   display: none;
 }
 
+#console-layout .dashboard-sidebar-backdrop {
+  display: none;
+}
+
 #console-layout .mobile-menu-btn {
   display: none;
 }
 
-#console-layout :is(h1, h2, h3, .brand-name, .card-title) {
+#console-layout :is(h1, .brand-name) {
   color: var(--dash-ink) !important;
-  font-family: 'Bricolage Grotesque', sans-serif !important;
+  font-family: var(--font-heading) !important;
   letter-spacing: 0 !important;
 }
 
 #console-layout h1 {
-  font-size: var(--dash-title-lg) !important;
-  font-weight: 700 !important;
-  line-height: 1.18 !important;
+  font-size: var(--type-page-title-size) !important;
+  font-weight: var(--type-page-title-weight) !important;
+  line-height: var(--type-page-title-line-height) !important;
 }
 
-#console-layout h2,
-#console-layout h3,
-#console-layout .card-title {
-  font-size: var(--dash-title-sm) !important;
-  font-weight: 700 !important;
-  line-height: 1.28 !important;
-}
-
-#console-layout :is(.kpi-label, .field-label, th, .dashboard-label, .badge, .kbd-shortcut, code) {
-  font-family: 'IBM Plex Mono', monospace !important;
-}
-
-#console-layout .text-text-muted,
-#console-layout :is(.text-gray-400, .text-gray-500, .text-gray-600, .text-secondary, .text-text-muted) {
-  color: var(--dash-ink-soft) !important;
-}
-
-#console-layout :is(.text-gray-700, .text-gray-900, .text-white, .client-detail-value, .client-card-name) {
+#console-layout :is(h2, h3, .card-title) {
   color: var(--dash-ink) !important;
+  font-family: var(--type-card-title-font) !important;
+  font-size: var(--type-card-title-size) !important;
+  font-weight: var(--type-card-title-weight) !important;
+  line-height: var(--type-card-title-line-height) !important;
 }
 
-#console-layout :is(.border-gray-100, .border-gray-200) {
-  border-color: var(--dash-rule) !important;
+#console-layout :is(.kbd-shortcut, code) {
+  font-family: 'IBM Plex Mono', monospace !important;
 }
 
 #console-layout .bg-white {
@@ -4917,8 +4908,11 @@ body.shell-drawer-open {
     font-size: 15px !important;
   }
 
-  #console-layout :is(.view-actions button, .toolbar-actions select, .toolbar-actions button, .btn-khata-primary, .btn-khata-secondary, .btn-khata-whatsapp) {
-    min-height: 38px !important;
+  #console-layout :is(.toolbar-actions, .view-actions) {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    align-items: center !important;
   }
 
   #console-layout .dashboard-overview .chart-container,
@@ -5786,73 +5780,115 @@ body.shell-drawer-open {
   touch-action: manipulation;
 }
 
-#console-layout :is(.btn-khata-primary, .btn-khata-secondary, .btn-khata-whatsapp, .dashboard-empty-action) {
+#console-layout :is(.btn-primary, .btn-secondary, .btn-ghost, .btn-danger, .btn-whatsapp, .btn-khata-primary, .btn-khata-secondary, .dashboard-empty-action) {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: var(--control-gap) !important;
-  min-height: var(--control-height-md) !important;
+  min-height: var(--btn-height-md) !important;
   padding: 0 var(--control-padding-x-md) !important;
   border-width: var(--control-border-width) !important;
   border-style: solid !important;
-  border-radius: var(--control-radius) !important;
-  font-size: var(--control-font-size) !important;
-  font-weight: var(--control-font-weight) !important;
-  line-height: var(--control-line-height) !important;
+  border-radius: var(--radius-btn) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--type-button-size) !important;
+  font-weight: var(--type-button-weight) !important;
+  line-height: var(--type-button-line-height) !important;
   letter-spacing: var(--letter-spacing-normal) !important;
   text-decoration: none !important;
   white-space: nowrap;
   box-shadow: var(--elevation-card) !important;
   transform: translateY(0);
   transition: var(--control-transition) !important;
+  cursor: pointer;
 }
 
-#console-layout :is(.btn-khata-primary, .settings-primary-btn) {
+/* Button Variants */
+#console-layout :is(.btn-primary, .btn-khata-primary, .settings-primary-btn) {
   background: var(--control-primary-bg) !important;
   border-color: var(--control-primary-border) !important;
   color: var(--control-primary-text) !important;
 }
 
-#console-layout :is(.btn-khata-primary, .settings-primary-btn):hover,
-#console-layout :is(.btn-khata-primary, .settings-primary-btn):focus-visible {
+#console-layout :is(.btn-primary, .btn-khata-primary, .settings-primary-btn):hover,
+#console-layout :is(.btn-primary, .btn-khata-primary, .settings-primary-btn):focus-visible {
   background: var(--control-primary-hover-bg) !important;
   border-color: var(--control-primary-hover-border) !important;
   color: var(--control-primary-text) !important;
   box-shadow: var(--control-focus-ring) !important;
 }
 
-#console-layout :is(.btn-khata-secondary, .settings-secondary-btn) {
+#console-layout :is(.btn-secondary, .btn-khata-secondary, .settings-secondary-btn) {
   background: var(--control-secondary-bg) !important;
   border-color: var(--control-secondary-border) !important;
   color: var(--control-secondary-text) !important;
 }
 
-#console-layout :is(.btn-khata-secondary, .settings-secondary-btn):hover,
-#console-layout :is(.btn-khata-secondary, .settings-secondary-btn):focus-visible {
+#console-layout :is(.btn-secondary, .btn-khata-secondary, .settings-secondary-btn):hover,
+#console-layout :is(.btn-secondary, .btn-khata-secondary, .settings-secondary-btn):focus-visible {
   background: var(--control-secondary-hover-bg) !important;
   border-color: var(--control-secondary-hover-border) !important;
   color: var(--control-secondary-text) !important;
   box-shadow: var(--control-focus-ring) !important;
 }
 
-#console-layout .btn-khata-whatsapp {
+#console-layout .btn-ghost {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: var(--text-primary) !important;
+  box-shadow: none !important;
+}
+
+#console-layout .btn-ghost:hover,
+#console-layout .btn-ghost:focus-visible {
+  background: var(--bg-soft) !important;
+  color: var(--text-primary) !important;
+}
+
+#console-layout .btn-danger {
+  background: var(--danger) !important;
+  border-color: var(--danger) !important;
+  color: var(--color-white) !important;
+}
+
+#console-layout .btn-danger:hover,
+#console-layout .btn-danger:focus-visible {
+  background: var(--color-stamp-dark) !important;
+  border-color: var(--color-stamp-dark) !important;
+  color: var(--color-white) !important;
+}
+
+#console-layout :is(.btn-whatsapp, .btn-khata-whatsapp) {
   background: var(--control-whatsapp-bg) !important;
   border-color: var(--control-whatsapp-border) !important;
   color: var(--control-whatsapp-text) !important;
 }
 
-#console-layout .btn-khata-whatsapp:hover,
-#console-layout .btn-khata-whatsapp:focus-visible {
+#console-layout :is(.btn-whatsapp, .btn-khata-whatsapp):hover,
+#console-layout :is(.btn-whatsapp, .btn-khata-whatsapp):focus-visible {
   background: var(--success-soft) !important;
   border-color: var(--success) !important;
   color: var(--success) !important;
   box-shadow: var(--control-focus-ring) !important;
 }
 
-#console-layout :is(.btn-khata-primary, .btn-khata-secondary, .btn-khata-whatsapp).text-xs,
-#console-layout :is(.btn-khata-primary, .btn-khata-secondary, .btn-khata-whatsapp):has(.text-xs) {
-  min-height: var(--control-height-sm) !important;
-  padding-inline: var(--control-padding-x-sm) !important;
+/* Button Sizing Modifiers */
+#console-layout .btn-sm {
+  min-height: var(--btn-height-sm) !important;
+  padding-inline: var(--control-padding-x-xs) !important;
+  font-size: var(--font-size-12) !important;
+}
+
+#console-layout .btn-md {
+  min-height: var(--btn-height-md) !important;
+  padding-inline: var(--control-padding-x-md) !important;
+  font-size: var(--font-size-13) !important;
+}
+
+#console-layout .btn-lg {
+  min-height: var(--btn-height-lg) !important;
+  padding-inline: var(--control-padding-x-lg) !important;
+  font-size: var(--font-size-14) !important;
 }
 
 #console-layout :is(.btn-khata-primary, .btn-khata-secondary, .btn-khata-whatsapp).w-full {
@@ -6051,8 +6087,8 @@ body.shell-drawer-open {
   text-transform: uppercase;
 }
 
-#console-layout :is(.field-input, .form-input, .form-select, .dropdown-select, input[type="month"], textarea),
-.modal-dialog-standard :is(.field-input, .form-input, .form-select, .dropdown-select, textarea) {
+#console-layout :is(.input, .select, .field-input, .form-input, .form-select, .dropdown-select, input[type="month"], textarea),
+.modal-dialog-standard :is(.input, .select, .field-input, .form-input, .form-select, .dropdown-select, textarea) {
   width: 100% !important;
   min-width: 0;
   min-height: var(--form-field-height-md) !important;
@@ -6063,6 +6099,7 @@ body.shell-drawer-open {
   color: var(--form-input-text) !important;
   caret-color: var(--form-input-text);
   box-shadow: var(--form-input-shadow) !important;
+  font-family: var(--font-body) !important;
   font-size: var(--type-input-size) !important;
   line-height: var(--type-input-line-height) !important;
   font-weight: var(--type-input-weight) !important;
@@ -6076,14 +6113,15 @@ body.shell-drawer-open {
   resize: vertical;
 }
 
-#console-layout :is(select.field-input, select.form-input, select.form-select, select.dropdown-select),
-.modal-dialog-standard :is(select.field-input, select.form-input, select.form-select, select.dropdown-select) {
+#console-layout :is(select, select.field-input, select.form-input, select.form-select, select.dropdown-select, .select),
+.modal-dialog-standard :is(select, select.field-input, select.form-input, select.form-select, select.dropdown-select, .select) {
   appearance: none;
+  -webkit-appearance: none;
   padding-right: 34px !important;
-  background-image: linear-gradient(45deg, transparent 50%, var(--text-muted) 50%), linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
-  background-position: calc(100% - 17px) 50%, calc(100% - 12px) 50%;
-  background-repeat: no-repeat;
-  background-size: 5px 5px, 5px 5px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23465247' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  background-position: calc(100% - 10px) 50% !important;
+  background-repeat: no-repeat !important;
+  background-size: 16px 16px !important;
 }
 
 #console-layout :is(.field-input, .form-input, .form-select, .dropdown-select, input[type="month"], textarea)::placeholder,
@@ -6204,67 +6242,61 @@ body.shell-drawer-open {
   background: var(--table-bg) !important;
 }
 
-#console-layout :is(.data-table, .dashboard-ledger-table) {
+#console-layout :is(table, .table, .data-table, .dashboard-ledger-table) {
   width: 100% !important;
   min-width: max-content;
   border-collapse: separate !important;
   border-spacing: 0 !important;
   table-layout: auto;
-  background: var(--table-bg) !important;
-  color: var(--table-text) !important;
-  font-size: var(--type-table-cell-size) !important;
-  line-height: var(--type-table-cell-line-height) !important;
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--font-size-13) !important;
+  line-height: var(--line-height-normal) !important;
 }
 
-#console-layout .dashboard-ledger-table thead,
-#console-layout .data-table thead {
-  background: var(--table-header-bg) !important;
+#console-layout :is(table, .table, .dashboard-ledger-table, .data-table) thead {
+  background: var(--bg-soft) !important;
 }
 
-#console-layout .dashboard-ledger-table th,
-#console-layout .data-table th {
-  height: var(--table-header-height) !important;
-  padding: 0 var(--table-cell-padding-x) !important;
-  border-bottom: 1px solid var(--table-border) !important;
-  background: var(--table-header-bg) !important;
-  color: var(--table-text-muted) !important;
-  font-family: var(--type-label-font) !important;
-  font-size: var(--type-table-header-size) !important;
-  line-height: var(--type-table-header-line-height) !important;
-  font-weight: var(--type-table-header-weight) !important;
-  letter-spacing: var(--type-table-header-letter-spacing) !important;
+#console-layout :is(table, .table, .dashboard-ledger-table, .data-table) th {
+  height: 36px !important;
+  padding: 0 12px !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  background: var(--bg-soft) !important;
+  color: var(--text-secondary) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--font-size-11) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  letter-spacing: 0.04em !important;
   text-align: left;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
-#console-layout .dashboard-ledger-table td,
-#console-layout .data-table td {
-  min-height: var(--table-row-height) !important;
-  height: var(--table-row-height) !important;
-  padding: var(--table-cell-padding-y) var(--table-cell-padding-x) !important;
+#console-layout :is(table, .table, .dashboard-ledger-table, .data-table) td {
+  min-height: 44px !important;
+  height: 44px !important;
+  padding: 8px 12px !important;
   border-top: 0 !important;
-  border-bottom: 1px solid var(--table-border) !important;
-  background: var(--table-row-bg) !important;
-  color: var(--table-text) !important;
-  font-size: var(--type-table-cell-size) !important;
-  line-height: var(--type-table-cell-line-height) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  font-size: var(--font-size-13) !important;
+  line-height: var(--line-height-normal) !important;
   vertical-align: middle !important;
 }
 
-#console-layout .dashboard-ledger-table tbody tr:last-child td,
-#console-layout .data-table tbody tr:last-child td {
+#console-layout :is(table, .table, .dashboard-ledger-table, .data-table) tbody tr:last-child td {
   border-bottom: 0 !important;
 }
 
-#console-layout .dashboard-ledger-table tbody tr,
-#console-layout .data-table tbody tr {
+#console-layout :is(table, .table, .dashboard-ledger-table, .data-table) tbody tr {
   transition: background-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-#console-layout .dashboard-ledger-table tbody tr:hover td,
-#console-layout .data-table tbody tr:hover td {
-  background: var(--table-row-hover-bg) !important;
+#console-layout :is(table, .table, .dashboard-ledger-table, .data-table) tbody tr:hover td {
+  background: var(--bg-soft) !important;
 }
 
 #console-layout .dashboard-ledger-table tbody tr:focus-visible td,
@@ -6414,64 +6446,79 @@ body.shell-drawer-open {
    -------------------------------------------------------------------------- */
 #console-layout :is(.dashboard-card, .toolbar-card, .chart-card, .card, .settings-panel, .settings-tabs-side) {
   min-width: 0;
-  border: 1px solid var(--card-border) !important;
-  border-radius: var(--card-radius) !important;
-  background: var(--card-bg) !important;
-  color: var(--card-text) !important;
-  box-shadow: var(--card-shadow) !important;
-  transition: var(--card-transition) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-12) !important;
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--elevation-card) !important;
+  transition: var(--control-transition) !important;
+}
+
+/* De-nest nested white card background stacking ("White Wasteland Effect") */
+#console-layout :is(.dashboard-card, .settings-panel) :is(.dashboard-card, .card):not(.kpi-card):not(.workspace-kpi-card):not(.gst-kpi-card) {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 1px solid var(--border-subtle) !important;
 }
 
 #console-layout :is(.dashboard-card, .chart-card, .export-card, .billing-main-card, .enterprise-card, .insight-card, .settings-panel):hover {
-  border-color: var(--card-border-strong) !important;
+  border-color: var(--border-strong) !important;
 }
 
 #console-layout :is(.dashboard-card:not(.p-0):not(.overflow-x):not(.overflow-hidden), .chart-card, .settings-panel) {
-  padding: var(--card-padding-md) !important;
+  padding: 16px 20px !important;
 }
 
 #console-layout .toolbar-card {
-  padding: var(--toolbar-card-padding) !important;
-  background: var(--card-bg) !important;
+  padding: 14px 16px !important;
+  background: var(--bg-card) !important;
 }
 
 #console-layout :is(.card-title, .export-card-title, .settings-option-title, .dashboard-panel-header h3, .insight-title) {
-  color: var(--card-text) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--font-size-15) !important;
+  font-weight: var(--font-weight-semibold) !important;
 }
 
 #console-layout :is(.card-subtitle, .export-card-desc, .view-subtitle, .dashboard-panel-header p:not(.dashboard-label), .settings-option-desc) {
-  color: var(--card-text-muted) !important;
+  color: var(--text-secondary) !important;
+  font-size: var(--font-size-13) !important;
 }
 
 #console-layout .dashboard-panel-header {
-  padding: var(--panel-header-padding-y) var(--panel-header-padding-x) !important;
-  border-bottom: 1px solid var(--panel-header-border) !important;
-  background: var(--card-bg-soft) !important;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  background: var(--bg-soft) !important;
 }
 
 #console-layout .dashboard-card > .dashboard-panel-header:first-child {
-  margin: calc(var(--card-padding-md) * -1) calc(var(--card-padding-md) * -1) var(--card-padding-md) !important;
-  border-radius: var(--card-radius) var(--card-radius) 0 0;
+  margin: -16px -20px 16px !important;
+  border-radius: var(--radius-12) var(--radius-12) 0 0;
 }
 
 #console-layout :is(.kpi-card, .workspace-kpi-card, .gst-kpi-card) {
   position: relative;
-  min-height: var(--metric-card-min-height) !important;
+  min-height: 94px !important;
   overflow: hidden;
-  padding: var(--card-padding-md) !important;
-  background: var(--card-bg) !important;
+  padding: 14px 16px !important;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-12) !important;
+  box-shadow: var(--elevation-card) !important;
 }
 
 #console-layout :is(.kpi-card, .workspace-kpi-card, .gst-kpi-card)::before {
   position: absolute;
   inset: 0 0 auto 0;
-  height: var(--metric-card-accent-height);
-  background: rgb(var(--color-success-rgb) / 0.42);
+  height: 2px;
+  background: var(--accent);
   content: '';
 }
 
 #console-layout :is(.kpi-card, .workspace-kpi-card, .gst-kpi-card):hover {
-  box-shadow: var(--card-shadow-hover) !important;
+  border-color: var(--border-strong) !important;
+  box-shadow: var(--elevation-card) !important;
 }
 
 #console-layout .chart-card {
@@ -6913,12 +6960,20 @@ body.shell-drawer-open {
   width: min(var(--overlay-dropdown-width), calc(100vw - 24px)) !important;
 }
 
-#console-layout .shell-menu {
-  width: min(var(--overlay-menu-width), calc(100vw - 24px)) !important;
+#console-layout :is(.dropdown-panel, .shell-menu, .dashboard-notification-menu, #profile-menu) {
+  border-radius: 12px !important;
+  box-shadow: var(--elevation-popover) !important;
+  border: 1px solid var(--border-subtle) !important;
+  background: var(--bg-card) !important;
+}
+
+#console-layout .shell-menu,
+#console-layout #profile-menu {
+  width: min(var(--overlay-menu-width, 280px), calc(100vw - 24px)) !important;
 }
 
 #console-layout :is(.command-bar-header, .command-bar-footer, .dashboard-notification-header, .profile-menu-summary) {
-  border-color: var(--overlay-surface-border) !important;
+  border-color: var(--border-subtle) !important;
   background: var(--bg-soft) !important;
 }
 

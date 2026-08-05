@@ -11,7 +11,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -32,29 +31,6 @@
     textarea {
       font-family: 'Inter', sans-serif;
     }
-
-    h1,
-    h2,
-    h3,
-    .brand-name {
-      font-family: 'Bricolage Grotesque', sans-serif;
-      letter-spacing: 0;
-    }
-
-    .material-icons {
-      font-family: 'Material Icons' !important;
-      font-weight: normal;
-      font-style: normal;
-      line-height: 1;
-      letter-spacing: normal;
-      text-transform: none;
-      display: inline-block;
-      white-space: nowrap;
-      word-wrap: normal;
-      direction: ltr;
-      -webkit-font-feature-settings: 'liga';
-      -webkit-font-smoothing: antialiased;
-    }
   </style>
   <link href="css/public-pages.css" rel="stylesheet">
   <link href="css/dashboard-khata.css" rel="stylesheet">
@@ -69,7 +45,7 @@
       <div class="auth-kicker">Partner console access</div>
       <div class="auth-header text-center">
         <div class="brand-logo flex items-center justify-center space-x-2 mb-6">
-          <span class="material-icons text-stamp text-3xl">receipt_long</span>
+          <i data-lucide="receipt" class="text-stamp w-8 h-8"></i>
           <span class="brand-name font-bold text-2xl text-ink">TaxBot <span class="text-xs bg-paper-dim text-ink-soft px-2 py-0.5 rounded font-semibold ml-1 brand-badge">Partner</span></span>
         </div>
         <h2 class="text-2xl font-bold text-ink mt-4" id="auth-title">CA Partner Login</h2>
@@ -86,7 +62,7 @@
           <label for="login-password" class="field-label">Password</label>
           <input type="password" id="login-password" class="field-input" placeholder="Enter password" required autocomplete="current-password">
         </div>
-        <button type="submit" class="w-full bg-ink text-paper font-semibold py-3.5 rounded btn-interact hover:bg-stamp">Sign In to Console</button>
+        <button type="submit" class="btn-primary btn-lg w-full">Sign In to Console</button>
       </form>
 
       <!-- Register Form (Hidden by default) -->
@@ -107,7 +83,7 @@
           <label for="reg-password" class="field-label">Password</label>
           <input type="password" id="reg-password" class="field-input" placeholder="Create password" required autocomplete="new-password">
         </div>
-        <button type="submit" class="w-full bg-ink text-paper font-semibold py-3.5 rounded btn-interact hover:bg-stamp">Create Partner Account</button>
+        <button type="submit" class="btn-primary btn-lg w-full">Create Partner Account</button>
       </form>
 
       <div class="auth-footer text-center mt-6 text-sm">
@@ -128,7 +104,7 @@
     <aside class="dashboard-sidebar app-sidebar" id="app-sidebar" aria-label="Primary navigation">
       <div class="dashboard-sidebar-header sidebar-header">
         <div class="dashboard-brand brand-logo">
-          <span class="material-icons dashboard-brand-icon" aria-hidden="true">receipt_long</span>
+          <i data-lucide="receipt" class="dashboard-brand-icon w-6 h-6 text-stamp" aria-hidden="true"></i>
           <span class="dashboard-brand-name brand-name">TaxBot <span class="dashboard-brand-badge brand-badge">Partner</span></span>
         </div>
         <button type="button" class="dashboard-icon-button sidebar-collapse-btn" id="sidebar-toggle" aria-label="Collapse sidebar" aria-pressed="false">

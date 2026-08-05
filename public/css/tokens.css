@@ -11,7 +11,7 @@
   --color-paper-dim: 238 242 234;
   --color-paper-soft: 252 252 248;
   --color-ink: 32 40 32;
-  --color-ink-soft: 95 107 96;
+  --color-ink-soft: 70 82 71;
   --color-ink-muted: 118 129 116;
   --color-rule: 223 227 216;
   --color-rule-soft: 236 239 230;
@@ -67,16 +67,16 @@
   --font-weight-heavy: 800;
   --letter-spacing-tight: 0;
   --letter-spacing-normal: 0;
-  --letter-spacing-label: 0.08em;
-  --letter-spacing-wide: 0.1em;
+  --letter-spacing-label: 0.02em;
+  --letter-spacing-wide: 0.05em;
 
   /* Typography semantic roles */
   --type-page-title-font: var(--font-heading);
-  --type-page-title-size: var(--font-size-28);
+  --type-page-title-size: var(--font-size-24);
   --type-page-title-line-height: var(--line-height-tight);
-  --type-page-title-weight: var(--font-weight-semibold);
-  --type-section-title-font: var(--font-heading);
-  --type-section-title-size: var(--font-size-20);
+  --type-page-title-weight: var(--font-weight-bold);
+  --type-section-title-font: var(--font-body);
+  --type-section-title-size: var(--font-size-18);
   --type-section-title-line-height: var(--line-height-snug);
   --type-section-title-weight: var(--font-weight-semibold);
   --type-card-title-font: var(--font-body);
@@ -88,10 +88,10 @@
   --type-body-weight: var(--font-weight-regular);
   --type-compact-size: var(--font-size-13);
   --type-compact-line-height: var(--line-height-snug);
-  --type-label-font: var(--font-mono);
+  --type-label-font: var(--font-body);
   --type-label-size: var(--font-size-11);
   --type-label-line-height: var(--line-height-snug);
-  --type-label-weight: var(--font-weight-semibold);
+  --type-label-weight: var(--font-weight-medium);
   --type-label-letter-spacing: var(--letter-spacing-label);
   --type-caption-size: var(--font-size-12);
   --type-caption-line-height: var(--line-height-snug);
@@ -210,7 +210,7 @@
 
   /* Shadow and elevation tokens */
   --elevation-none: none;
-  --elevation-card: 0 1px 2px rgb(35 42 36 / 0.04);
+  --elevation-card: 0 1px 3px 0 rgb(35 42 36 / 0.04), 0 1px 2px -1px rgb(35 42 36 / 0.04);
   --elevation-raised: 0 8px 24px rgb(35 42 36 / 0.08);
   --elevation-popover: 0 18px 44px rgb(35 42 36 / 0.14);
   --elevation-modal: 0 24px 64px rgb(35 42 36 / 0.18);
@@ -258,9 +258,9 @@
   --z-max: 100;
 
   /* Application shell */
-  --shell-sidebar-expanded: 248px;
-  --shell-sidebar-collapsed: 72px;
-  --shell-header-height: 64px;
+  --shell-sidebar-expanded: 240px;
+  --shell-sidebar-collapsed: 64px;
+  --shell-header-height: 56px;
   --shell-action-size: 36px;
   --shell-content-gutter: 24px;
   --shell-sidebar-nav-height: 42px;
@@ -271,35 +271,39 @@
   --shell-sidebar-active-bar-width: 3px;
   --shell-sidebar-tooltip-offset: 12px;
   --shell-sidebar-tooltip-radius: var(--radius-8);
-  --shell-sidebar-footer-height: 76px;
-  --shell-sidebar-avatar-size: 40px;
+  --shell-sidebar-footer-height: 64px;
+  --shell-sidebar-avatar-size: 36px;
   --shell-sidebar-collapse-size: 36px;
   --shell-sidebar-label-fade: 180ms var(--ease-standard);
-  --shell-header-padding-x: 24px;
-  --shell-header-gap: 16px;
-  --shell-header-cluster-gap: 10px;
+  --shell-header-padding-x: 16px;
+  --shell-header-gap: 12px;
+  --shell-header-cluster-gap: 8px;
   --shell-header-breadcrumb-width: 168px;
   --shell-header-search-min: 280px;
   --shell-header-search-max: 720px;
-  --shell-header-search-height: 40px;
-  --shell-header-control-height: 40px;
-  --shell-header-profile-height: 40px;
-  --shell-header-avatar-size: 32px;
+  --shell-header-search-height: 36px;
+  --shell-header-control-height: 36px;
+  --shell-header-profile-height: 36px;
+  --shell-header-avatar-size: 28px;
   --shell-header-menu-width: 280px;
   --shell-header-dropdown-width: 340px;
   --shell-header-divider: 1px solid var(--border-subtle);
 
   /* Control sizing and states */
+  --btn-height-sm: 28px;
+  --btn-height-md: 36px;
+  --btn-height-lg: 40px;
+  --radius-btn: var(--radius-8);
   --control-height-xs: 28px;
-  --control-height-sm: 32px;
+  --control-height-sm: 28px;
   --control-height-md: 36px;
-  --control-height-lg: 44px;
+  --control-height-lg: 40px;
   --control-padding-x-xs: 10px;
   --control-padding-x-sm: 12px;
   --control-padding-x-md: 14px;
   --control-padding-x-lg: 18px;
   --control-gap: 8px;
-  --control-radius: var(--radius-8);
+  --control-radius: var(--radius-btn);
   --control-radius-pill: var(--radius-round);
   --control-border-width: 1px;
   --control-font-size: var(--type-button-size);
@@ -372,10 +376,10 @@
   --form-feedback-success: var(--success);
 
   /* Tables and badges */
-  --table-header-height: 40px;
+  --table-header-height: 36px;
   --table-row-height: 44px;
-  --table-cell-padding-x: 14px;
-  --table-cell-padding-y: 10px;
+  --table-cell-padding-x: 12px;
+  --table-cell-padding-y: 8px;
   --table-checkbox-cell-width: 44px;
   --table-action-cell-width: 96px;
   --table-bg: var(--bg-card);
