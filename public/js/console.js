@@ -1369,10 +1369,10 @@ function renderDocuments() {
 
     tbody.innerHTML = filtered.length === 0 ? renderTableEmptyState(4, 'No documents match these filters. Adjust search or upload a file.') : filtered.map(d => `
       <tr class="document-list-row ledger-row ${selectedDocId === d.id ? 'active-row' : ''}" data-doc-id="${d.id}">
-        <td><strong>${escapeHtml(d.name || '-')}</strong></td>
-        <td>${escapeHtml(d.clientName || '-')}</td>
+        <td><strong class="document-name-cell">${escapeHtml(d.name || '-')}</strong></td>
+        <td><span class="document-client-cell">${escapeHtml(d.clientName || '-')}</span></td>
         <td>${renderStatusPill('Draft', d.folder || 'documents')}</td>
-        <td class="numeric">${escapeHtml(d.received || '-')}</td>
+        <td class="numeric document-date-cell">${escapeHtml(d.received || '-')}</td>
       </tr>
     `).join('');
 

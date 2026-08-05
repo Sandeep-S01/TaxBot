@@ -2224,22 +2224,53 @@ body.shell-drawer-open {
 }
 
 #console-layout .dashboard-documents .document-split-layout {
-  gap: 16px !important;
+  align-items: start;
+  gap: 18px !important;
+}
+
+#console-layout .dashboard-documents .document-list-side {
+  min-width: 0;
+}
+
+#console-layout .dashboard-documents .toolbar-card {
+  padding: 14px !important;
+}
+
+#console-layout .dashboard-documents .toolbar-search {
+  min-height: 38px;
+  border-radius: var(--dash-radius-sm);
+  background: var(--dash-surface-soft) !important;
+}
+
+#console-layout .dashboard-documents .toolbar-search svg {
+  width: 15px !important;
+  height: 15px !important;
+  color: var(--dash-ink-soft);
+}
+
+#console-layout .dashboard-documents .toolbar-search input {
+  color: var(--dash-ink);
+  font-size: var(--dash-text-sm) !important;
+  font-weight: 400;
+}
+
+#console-layout .dashboard-documents .toolbar-search input::placeholder {
+  color: rgb(95 107 96 / 0.72);
 }
 
 #console-layout .dashboard-documents .document-folders {
-  gap: 8px !important;
+  gap: 7px !important;
 }
 
 #console-layout .dashboard-documents .doc-folder-chip {
-  min-height: 34px;
-  padding: 0 14px;
-  background: #fff !important;
+  min-height: 32px;
+  padding: 0 12px;
+  background: var(--dash-surface) !important;
   border: 1px solid var(--dash-rule) !important;
-  border-radius: 999px;
+  border-radius: var(--dash-radius-sm);
   color: var(--dash-ink-soft) !important;
   font-family: 'IBM Plex Mono', monospace !important;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -2248,22 +2279,49 @@ body.shell-drawer-open {
 
 #console-layout .dashboard-documents .doc-folder-chip:hover,
 #console-layout .dashboard-documents .doc-folder-chip.active {
-  background: var(--dash-paper-dim) !important;
-  border-color: var(--dash-ink) !important;
+  background: rgb(71 101 82 / 0.08) !important;
+  border-color: rgb(71 101 82 / 0.28) !important;
   color: var(--dash-ink) !important;
 }
 
 #console-layout .dashboard-documents .document-list-row {
   cursor: pointer;
+  transition: background-color .16s ease;
 }
 
 #console-layout .dashboard-documents .document-list-row.active-row td {
-  background: var(--dash-paper-dim) !important;
+  background: rgb(71 101 82 / 0.08) !important;
+}
+
+#console-layout .dashboard-documents .document-name-cell {
+  display: inline-block;
+  max-width: 280px;
+  overflow: hidden;
+  color: var(--dash-ink);
+  font-size: var(--dash-text-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  white-space: nowrap;
+}
+
+#console-layout .dashboard-documents .document-client-cell {
+  color: var(--dash-ink-soft);
+  font-size: var(--dash-text-sm);
+}
+
+#console-layout .dashboard-documents .document-date-cell {
+  color: var(--dash-ink-soft);
+  font-size: 10px !important;
+  letter-spacing: 0.03em;
 }
 
 #console-layout .dashboard-documents #doc-preview-panel {
   align-items: stretch !important;
-  padding: 24px !important;
+  min-height: 420px;
+  padding: 22px !important;
+  border-radius: var(--dash-radius-lg) !important;
   text-align: left !important;
 }
 
@@ -2279,7 +2337,7 @@ body.shell-drawer-open {
 
 #console-layout .dashboard-documents .preview-content-view {
   display: grid;
-  gap: 20px;
+  gap: 18px;
   width: 100%;
 }
 
@@ -2287,24 +2345,24 @@ body.shell-drawer-open {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  padding-bottom: 16px;
+  gap: 14px;
+  padding-bottom: 14px;
   border-bottom: 1px solid var(--dash-rule);
 }
 
 #console-layout .dashboard-documents #preview-filename {
   margin: 0;
   color: var(--dash-ink) !important;
-  font-family: 'Bricolage Grotesque', sans-serif !important;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.2;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
   overflow-wrap: anywhere;
 }
 
 #console-layout .dashboard-documents .preview-ocr-fields {
   display: grid;
-  gap: 14px;
+  gap: 13px;
 }
 
 #console-layout .dashboard-documents .form-grid-2 {
@@ -2328,9 +2386,9 @@ body.shell-drawer-open {
 #console-layout .dashboard-documents .form-group label {
   color: var(--dash-ink-soft) !important;
   font-family: 'IBM Plex Mono', monospace !important;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: .08em;
+  letter-spacing: .06em;
   text-transform: uppercase;
 }
 
@@ -2340,14 +2398,15 @@ body.shell-drawer-open {
 }
 
 #console-layout .dashboard-documents .input-highlight {
-  border-color: var(--dash-ink) !important;
+  border-color: rgb(71 101 82 / 0.42) !important;
+  background: rgb(71 101 82 / 0.06) !important;
   color: var(--dash-ink) !important;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 #console-layout .dashboard-documents .preview-actions-panel {
   display: grid;
-  gap: 10px;
+  gap: 9px;
 }
 
 #console-layout .dashboard-panel-header {
