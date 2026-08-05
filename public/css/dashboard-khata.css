@@ -116,6 +116,7 @@
   min-height: 0;
   overflow-y: auto;
   padding: 14px 12px !important;
+  scrollbar-gutter: stable;
 }
 
 #console-layout .dashboard-nav-list {
@@ -717,7 +718,6 @@ body.shell-drawer-open {
 #console-layout #app-sidebar.collapsed .dashboard-brand-name,
 #console-layout #app-sidebar.collapsed .dashboard-brand-badge,
 #console-layout #app-sidebar.collapsed .dashboard-nav-link .link-text,
-#console-layout #app-sidebar.collapsed .dashboard-nav-count,
 #console-layout #app-sidebar.collapsed .dashboard-firm-copy,
 #console-layout #app-sidebar.collapsed .btn-logout {
   max-width: 0 !important;
@@ -744,6 +744,68 @@ body.shell-drawer-open {
 #console-layout #app-sidebar.collapsed .dashboard-nav-link {
   padding-inline: 0 !important;
   justify-content: center;
+  min-height: 48px;
+}
+
+#console-layout #app-sidebar.collapsed .dashboard-nav-link::before {
+  left: 50%;
+  top: auto;
+  bottom: 6px;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+}
+
+#console-layout #app-sidebar.collapsed .dashboard-nav-link::after {
+  content: attr(data-nav-label);
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 8px 10px;
+  border: 1px solid var(--dash-rule);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgb(35 42 36 / 0.12);
+  color: var(--dash-ink);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--khata-sidebar-transition), transform var(--khata-sidebar-transition);
+  z-index: 60;
+}
+
+#console-layout #app-sidebar.collapsed .dashboard-nav-link:hover,
+#console-layout #app-sidebar.collapsed .dashboard-nav-link:focus-visible,
+#console-layout #app-sidebar.collapsed .dashboard-nav-link.active {
+  transform: none;
+}
+
+#console-layout #app-sidebar.collapsed .dashboard-nav-link:hover::after,
+#console-layout #app-sidebar.collapsed .dashboard-nav-link:focus-visible::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+#console-layout #app-sidebar.collapsed .dashboard-nav-count {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  min-width: 18px;
+  min-height: 18px;
+  padding: 0 5px;
+  margin-left: 0;
+  opacity: 1;
+  max-width: none;
+  pointer-events: none;
+  border-color: #fff !important;
+  background: var(--dash-stamp) !important;
+  color: #fff !important;
+  font-size: 10px;
 }
 
 #console-layout #app-sidebar.collapsed .sidebar-collapse-btn i,

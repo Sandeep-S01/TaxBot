@@ -31,6 +31,7 @@
     const profileLogout = document.getElementById('profile-menu-logout');
     const notificationButton = document.getElementById('notification-btn');
     const notificationMenu = document.getElementById('notifications-dropdown-menu');
+    const navLinks = Array.from(document.querySelectorAll('#app-sidebar .nav-link'));
 
     if (!sidebar || !collapseButton || !mobileMenuButton || !backdrop) return;
 
@@ -55,6 +56,11 @@
       collapseButton.setAttribute('aria-label', active ? 'Expand sidebar' : 'Collapse sidebar');
       collapseButton.title = active ? 'Expand sidebar' : 'Collapse sidebar';
     }
+
+    navLinks.forEach((link) => {
+      const label = link.querySelector('.link-text')?.textContent?.trim();
+      if (label && !link.dataset.navLabel) link.dataset.navLabel = label;
+    });
 
     function setDrawerOpen(open, restoreFocus) {
       const active = !desktopQuery.matches && open;
@@ -111,7 +117,7 @@
       setDrawerOpen(!sidebar.classList.contains('drawer-open'));
     });
     backdrop.addEventListener('click', () => setDrawerOpen(false, true));
-    sidebar.querySelectorAll('.nav-link').forEach((link) => {
+    navLinks.forEach((link) => {
       link.addEventListener('click', () => setDrawerOpen(false));
     });
 
