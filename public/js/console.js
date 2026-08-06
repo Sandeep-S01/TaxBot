@@ -165,12 +165,14 @@ function initRouter() {
     }
 
     const routeMeta = SHELL_ROUTE_META[targetView] || SHELL_ROUTE_META.overview;
+    let activeNavApplied = false;
     navLinks.forEach(link => {
       link.classList.remove('active');
       link.removeAttribute('aria-current');
-      if (link.getAttribute('data-view') === routeMeta.parentView) {
+      if (!activeNavApplied && link.getAttribute('data-view') === routeMeta.parentView) {
         link.classList.add('active');
         link.setAttribute('aria-current', 'page');
+        activeNavApplied = true;
       }
     });
 
@@ -270,6 +272,56 @@ function initIcons() {
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
   }
+}
+
+function updateNavBadge(elementId, count, label, variant = 'neutral') {
+  const badge = document.getElementById(elementId);
+  if (!badge) return;
+  const safeCount = Number(count) || 0;
+  const visible = safeCount > 0;
+  const variantClasses = ['badge-accent', 'badge-warning', 'badge-success', 'badge-error', 'badge-secondary'];
+
+  badge.textContent = safeCount.toLocaleString('en-IN');
+  badge.classList.remove(...variantClasses);
+  badge.classList.add(variant === 'warning' ? 'badge-warning' : variant === 'error' ? 'badge-error' : 'badge-secondary');
+  badge.classList.toggle('is-empty', !visible);
+  badge.toggleAttribute('aria-hidden', !visible);
+
+  if (visible) {
+    const accessibleLabel = `${safeCount.toLocaleString('en-IN')} ${label}`;
+    badge.setAttribute('aria-label', accessibleLabel);
+    badge.title = accessibleLabel;
+  } else {
+    badge.removeAttribute('aria-label');
+    badge.removeAttribute('title');
+  }
+}
+
+function hasUsableGstin(client) {
+  return Boolean(client?.gstin && client.gstin !== 'N/A');
+}
+
+function updateClientOperationalStatuses() {
+  globalClientsList.forEach(c => {
+    const clientTx = globalTransactions.filter(t => t.clientId === c.id);
+    const verified = clientTx.filter(t => t.status === 'Verified').length;
+    const reviewRequired = clientTx.some(t => t.status === 'Review Required');
+    const total = clientTx.length;
+
+    if (total === 0) {
+      c.health = hasUsableGstin(c) ? 50 : 30;
+      c.filedStatus = 'Missing Data';
+    } else {
+      c.health = Math.round((verified / total) * 100);
+      if (!hasUsableGstin(c)) {
+        c.filedStatus = 'Missing Data';
+      } else if (reviewRequired || verified < total) {
+        c.filedStatus = 'Review Required';
+      } else {
+        c.filedStatus = 'Ready';
+      }
+    }
+  });
 }
 
 function setMetricSublineVisible(elementId, shouldShow) {
@@ -383,18 +435,18 @@ async function fetchClientsList() {
       phone: escapeHtml('+' + c.phone),
       plan: c.plan === 'pro' ? 'Partner Pro' : (c.plan === 'starter' ? 'Starter Plan' : 'Trial Plan'),
       lastActivity: 'Active',
-      health: c.gstin ? 95 : 68,
+      health: c.gstin ? 50 : 30,
       status: 'Active',
-      filedStatus: c.plan === 'pro' ? 'Ready' : (c.plan === 'starter' ? 'Review Required' : 'Missing Data')
+      filedStatus: 'Missing Data'
     }));
 
     // Update global counters in HTML
-    document.getElementById('clients-count').textContent = globalClientsList.length;
+    updateNavBadge('clients-count', globalClientsList.length, globalClientsList.length === 1 ? 'client' : 'clients');
 
     // Now fetch real transactions from aggregated API
     await fetchGlobalTransactions();
 
-    // Setup mock notifications linked to actual clients
+    // Build notifications linked to actual client activity
     setupMockNotifications();
     appDataState.clients.loaded = true;
   } catch (err) {
@@ -474,6 +526,8 @@ async function fetchGlobalTransactions() {
         gstin: 'N/A'
       }));
 
+    updateClientOperationalStatuses();
+
     // Build AI insights from clients that need attention
     globalClientsList.forEach(c => {
       if (c.filedStatus !== 'Ready') {
@@ -528,9 +582,9 @@ async function fetchGlobalTransactions() {
 
   // Update badges
   const pendingCount = globalTransactions.filter(t => t.status === 'Review Required').length;
-  document.getElementById('pending-transactions-badge').textContent = pendingCount || globalTransactions.length;
-  document.getElementById('documents-count-badge').textContent = globalDocuments.length;
-  document.getElementById('insights-count-badge').textContent = globalInsights.length;
+  updateNavBadge('pending-transactions-badge', pendingCount, pendingCount === 1 ? 'pending transaction' : 'pending transactions', 'warning');
+  updateNavBadge('documents-count-badge', globalDocuments.length, globalDocuments.length === 1 ? 'document' : 'documents');
+  updateNavBadge('insights-count-badge', globalInsights.length, globalInsights.length === 1 ? 'AI insight' : 'AI insights', 'error');
 }
 
 // --------------------------------------------------------------------------

@@ -125,21 +125,21 @@
             <a href="#clients" class="dashboard-nav-link nav-link" data-view="clients" id="nav-clients">
               <i data-lucide="users" aria-hidden="true"></i>
               <span class="link-text">Clients</span>
-              <span class="dashboard-nav-count badge badge-accent" id="clients-count">0</span>
+              <span class="dashboard-nav-count badge badge-secondary is-empty" id="clients-count" aria-hidden="true">0</span>
             </a>
           </li>
           <li>
             <a href="#transactions" class="dashboard-nav-link nav-link" data-view="transactions" id="nav-transactions">
               <i data-lucide="receipt" aria-hidden="true"></i>
               <span class="link-text">Transactions</span>
-              <span class="dashboard-nav-count badge badge-warning" id="pending-transactions-badge">0</span>
+              <span class="dashboard-nav-count badge badge-warning is-empty" id="pending-transactions-badge" aria-hidden="true">0</span>
             </a>
           </li>
           <li>
             <a href="#documents" class="dashboard-nav-link nav-link" data-view="documents" id="nav-documents">
               <i data-lucide="folder-open" aria-hidden="true"></i>
               <span class="link-text">Documents</span>
-              <span class="dashboard-nav-count badge badge-success" id="documents-count-badge">0</span>
+              <span class="dashboard-nav-count badge badge-secondary is-empty" id="documents-count-badge" aria-hidden="true">0</span>
             </a>
           </li>
           <li>
@@ -152,7 +152,7 @@
             <a href="#insights" class="dashboard-nav-link nav-link" data-view="insights" id="nav-insights">
               <i data-lucide="sparkles" aria-hidden="true"></i>
               <span class="link-text">AI Insights</span>
-              <span class="dashboard-nav-count badge badge-error" id="insights-count-badge">0</span>
+              <span class="dashboard-nav-count badge badge-error is-empty" id="insights-count-badge" aria-hidden="true">0</span>
             </a>
           </li>
           <li>
@@ -215,7 +215,7 @@
           <div class="dashboard-notification-area notification-dropdown">
             <button type="button" class="dashboard-icon-button header-btn" id="notification-btn" aria-label="Notifications" aria-haspopup="true" aria-controls="notifications-dropdown-menu" aria-expanded="false">
               <i data-lucide="bell" aria-hidden="true"></i>
-              <span class="indicator-dot" aria-hidden="true"></span>
+              <span class="indicator-dot hidden" aria-hidden="true"></span>
             </button>
             <div class="dashboard-notification-menu dropdown-menu hidden" id="notifications-dropdown-menu" role="menu" aria-label="Notifications" tabindex="-1" hidden>
               <div class="dashboard-notification-header dropdown-header">

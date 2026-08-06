@@ -54,6 +54,8 @@ function initNotifications() {
       updateNotificationIndicator();
     });
   }
+
+  updateNotificationIndicator();
 }
 
 function updateNotificationIndicator() {
@@ -139,66 +141,48 @@ function renderNotificationsList() {
 
 function setupMockNotifications() {
   const clientName = (c) => String(c?.name || c?.business_name || c?.clientName || '');
-  const acme = globalClientsList.find(c => clientName(c).toLowerCase().includes('acme')) || globalClientsList[0];
-  const patel = globalClientsList.find(c => clientName(c).toLowerCase().includes('patel')) || globalClientsList[1] || globalClientsList[0];
-  const sharma = globalClientsList.find(c => clientName(c).toLowerCase().includes('sharma')) || globalClientsList[2] || globalClientsList[0];
+  const readyClient = globalClientsList.find(c => c.filedStatus === 'Ready');
+  const latestDocument = globalDocuments[0];
 
-  globalNotifications = [
-    {
-      id: 'notif-1',
-      title: 'GST ITC Mismatch Detected',
-      desc: `Mismatched GSTR-2B purchase invoices for ${acme ? clientName(acme) : 'Acme Corp'} (INR 45,200).`,
-      time: '10m ago',
-      unread: true,
-      type: 'critical',
-      action: () => {
-        if (acme) {
-          window.location.hash = `client/${acme.id}`;
-        } else {
-          window.location.hash = 'gst';
-        }
-      },
+  globalNotifications = globalInsights.slice(0, 3).map((insight, index) => ({
+    id: `notif-insight-${insight.id || index}`,
+    title: insight.title || 'Client Review Needed',
+    desc: insight.desc || `Review ${clientName(insight) || 'client'} before the next filing cycle.`,
+    time: index === 0 ? 'Just now' : `${index + 1}h ago`,
+    unread: insight.severity === 'high',
+    type: insight.severity === 'high' ? 'critical' : 'warning',
+    action: () => {
+      if (insight.clientId) {
+        window.location.hash = `client/${insight.clientId}`;
+      } else {
+        window.location.hash = 'insights';
+      }
     },
-    {
-      id: 'notif-2',
-      title: 'New Client Voice Note',
-      desc: `Voice note file processed for ${patel ? clientName(patel) : 'Patel Kirana Store'}.`,
-      time: '1h ago',
-      unread: true,
+  }));
+
+  if (latestDocument) {
+    globalNotifications.unshift({
+      id: `notif-doc-${latestDocument.id}`,
+      title: 'New Document Parsed',
+      desc: `${latestDocument.name || 'Document'} processed for ${latestDocument.clientName || 'client'}.`,
+      time: latestDocument.received || 'Just now',
+      unread: false,
       type: 'success',
-      action: () => {
-        if (patel) {
-          activeClientId = patel.id;
-          window.location.hash = `client/${patel.id}`;
-          setTimeout(() => {
-            const docTab = document.querySelector('[data-ws-tab="documents"]');
-            if (docTab) docTab.click();
-          }, 100);
-        } else {
-          window.location.hash = 'documents';
-        }
-      },
-    },
-    {
-      id: 'notif-3',
+      action: () => { window.location.hash = 'documents'; },
+    });
+  }
+
+  if (readyClient) {
+    globalNotifications.push({
+      id: `notif-ready-${readyClient.id}`,
       title: 'GSTR-1 Ready to File',
-      desc: `Ledger check 100% complete for ${sharma ? clientName(sharma) : 'Sandeep Sharma'}.`,
-      time: '3h ago',
+      desc: `Ledger check complete for ${clientName(readyClient) || 'client'}.`,
+      time: 'Today',
       unread: false,
       type: 'warning',
-      action: () => {
-        if (sharma) {
-          window.location.hash = `client/${sharma.id}`;
-          setTimeout(() => {
-            const gstTab = document.querySelector('[data-ws-tab="gst"]');
-            if (gstTab) gstTab.click();
-          }, 100);
-        } else {
-          window.location.hash = 'gst';
-        }
-      },
-    },
-  ];
+      action: () => { window.location.hash = 'gst'; },
+    });
+  }
 
   updateNotificationIndicator();
 }

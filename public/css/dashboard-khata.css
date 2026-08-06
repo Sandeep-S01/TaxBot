@@ -5640,6 +5640,19 @@ body.shell-drawer-open {
   transform: none !important;
 }
 
+#console-layout .dashboard-nav-count.is-empty,
+#console-layout.sidebar-collapsed #app-sidebar .dashboard-nav-count.is-empty,
+#console-layout #app-sidebar.collapsed .dashboard-nav-count.is-empty {
+  display: none !important;
+}
+
+#console-layout .dashboard-sidebar .dashboard-nav-link:not(.active)::before,
+#console-layout .dashboard-sidebar .dashboard-nav-link:not(.active):hover::before,
+#console-layout .dashboard-sidebar .dashboard-nav-link:not(.active):focus-visible::before {
+  opacity: 0 !important;
+  transform: translateY(-50%) scaleY(0.55) !important;
+}
+
 #console-layout.sidebar-collapsed #app-sidebar .dashboard-sidebar-footer,
 #console-layout #app-sidebar.collapsed .dashboard-sidebar-footer {
   min-height: var(--shell-sidebar-footer-height) !important;
@@ -5686,10 +5699,11 @@ body.shell-drawer-open {
 
 #console-layout .dashboard-top-left {
   display: grid !important;
-  grid-template-columns: auto minmax(96px, var(--shell-header-breadcrumb-width)) minmax(var(--shell-header-search-min), var(--shell-header-search-max));
+  grid-template-columns: auto minmax(72px, var(--shell-header-breadcrumb-width)) minmax(0, var(--shell-header-search-max));
   align-items: center !important;
   justify-content: start !important;
   min-width: 0;
+  overflow: hidden;
   gap: var(--shell-header-cluster-gap) !important;
 }
 
@@ -5697,7 +5711,8 @@ body.shell-drawer-open {
   display: flex !important;
   align-items: center !important;
   justify-content: flex-end !important;
-  min-width: 0;
+  min-width: max-content;
+  flex: 0 0 auto;
   gap: var(--shell-header-cluster-gap) !important;
 }
 
@@ -5733,7 +5748,7 @@ body.shell-drawer-open {
   grid-template-columns: var(--icon-action-size) minmax(0, 1fr) auto;
   align-items: center !important;
   width: min(46vw, var(--shell-header-search-max)) !important;
-  min-width: var(--shell-header-search-min) !important;
+  min-width: 0 !important;
   max-width: var(--shell-header-search-max) !important;
   height: var(--shell-header-search-height) !important;
   min-height: var(--shell-header-search-height) !important;
@@ -5828,9 +5843,16 @@ body.shell-drawer-open {
 
 #console-layout .dashboard-profile-name {
   max-width: 144px;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+#console-layout .dashboard-notification-area,
+#console-layout .dashboard-live-link,
+#console-layout .dashboard-profile {
+  flex: 0 0 auto;
 }
 
 #console-layout .dashboard-notification-area,
