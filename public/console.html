@@ -283,14 +283,14 @@
           </div>
 
           <!-- Top KPI Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 kpi-grid">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 kpi-grid" id="overview-kpi-grid">
             <div class="dashboard-card kpi-card">
               <div class="flex justify-between items-start mb-4 kpi-meta">
                 <span class="dashboard-label kpi-label">Active Clients</span>
                 <i data-lucide="users" class="w-5 h-5 kpi-icon"></i>
               </div>
               <div class="kpi-value numeric" id="kpi-active-clients">0</div>
-              <div class="kpi-change flex items-center space-x-1 mt-2">
+              <div class="kpi-change flex items-center space-x-1 mt-2 hidden" id="kpi-active-clients-sub">
                 <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> <span>+4 this month</span>
               </div>
             </div>
@@ -301,7 +301,7 @@
                 <i data-lucide="check-circle" class="w-5 h-5 kpi-icon"></i>
               </div>
               <div class="kpi-value numeric" id="kpi-gst-ready">0</div>
-              <div class="kpi-change mt-2" id="kpi-gst-ready-sub">0 / 0 reconciled</div>
+              <div class="kpi-change mt-2 hidden" id="kpi-gst-ready-sub">0 / 0 reconciled</div>
             </div>
 
             <div class="dashboard-card kpi-card">
@@ -310,7 +310,7 @@
                 <i data-lucide="alert-circle" class="w-5 h-5 kpi-icon"></i>
               </div>
               <div class="kpi-value numeric" id="kpi-pending-filings">0</div>
-              <div class="kpi-change mt-2">Action required before GSTR-1</div>
+              <div class="kpi-change mt-2 hidden" id="kpi-pending-filings-sub">Action required before GSTR-1</div>
             </div>
 
             <div class="dashboard-card kpi-card">
@@ -319,7 +319,7 @@
                 <i data-lucide="file-text" class="w-5 h-5 kpi-icon"></i>
               </div>
               <div class="kpi-value numeric" id="kpi-docs-today">0</div>
-              <div class="kpi-change flex items-center space-x-1 mt-2">
+              <div class="kpi-change flex items-center space-x-1 mt-2 hidden" id="kpi-docs-today-sub">
                 <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i> <span>+12% vs yesterday</span>
               </div>
             </div>
@@ -330,7 +330,7 @@
                 <i data-lucide="receipt" class="w-5 h-5 kpi-icon"></i>
               </div>
               <div class="kpi-value numeric" id="kpi-trans-today">0</div>
-              <div class="kpi-change mt-2">Auto-extracted via AI</div>
+              <div class="kpi-change mt-2 hidden" id="kpi-trans-today-sub">Auto-extracted via AI</div>
             </div>
 
             <div class="dashboard-card kpi-card">
@@ -339,9 +339,22 @@
                 <i data-lucide="credit-card" class="w-5 h-5 kpi-icon"></i>
               </div>
               <div class="kpi-value numeric" id="kpi-monthly-rev">Rs. 0</div>
-              <div class="kpi-change flex items-center space-x-1 mt-2">
+              <div class="kpi-change flex items-center space-x-1 mt-2 hidden" id="kpi-monthly-rev-sub">
                 <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> <span>+12.4% MoM</span>
               </div>
+            </div>
+          </div>
+
+          <div class="dashboard-card overview-zero-state hidden" id="overview-zero-state">
+            <div class="overview-zero-state-content">
+              <i data-lucide="user-plus" class="overview-zero-state-icon"></i>
+              <div>
+                <h2>Get Started</h2>
+                <p>Add your first client to start tracking GST, transactions, and filings.</p>
+              </div>
+              <button class="btn-khata-primary overview-zero-state-cta flex items-center space-x-2" id="overview-zero-add-client-btn">
+                <i data-lucide="plus" class="w-4 h-4"></i> <span>Add Client</span>
+              </button>
             </div>
           </div>
 
@@ -577,22 +590,22 @@
             <div class="dashboard-card workspace-kpi-card">
               <div class="dashboard-label mb-1">Sales Revenue (Monthly)</div>
               <div class="workspace-kpi-value numeric" id="ws-kpi-sales">Rs. 0</div>
-              <span class="workspace-kpi-sub flex items-center space-x-0.5 mt-1" id="ws-kpi-sales-change"><i data-lucide="trending-up" class="w-3 h-3"></i> <span>+18% vs last month</span></span>
+              <span class="workspace-kpi-sub flex items-center space-x-0.5 mt-1 hidden" id="ws-kpi-sales-change"><i data-lucide="trending-up" class="w-3 h-3"></i> <span>+18% vs last month</span></span>
             </div>
             <div class="dashboard-card workspace-kpi-card">
               <div class="dashboard-label mb-1">Total Expenses (Monthly)</div>
               <div class="workspace-kpi-value numeric" id="ws-kpi-expenses">Rs. 0</div>
-              <span class="workspace-kpi-sub block mt-1">Auto-reconciled via OCR</span>
+              <span class="workspace-kpi-sub block mt-1 hidden" id="ws-kpi-expenses-sub">Auto-reconciled via OCR</span>
             </div>
             <div class="dashboard-card workspace-kpi-card">
               <div class="dashboard-label mb-1">GST Payable (Net)</div>
               <div class="workspace-kpi-value numeric" id="ws-kpi-gst-payable">Rs. 0</div>
-              <span class="workspace-kpi-sub block mt-1">Based on sales transactions</span>
+              <span class="workspace-kpi-sub block mt-1 hidden" id="ws-kpi-gst-payable-sub">Based on sales transactions</span>
             </div>
             <div class="dashboard-card workspace-kpi-card">
               <div class="dashboard-label mb-1">Input Tax Credit (ITC)</div>
               <div class="workspace-kpi-value numeric" id="ws-kpi-itc">Rs. 0</div>
-              <span class="workspace-kpi-sub block mt-1" id="ws-kpi-itc-sub">Verified from GSTR-2B</span>
+              <span class="workspace-kpi-sub block mt-1 hidden" id="ws-kpi-itc-sub">Verified from GSTR-2B</span>
             </div>
           </div>
 
@@ -955,22 +968,22 @@
             <div class="dashboard-card gst-kpi-card">
               <div class="dashboard-label mb-1">GST Liability (Total)</div>
               <div class="gst-kpi-value numeric" id="gst-total-liability-metric">Rs 0</div>
-              <span class="gst-kpi-sub mt-1 block">Accrued across active clients</span>
+              <span class="gst-kpi-sub mt-1 block hidden" id="gst-total-liability-sub">Accrued across active clients</span>
             </div>
             <div class="dashboard-card gst-kpi-card">
               <div class="dashboard-label mb-1">Input Tax Credit (Total)</div>
               <div class="gst-kpi-value numeric" id="gst-total-itc-metric">Rs 0</div>
-              <span class="gst-kpi-sub mt-1 block">Matched from GSTR-2B logs</span>
+              <span class="gst-kpi-sub mt-1 block hidden" id="gst-total-itc-sub">Matched from GSTR-2B logs</span>
             </div>
             <div class="dashboard-card gst-kpi-card">
               <div class="dashboard-label mb-1">Ready to File</div>
               <div class="gst-kpi-value numeric" id="gst-ready-to-file-metric">0</div>
-              <span class="gst-kpi-sub mt-1 block">100% reconciled</span>
+              <span class="gst-kpi-sub mt-1 block hidden" id="gst-ready-to-file-sub">100% reconciled</span>
             </div>
             <div class="dashboard-card gst-kpi-card">
               <div class="dashboard-label mb-1">Needs Review / Missing Data</div>
               <div class="gst-kpi-value numeric" id="gst-needs-review-metric">0</div>
-              <span class="gst-kpi-sub mt-1 block">Unresolved mismatches</span>
+              <span class="gst-kpi-sub mt-1 block hidden" id="gst-needs-review-sub">Unresolved mismatches</span>
             </div>
           </div>
 

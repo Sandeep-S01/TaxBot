@@ -4735,15 +4735,19 @@ body.shell-drawer-open {
 #console-layout .dashboard-overview .kpi-meta {
   margin-bottom: 16px !important;
   gap: 10px;
+  min-height: 32px;
 }
 
 #console-layout .dashboard-overview .kpi-label {
   max-width: 110px;
+  min-height: 32px;
   color: var(--dash-ink-soft);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.12em;
   line-height: 1.45;
+  display: flex;
+  align-items: flex-start;
 }
 
 #console-layout .dashboard-overview .kpi-icon {
@@ -4776,6 +4780,49 @@ body.shell-drawer-open {
   width: 14px !important;
   height: 14px !important;
   stroke-width: 1.9;
+}
+
+#console-layout .dashboard-overview .overview-zero-state {
+  margin-bottom: 18px;
+  padding: 28px 24px;
+  text-align: center;
+}
+
+#console-layout .dashboard-overview .overview-zero-state-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 520px;
+  margin: 0 auto;
+  gap: 16px;
+}
+
+#console-layout .dashboard-overview .overview-zero-state-icon {
+  width: 30px;
+  height: 30px;
+  color: var(--dash-sage);
+  stroke-width: 1.8;
+}
+
+#console-layout .dashboard-overview .overview-zero-state h2 {
+  color: var(--dash-ink);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+#console-layout .dashboard-overview .overview-zero-state p {
+  margin-top: 6px;
+  color: var(--dash-ink-soft);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#console-layout .dashboard-overview .overview-zero-state-cta {
+  min-height: 44px;
+  padding: 0 18px !important;
+  font-size: 14px !important;
+  font-weight: 700;
 }
 
 #console-layout .dashboard-overview .grid.grid-cols-1.lg\:grid-cols-12 {

@@ -272,6 +272,12 @@ function initIcons() {
   }
 }
 
+function setMetricSublineVisible(elementId, shouldShow) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+  element.classList.toggle('hidden', !shouldShow);
+}
+
 function getActiveViewName() {
   const activeSection = document.querySelector('.view-section.active');
   return activeSection ? activeSection.id.replace('view-', '') : 'overview';
@@ -533,10 +539,19 @@ async function fetchGlobalTransactions() {
 
 // Screen 1: Overview Dashboard
 function renderOverview() {
-  document.getElementById('kpi-active-clients').textContent = globalClientsList.length;
+  const activeClientCount = globalClientsList.length;
+  const overviewKpiGrid = document.getElementById('overview-kpi-grid');
+  const overviewZeroState = document.getElementById('overview-zero-state');
+  const isConfirmedZeroAccount = !appDataState.clients.loading && !appDataState.clients.error && activeClientCount === 0;
+  if (overviewKpiGrid && overviewZeroState) {
+    overviewKpiGrid.classList.toggle('hidden', isConfirmedZeroAccount);
+    overviewZeroState.classList.toggle('hidden', !isConfirmedZeroAccount);
+  }
+
+  document.getElementById('kpi-active-clients').textContent = activeClientCount;
   const readyCount = globalClientsList.filter(c => c.filedStatus === 'Ready').length;
   document.getElementById('kpi-gst-ready').textContent = readyCount;
-  document.getElementById('kpi-gst-ready-sub').textContent = `${readyCount} / ${globalClientsList.length} reconciled`;
+  document.getElementById('kpi-gst-ready-sub').textContent = `${readyCount} / ${activeClientCount} reconciled`;
   
   const actionCount = globalClientsList.filter(c => c.filedStatus !== 'Ready').length;
   document.getElementById('kpi-pending-filings').textContent = actionCount;
@@ -564,6 +579,13 @@ function renderOverview() {
     totalRev += rate;
   });
   document.getElementById('kpi-monthly-rev').textContent = `₹${totalRev.toLocaleString('en-IN')}`;
+
+  setMetricSublineVisible('kpi-active-clients-sub', activeClientCount > 0);
+  setMetricSublineVisible('kpi-gst-ready-sub', readyCount > 0 && activeClientCount > 0);
+  setMetricSublineVisible('kpi-pending-filings-sub', actionCount > 0);
+  setMetricSublineVisible('kpi-docs-today-sub', globalDocuments.length > 0);
+  setMetricSublineVisible('kpi-trans-today-sub', globalTransactions.length > 0);
+  setMetricSublineVisible('kpi-monthly-rev-sub', totalRev > 0);
 
   // Urgent actions count text
   document.getElementById('kpi-urgent-actions-count').textContent = `${globalInsights.length} Action Items`;
@@ -859,6 +881,10 @@ async function renderClientWorkspace(clientId) {
   document.getElementById('ws-kpi-expenses').textContent = `Rs ${expenseVal.toLocaleString('en-IN')}`;
   document.getElementById('ws-kpi-gst-payable').textContent = `Rs ${gstDueVal.toLocaleString('en-IN')}`;
   document.getElementById('ws-kpi-itc').textContent = `Rs ${itcVal.toLocaleString('en-IN')}`;
+  setMetricSublineVisible('ws-kpi-sales-change', salesVal > 0);
+  setMetricSublineVisible('ws-kpi-expenses-sub', expenseVal > 0);
+  setMetricSublineVisible('ws-kpi-gst-payable-sub', gstDueVal > 0);
+  setMetricSublineVisible('ws-kpi-itc-sub', itcVal > 0);
 
   // Setup sub-tabs
   const tabLinks = document.querySelectorAll('[data-ws-tab]');
@@ -1551,7 +1577,12 @@ async function renderGSTCenter() {
   
   const readyCount = globalClientsList.filter(c => c.filedStatus === 'Ready').length;
   document.getElementById('gst-ready-to-file-metric').textContent = readyCount;
-  document.getElementById('gst-needs-review-metric').textContent = globalClientsList.length - readyCount;
+  const needsReviewCount = globalClientsList.length - readyCount;
+  document.getElementById('gst-needs-review-metric').textContent = needsReviewCount;
+  setMetricSublineVisible('gst-total-liability-sub', report.totalOutwardTaxableValue > 0);
+  setMetricSublineVisible('gst-total-itc-sub', report.totalInwardTaxAmount > 0);
+  setMetricSublineVisible('gst-ready-to-file-sub', readyCount > 0);
+  setMetricSublineVisible('gst-needs-review-sub', needsReviewCount > 0);
 
   if (report.incomplete && report.warnings?.length) {
     showToast('GSTR report compiled with review-needed client calculations.', 'warning');
@@ -2131,6 +2162,7 @@ function initModals() {
   const addClientModal = document.getElementById('add-client-modal');
   const openTriggers = [
     document.getElementById('overview-add-client-btn'),
+    document.getElementById('overview-zero-add-client-btn'),
     document.getElementById('qa-add-client'),
     document.getElementById('btn-add-client-modal-trigger')
   ];
