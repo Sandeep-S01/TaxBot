@@ -8573,3 +8573,470 @@ body.shell-drawer-open {
     max-width: 250px !important;
   }
 }
+
+/* Overview repair - shared high-density console scaffold */
+#console-layout .dashboard-overview {
+  gap: var(--space-24) !important;
+}
+
+#console-layout .dashboard-overview .view-header {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: var(--space-16) !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+#console-layout .dashboard-overview .view-header h1 {
+  margin: 8px 0 0 !important;
+  color: var(--ink) !important;
+  font-family: var(--font-heading) !important;
+  font-size: var(--font-size-32) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1.12 !important;
+  letter-spacing: 0 !important;
+}
+
+#console-layout .dashboard-overview .view-header p:not(.dashboard-label) {
+  max-width: 680px !important;
+  margin: 8px 0 0 !important;
+  color: var(--ink-soft) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--font-size-14) !important;
+  line-height: 1.35 !important;
+}
+
+#console-layout .dashboard-overview #overview-add-client-btn,
+#console-layout .dashboard-overview #overview-zero-add-client-btn,
+#console-layout .dashboard-overview .action-item button {
+  min-height: 36px !important;
+  padding: 0 14px !important;
+  border-radius: var(--radius-8) !important;
+  font-size: var(--font-size-13) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1 !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-overview #overview-add-client-btn svg,
+#console-layout .dashboard-overview #overview-zero-add-client-btn svg {
+  width: 16px !important;
+  height: 16px !important;
+  stroke-width: var(--icon-stroke-thin) !important;
+}
+
+#console-layout .dashboard-overview .kpi-grid {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: var(--space-12) !important;
+  margin: 0 !important;
+}
+
+#console-layout .dashboard-overview .kpi-card {
+  min-height: 104px !important;
+  padding: 16px !important;
+  border: 1px solid rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper-soft) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#console-layout .dashboard-overview .kpi-card::before {
+  display: none !important;
+}
+
+#console-layout .dashboard-overview .kpi-card:hover {
+  border-color: rgb(var(--color-rule) / 0.75) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#console-layout .dashboard-overview .kpi-meta {
+  min-height: 24px !important;
+  margin: 0 0 14px !important;
+  gap: var(--space-8) !important;
+}
+
+#console-layout .dashboard-overview .kpi-label {
+  max-width: 120px !important;
+  min-height: 0 !important;
+  color: var(--ink) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  font-weight: var(--font-weight-regular) !important;
+  line-height: 1.25 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: uppercase !important;
+}
+
+#console-layout .dashboard-overview .kpi-icon {
+  width: 17px !important;
+  height: 17px !important;
+  color: var(--sage) !important;
+  stroke-width: var(--icon-stroke-thin) !important;
+}
+
+#console-layout .dashboard-overview .kpi-value {
+  margin: 0 !important;
+  color: var(--ink) !important;
+  font-family: var(--font-mono) !important;
+  font-size: var(--font-size-24) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  text-align: right !important;
+}
+
+#console-layout .dashboard-overview .kpi-change {
+  min-height: 22px !important;
+  margin-top: var(--space-10) !important;
+  color: var(--ink-soft) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--font-size-12) !important;
+  font-weight: var(--font-weight-regular) !important;
+  line-height: 1.3 !important;
+}
+
+#console-layout .dashboard-overview .kpi-change svg {
+  width: 12px !important;
+  height: 12px !important;
+  stroke-width: var(--icon-stroke-thin) !important;
+}
+
+#console-layout .dashboard-overview .analytics-grid,
+#console-layout .dashboard-overview .dashboard-split {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  gap: var(--space-16) !important;
+  margin: 0 !important;
+}
+
+#console-layout .dashboard-overview .chart-card,
+#console-layout .dashboard-overview .dashboard-card {
+  border: 1px solid rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper-soft) !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-overview .chart-card {
+  padding: 18px 20px !important;
+}
+
+#console-layout .dashboard-overview .card-header {
+  margin-bottom: var(--space-12) !important;
+}
+
+#console-layout .dashboard-overview .card-title {
+  color: var(--ink) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--font-size-16) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1.25 !important;
+  letter-spacing: 0 !important;
+}
+
+#console-layout .dashboard-overview .card-title svg {
+  width: 16px !important;
+  height: 16px !important;
+  stroke-width: var(--icon-stroke-thin) !important;
+}
+
+#console-layout .dashboard-overview .card-subtitle {
+  max-width: 560px !important;
+  margin-top: var(--space-6) !important;
+  color: var(--ink-soft) !important;
+  font-size: var(--font-size-13) !important;
+  line-height: 1.35 !important;
+}
+
+#console-layout .dashboard-overview .chart-container {
+  height: 190px !important;
+  margin-top: var(--space-14) !important;
+  padding: var(--space-16) !important;
+  border: 1px solid rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper) !important;
+}
+
+#console-layout .dashboard-overview .chart-container .dashboard-empty-state {
+  min-height: 130px !important;
+  padding: var(--space-16) !important;
+  border: 1px dashed rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-8) !important;
+  background: transparent !important;
+}
+
+#console-layout .dashboard-overview .chart-container .dashboard-empty-state p {
+  max-width: 360px !important;
+  color: var(--ink-soft) !important;
+  font-size: var(--font-size-13) !important;
+  line-height: 1.35 !important;
+}
+
+#console-layout .dashboard-overview .dashboard-split .dashboard-card {
+  padding: 18px 20px !important;
+}
+
+#console-layout .dashboard-overview .card-alert {
+  border-color: rgb(var(--color-rule) / 0.58) !important;
+  background: var(--paper-soft) !important;
+}
+
+#console-layout .dashboard-overview .card-alert .card-title,
+#console-layout .dashboard-overview .card-alert .card-title svg {
+  color: var(--stamp) !important;
+}
+
+#console-layout .dashboard-overview .overview-card-rule {
+  padding-bottom: var(--space-12) !important;
+  border-bottom: 1px solid rgb(var(--color-rule) / 0.65) !important;
+}
+
+#console-layout .dashboard-overview .action-list {
+  gap: 0 !important;
+}
+
+#console-layout .dashboard-overview .action-item {
+  min-height: 58px !important;
+  gap: var(--space-12) !important;
+  padding: 10px 0 !important;
+  border-bottom: 1px solid rgb(var(--color-rule) / 0.55) !important;
+}
+
+#console-layout .dashboard-overview .action-item:last-child {
+  border-bottom: 0 !important;
+}
+
+#console-layout .dashboard-overview .action-details span:first-child,
+#console-layout .dashboard-overview .quick-action-btn span,
+#console-layout .dashboard-overview .feed-text {
+  color: var(--ink) !important;
+  font-size: var(--font-size-13) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1.3 !important;
+}
+
+#console-layout .dashboard-overview .action-details span:last-child {
+  margin-top: var(--space-4) !important;
+  color: var(--ink-soft) !important;
+  font-size: var(--font-size-12) !important;
+  line-height: 1.3 !important;
+}
+
+#console-layout .dashboard-overview .status-pill,
+#console-layout .dashboard-overview .feed-time,
+#console-layout .dashboard-overview .feed-amount,
+#console-layout .dashboard-overview .metric-value {
+  font-family: var(--font-mono) !important;
+}
+
+#console-layout .dashboard-overview .health-breakdown {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: var(--space-8) !important;
+}
+
+#console-layout .dashboard-overview .health-metric-card {
+  min-height: 76px !important;
+  padding: var(--space-12) !important;
+  border: 1px solid rgb(var(--color-rule) / 0.55) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper) !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-overview .metric-value {
+  color: var(--ink) !important;
+  font-size: var(--font-size-24) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1 !important;
+}
+
+#console-layout .dashboard-overview .metric-label {
+  margin-top: var(--space-8) !important;
+  color: var(--ink-soft) !important;
+  font-size: var(--font-size-12) !important;
+  line-height: 1.25 !important;
+}
+
+#console-layout .dashboard-overview .health-visual-bar {
+  height: 10px !important;
+  margin-top: var(--space-14) !important;
+  border: 1px solid rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-round) !important;
+  background: var(--paper-dim) !important;
+  overflow: hidden !important;
+}
+
+#console-layout .dashboard-overview .quick-actions-panel {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: var(--space-10) !important;
+}
+
+#console-layout .dashboard-overview .quick-action-btn {
+  min-height: 72px !important;
+  padding: var(--space-12) !important;
+  border: 1px solid rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper) !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-overview .quick-action-btn:hover {
+  border-color: rgb(var(--color-rule) / 0.75) !important;
+  background: var(--paper-dim) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-overview .quick-action-icon {
+  width: 28px !important;
+  height: 28px !important;
+  margin-bottom: var(--space-8) !important;
+  border: 1px solid rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-round) !important;
+  background: var(--paper-soft) !important;
+  color: var(--sage) !important;
+}
+
+#console-layout .dashboard-overview .quick-action-icon svg {
+  width: 15px !important;
+  height: 15px !important;
+  stroke-width: var(--icon-stroke-thin) !important;
+}
+
+#console-layout .dashboard-overview .activity-feed {
+  gap: 0 !important;
+}
+
+#console-layout .dashboard-overview .feed-item {
+  min-height: 52px !important;
+  padding: 10px 0 !important;
+  border-top: 0 !important;
+  border-bottom: 1px solid rgb(var(--color-rule) / 0.55) !important;
+}
+
+#console-layout .dashboard-overview .feed-item:last-child {
+  border-bottom: 0 !important;
+}
+
+#console-layout .dashboard-overview .feed-marker {
+  width: 8px !important;
+  height: 8px !important;
+  margin-top: 5px !important;
+  border-radius: var(--radius-round) !important;
+}
+
+#console-layout .dashboard-overview .feed-amount,
+#console-layout .dashboard-overview .feed-time {
+  color: var(--ink-soft) !important;
+  font-size: var(--font-size-12) !important;
+  line-height: 1.25 !important;
+}
+
+#console-layout .dashboard-overview .overview-zero-state {
+  margin: 0 !important;
+  padding: var(--space-24) !important;
+  border: 1px dashed rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper-soft) !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-overview .overview-zero-state-content {
+  gap: var(--space-12) !important;
+}
+
+#console-layout .dashboard-overview .overview-zero-state h2 {
+  color: var(--ink) !important;
+  font-size: var(--font-size-20) !important;
+  font-weight: var(--font-weight-semibold) !important;
+}
+
+#console-layout .dashboard-overview .overview-zero-state p {
+  color: var(--ink-soft) !important;
+  font-size: var(--font-size-13) !important;
+}
+
+@media (max-width: 1280px) {
+  #console-layout .dashboard-overview .kpi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  #console-layout .dashboard-overview .analytics-grid,
+  #console-layout .dashboard-overview .dashboard-split {
+    grid-template-columns: 1fr !important;
+  }
+
+  #console-layout .dashboard-overview .analytics-grid > *,
+  #console-layout .dashboard-overview .dashboard-split > * {
+    grid-column: auto !important;
+  }
+}
+
+@media (max-width: 768px) {
+  #console-layout .dashboard-overview {
+    gap: var(--space-16) !important;
+  }
+
+  #console-layout .dashboard-overview .view-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  #console-layout .dashboard-overview .view-header h1 {
+    font-size: var(--font-size-24) !important;
+  }
+
+  #console-layout .dashboard-overview .view-actions,
+  #console-layout .dashboard-overview .view-actions button {
+    width: 100% !important;
+  }
+
+  #console-layout .dashboard-overview .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: var(--space-12) !important;
+  }
+
+  #console-layout .dashboard-overview .kpi-card {
+    min-height: 104px !important;
+    padding: var(--space-12) !important;
+  }
+
+  #console-layout .dashboard-overview .kpi-value {
+    font-size: var(--font-size-24) !important;
+  }
+
+  #console-layout .dashboard-overview .chart-card,
+  #console-layout .dashboard-overview .dashboard-split .dashboard-card {
+    padding: var(--space-16) !important;
+  }
+
+  #console-layout .dashboard-overview .chart-container {
+    height: 200px !important;
+    padding: var(--space-12) !important;
+  }
+
+  #console-layout .dashboard-overview .action-item {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  #console-layout .dashboard-overview .action-item button {
+    width: 100% !important;
+  }
+
+  #console-layout .dashboard-overview .health-breakdown {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #console-layout .dashboard-overview .quick-actions-panel {
+    grid-template-columns: 1fr !important;
+  }
+}
