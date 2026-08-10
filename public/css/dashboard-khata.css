@@ -9040,3 +9040,371 @@ body.shell-drawer-open {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* Clients repair - shared high-density ledger scaffold */
+#console-layout .dashboard-clients {
+  gap: var(--space-24) !important;
+}
+
+#console-layout .dashboard-clients .view-header {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: var(--space-16) !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+#console-layout .dashboard-clients .view-header h1 {
+  margin: 8px 0 0 !important;
+  color: var(--ink) !important;
+  font-family: var(--font-heading) !important;
+  font-size: var(--font-size-32) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1.12 !important;
+  letter-spacing: 0 !important;
+}
+
+#console-layout .dashboard-clients .view-header p:not(.dashboard-label) {
+  max-width: 680px !important;
+  margin: 8px 0 0 !important;
+  color: var(--ink-soft) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--font-size-14) !important;
+  line-height: 1.35 !important;
+}
+
+#console-layout .dashboard-clients #btn-add-client-modal-trigger {
+  min-height: 36px !important;
+  padding: 0 14px !important;
+  border-radius: var(--radius-8) !important;
+  font-size: var(--font-size-13) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1 !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-clients #btn-add-client-modal-trigger svg {
+  width: 16px !important;
+  height: 16px !important;
+  stroke-width: var(--icon-stroke-thin) !important;
+}
+
+#console-layout .dashboard-clients .clients-toolbar {
+  display: grid !important;
+  grid-template-columns: minmax(260px, 1fr) auto !important;
+  align-items: center !important;
+  gap: var(--space-12) !important;
+  min-height: 54px !important;
+  padding: var(--space-10) var(--space-12) !important;
+  border: 1px solid rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper-soft) !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-clients .clients-toolbar .toolbar-search {
+  min-height: 36px !important;
+  height: 36px !important;
+  padding: 0 12px !important;
+  gap: 10px !important;
+  border: 1px solid rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper) !important;
+  color: var(--ink-soft) !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-clients .clients-toolbar .toolbar-search svg {
+  width: 18px !important;
+  height: 18px !important;
+  color: rgb(var(--color-ink-muted) / 0.55) !important;
+  stroke-width: var(--icon-stroke-thin) !important;
+}
+
+#console-layout .dashboard-clients .clients-toolbar .toolbar-search input {
+  min-height: 0 !important;
+  color: var(--ink) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--font-size-13) !important;
+  line-height: 1.2 !important;
+}
+
+#console-layout .dashboard-clients .clients-toolbar .toolbar-search input::placeholder {
+  color: var(--ink-soft) !important;
+  opacity: 0.78 !important;
+}
+
+#console-layout .dashboard-clients .toolbar-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: var(--space-10) !important;
+  flex-wrap: nowrap !important;
+}
+
+#console-layout .dashboard-clients .filter-group {
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 28px !important;
+  border: 1px solid rgb(var(--color-rule) / 0.55) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper) !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-clients .filter-tab {
+  min-height: 28px !important;
+  padding: 0 10px !important;
+  border: 0 !important;
+  border-right: 1px solid rgb(var(--color-rule) / 0.55) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--ink) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  font-weight: var(--font-weight-regular) !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  text-transform: uppercase !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-clients .filter-tab:last-child {
+  border-right: 0 !important;
+}
+
+#console-layout .dashboard-clients .filter-tab:hover,
+#console-layout .dashboard-clients .filter-tab:focus-visible,
+#console-layout .dashboard-clients .filter-tab.active {
+  background: var(--paper-dim) !important;
+  color: var(--ink) !important;
+}
+
+#console-layout .dashboard-clients .clients-result-count {
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 28px !important;
+  padding: 0 10px !important;
+  border: 1px solid rgb(var(--color-rule) / 0.55) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  font-weight: var(--font-weight-regular) !important;
+  letter-spacing: 0 !important;
+  text-transform: uppercase !important;
+}
+
+#console-layout .dashboard-clients #clients-list-container {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: var(--space-16) !important;
+  min-width: 0 !important;
+}
+
+#console-layout .dashboard-clients .clients-table-card {
+  border: 1px solid rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper-soft) !important;
+  box-shadow: none !important;
+  overflow: auto !important;
+}
+
+#console-layout .dashboard-clients .clients-ledger-table {
+  min-width: 900px !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+  background: var(--paper-soft) !important;
+}
+
+#console-layout .dashboard-clients .clients-ledger-table th {
+  height: 36px !important;
+  padding: 0 16px !important;
+  border-bottom: 2px solid var(--ink) !important;
+  color: var(--ink) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1.1 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: uppercase !important;
+}
+
+#console-layout .dashboard-clients .clients-ledger-table td {
+  height: 50px !important;
+  padding: 8px 16px !important;
+  border-bottom: 1px solid rgb(var(--color-rule) / 0.65) !important;
+  background: var(--paper-soft) !important;
+  color: var(--ink) !important;
+  font-size: var(--font-size-13) !important;
+  line-height: 1.25 !important;
+}
+
+#console-layout .dashboard-clients .clients-ledger-table tr:last-child td {
+  border-bottom: 0 !important;
+}
+
+#console-layout .dashboard-clients .clients-ledger-table tbody tr:hover td {
+  background: rgb(var(--color-stamp) / 0.06) !important;
+}
+
+#console-layout .dashboard-clients .client-meta-wrap {
+  display: grid !important;
+  gap: var(--space-4) !important;
+  min-width: 0 !important;
+}
+
+#console-layout .dashboard-clients .client-name-cell,
+#console-layout .dashboard-clients .client-owner-cell {
+  overflow: hidden !important;
+  color: var(--ink) !important;
+  font-size: var(--font-size-13) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1.2 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+#console-layout .dashboard-clients .client-gstin-cell,
+#console-layout .dashboard-clients .clients-ledger-table code,
+#console-layout .dashboard-clients .clients-ledger-table .numeric,
+#console-layout .dashboard-clients .clients-ledger-table .numeric strong {
+  color: var(--ink-soft) !important;
+  font-family: var(--font-mono) !important;
+  font-size: var(--font-size-12) !important;
+  font-weight: var(--font-weight-regular) !important;
+  line-height: 1.2 !important;
+}
+
+#console-layout .dashboard-clients .clients-ledger-table code {
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 24px !important;
+  padding: 0 8px !important;
+  border: 1px solid rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-6) !important;
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+}
+
+#console-layout .dashboard-clients .clients-ledger-table .numeric,
+#console-layout .dashboard-clients .clients-ledger-table .numeric strong {
+  color: var(--ink) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  text-align: right !important;
+}
+
+#console-layout .dashboard-clients .clients-pagination {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: var(--space-12) !important;
+  min-height: 36px !important;
+  padding: 0 2px !important;
+  color: var(--ink) !important;
+}
+
+#console-layout .dashboard-clients .clients-pagination .dashboard-label {
+  color: var(--ink) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  font-weight: var(--font-weight-regular) !important;
+  letter-spacing: 0 !important;
+  text-transform: uppercase !important;
+}
+
+#console-layout .dashboard-clients .pagination-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--space-8) !important;
+}
+
+#console-layout .dashboard-clients .clients-pagination button {
+  min-height: 32px !important;
+  padding: 0 12px !important;
+  border-radius: var(--radius-8) !important;
+  font-size: var(--font-size-13) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-clients .clients-pagination button:disabled {
+  background: var(--paper-dim) !important;
+  color: var(--ink-soft) !important;
+  opacity: 0.7 !important;
+}
+
+@media (max-width: 1024px) {
+  #console-layout .dashboard-clients .clients-toolbar {
+    grid-template-columns: 1fr !important;
+  }
+
+  #console-layout .dashboard-clients .toolbar-actions {
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+  }
+}
+
+@media (max-width: 768px) {
+  #console-layout .dashboard-clients {
+    gap: var(--space-16) !important;
+  }
+
+  #console-layout .dashboard-clients .view-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  #console-layout .dashboard-clients .view-header h1 {
+    font-size: var(--font-size-24) !important;
+  }
+
+  #console-layout .dashboard-clients .view-actions,
+  #console-layout .dashboard-clients .view-actions button {
+    width: 100% !important;
+  }
+
+  #console-layout .dashboard-clients .clients-toolbar {
+    padding: var(--space-12) !important;
+  }
+
+  #console-layout .dashboard-clients .clients-toolbar .toolbar-search {
+    width: 100% !important;
+  }
+
+  #console-layout .dashboard-clients .toolbar-actions,
+  #console-layout .dashboard-clients .filter-group,
+  #console-layout .dashboard-clients .clients-result-count {
+    width: 100% !important;
+  }
+
+  #console-layout .dashboard-clients .filter-tab {
+    flex: 1 1 0 !important;
+    padding: 0 8px !important;
+  }
+
+  #console-layout .dashboard-clients .clients-ledger-table {
+    min-width: 760px !important;
+  }
+
+  #console-layout .dashboard-clients .clients-ledger-table th {
+    padding: 0 12px !important;
+  }
+
+  #console-layout .dashboard-clients .clients-ledger-table td {
+    padding: 8px 12px !important;
+  }
+
+  #console-layout .dashboard-clients .clients-pagination {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  #console-layout .dashboard-clients .pagination-actions {
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+}
