@@ -7488,6 +7488,35 @@ body.shell-drawer-open {
   letter-spacing: 0.04em !important;
 }
 
+#console-layout .dashboard-top-nav {
+  height: 56px !important;
+  min-height: 56px !important;
+  padding-inline: var(--space-24) !important;
+  border-bottom: 1px solid rgb(var(--color-rule) / 0.65) !important;
+  background: var(--paper-soft) !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-top-left {
+  flex: 1 1 auto !important;
+  max-width: none !important;
+  min-width: 0 !important;
+}
+
+#console-layout .dashboard-search.command-bar-trigger {
+  width: min(100%, 640px) !important;
+  max-width: 640px !important;
+  min-height: 36px !important;
+  height: 36px !important;
+  border-color: rgb(var(--color-rule) / 0.65) !important;
+  background: var(--paper-soft) !important;
+}
+
+#console-layout .dashboard-top-actions {
+  flex: 0 0 auto !important;
+  margin-left: auto !important;
+}
+
 #console-layout .dashboard-sidebar {
   flex-basis: var(--shell-sidebar-expanded) !important;
   width: var(--shell-sidebar-expanded) !important;
@@ -7881,5 +7910,340 @@ body.shell-drawer-open {
 
   #console-layout .dashboard-documents #global-documents-table {
     min-width: 640px !important;
+  }
+}
+
+/* GST Center repair - shared high-density ledger scaffold */
+#console-layout .dashboard-gst {
+  gap: var(--space-24) !important;
+}
+
+#console-layout .dashboard-gst .view-header {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: var(--space-16) !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+#console-layout .dashboard-gst .view-header h1 {
+  margin: var(--space-6) 0 0 !important;
+  color: var(--ink) !important;
+  font-family: var(--font-heading) !important;
+  font-size: var(--font-size-32) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1.15 !important;
+  letter-spacing: 0 !important;
+}
+
+#console-layout .dashboard-gst .view-header p:not(.dashboard-label) {
+  margin-top: var(--space-8) !important;
+  max-width: 620px;
+  color: var(--ink-soft) !important;
+  font-size: var(--font-size-14) !important;
+  line-height: var(--line-height-body) !important;
+}
+
+#console-layout .dashboard-gst .view-actions {
+  padding-top: var(--space-8) !important;
+}
+
+#console-layout .dashboard-gst #btn-gst-bulk-file {
+  min-height: 40px !important;
+  padding: 8px 16px !important;
+  white-space: nowrap;
+}
+
+#console-layout .dashboard-gst .grid:has(.gst-kpi-card) {
+  gap: var(--space-16) !important;
+}
+
+#console-layout .dashboard-gst .gst-kpi-card {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: start;
+  min-height: 96px !important;
+  padding: var(--space-16) !important;
+  overflow: hidden !important;
+  border: 1px solid rgb(var(--color-rule) / 0.7) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper-soft) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#console-layout .dashboard-gst .gst-kpi-card::before {
+  display: none !important;
+  content: none !important;
+}
+
+#console-layout .dashboard-gst .gst-kpi-card:hover {
+  border-color: rgb(var(--color-rule) / 0.9) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#console-layout .dashboard-gst .gst-kpi-card .dashboard-label {
+  grid-column: 1 / -1;
+  margin: 0 !important;
+  color: var(--ink) !important;
+  font-size: var(--font-size-12) !important;
+}
+
+#console-layout .dashboard-gst .gst-kpi-value {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: end;
+  margin: var(--space-10) 0 0 !important;
+  color: var(--ink) !important;
+  font-family: var(--font-mono) !important;
+  font-size: var(--font-size-24) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  text-align: right !important;
+  white-space: nowrap;
+}
+
+#console-layout .dashboard-gst .gst-kpi-sub {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+  margin: var(--space-10) var(--space-12) 0 0 !important;
+  color: var(--ink-soft) !important;
+  font-size: var(--font-size-12) !important;
+  line-height: 1.35 !important;
+}
+
+#console-layout .dashboard-gst .gst-ledger-card {
+  overflow: visible !important;
+  border: 1px solid rgb(var(--color-rule) / 0.75) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper-soft) !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-gst .gst-ledger-header {
+  display: grid !important;
+  grid-template-columns: minmax(220px, 1fr) minmax(0, auto);
+  align-items: center !important;
+  gap: var(--space-16) !important;
+  min-height: 56px !important;
+  padding: var(--space-12) var(--space-16) !important;
+  border-bottom: 1px solid var(--rule) !important;
+  border-radius: var(--radius-8) var(--radius-8) 0 0 !important;
+  background: var(--paper-soft) !important;
+  overflow: visible !important;
+}
+
+#console-layout .dashboard-gst .gst-ledger-header > div:first-child {
+  min-width: 0;
+}
+
+#console-layout .dashboard-gst .gst-ledger-header h3 {
+  margin: 0 !important;
+  overflow: visible !important;
+  color: var(--ink) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--font-size-15) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1.25 !important;
+  white-space: normal !important;
+}
+
+#console-layout .dashboard-gst .gst-ledger-header #gst-result-count {
+  margin-top: var(--space-4) !important;
+  color: var(--ink-soft) !important;
+  font-size: var(--font-size-13) !important;
+}
+
+#console-layout .dashboard-gst .gst-ledger-controls {
+  display: grid !important;
+  grid-template-columns: minmax(220px, 320px) 150px 150px;
+  align-items: center !important;
+  gap: var(--space-8) !important;
+  min-width: 0 !important;
+}
+
+#console-layout .dashboard-gst .toolbar-search,
+#console-layout .dashboard-gst .dropdown-select,
+#console-layout .dashboard-gst #gst-period-picker {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 36px !important;
+  height: 36px !important;
+  padding-block: 0 !important;
+  border: 1px solid rgb(var(--color-rule) / 0.8) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper-soft) !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-gst .toolbar-search {
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--space-8) !important;
+  padding-inline: var(--space-12) !important;
+}
+
+#console-layout .dashboard-gst .toolbar-search svg {
+  width: 18px !important;
+  height: 18px !important;
+  color: var(--ink-soft) !important;
+  stroke-width: var(--icon-stroke-thin) !important;
+}
+
+#console-layout .dashboard-gst .toolbar-search input,
+#console-layout .dashboard-gst .dropdown-select,
+#console-layout .dashboard-gst #gst-period-picker {
+  color: var(--ink) !important;
+  font-size: var(--font-size-14) !important;
+  line-height: 1.2 !important;
+}
+
+#console-layout .dashboard-gst .toolbar-search input::placeholder {
+  color: var(--ink-soft) !important;
+  opacity: 0.86;
+}
+
+#console-layout .dashboard-gst .gst-table-scroll {
+  width: 100%;
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  border-radius: 0 0 var(--radius-8) var(--radius-8);
+}
+
+#console-layout .dashboard-gst #gst-center-table {
+  width: 100% !important;
+  min-width: 920px !important;
+  table-layout: fixed !important;
+  background: var(--paper-soft) !important;
+}
+
+#console-layout .dashboard-gst #gst-center-table th,
+#console-layout .dashboard-gst #gst-center-table td {
+  padding: var(--space-10) var(--space-12) !important;
+  background: var(--paper-soft) !important;
+  border-bottom: 1px solid var(--rule) !important;
+  color: var(--ink) !important;
+  vertical-align: middle !important;
+}
+
+#console-layout .dashboard-gst #gst-center-table th {
+  height: 44px !important;
+  border-bottom: 2px solid var(--ink) !important;
+  font-family: var(--font-mono) !important;
+  font-size: var(--font-size-12) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  letter-spacing: 0.04em !important;
+  text-align: left !important;
+}
+
+#console-layout .dashboard-gst #gst-center-table th.numeric,
+#console-layout .dashboard-gst #gst-center-table td.numeric {
+  text-align: right !important;
+}
+
+#console-layout .dashboard-gst #gst-center-table th:nth-child(1) {
+  width: 24%;
+}
+
+#console-layout .dashboard-gst #gst-center-table th:nth-child(2),
+#console-layout .dashboard-gst #gst-center-table th:nth-child(3),
+#console-layout .dashboard-gst #gst-center-table th:nth-child(4) {
+  width: 16%;
+}
+
+#console-layout .dashboard-gst #gst-center-table th:nth-child(5) {
+  width: 15%;
+}
+
+#console-layout .dashboard-gst #gst-center-table th:nth-child(6) {
+  width: 13%;
+}
+
+#console-layout .dashboard-gst .gst-client-cell {
+  display: grid;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+#console-layout .dashboard-gst .gst-client-cell strong {
+  overflow: hidden;
+  color: var(--ink) !important;
+  font-size: var(--font-size-14) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1.25 !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#console-layout .dashboard-gst .gst-client-cell code {
+  color: var(--ink-soft) !important;
+  font-family: var(--font-mono) !important;
+  font-size: var(--font-size-12) !important;
+  line-height: 1.2 !important;
+}
+
+#console-layout .dashboard-gst .gst-money-cell,
+#console-layout .dashboard-gst .gst-net-cell,
+#console-layout .dashboard-gst .gst-net-cell strong {
+  color: var(--ink) !important;
+  font-family: var(--font-mono) !important;
+  font-size: var(--font-size-13) !important;
+  font-weight: var(--font-weight-semibold) !important;
+}
+
+#console-layout .dashboard-gst .btn-gst-file-action {
+  min-height: 36px !important;
+  padding: 8px 12px !important;
+  font-size: var(--font-size-13) !important;
+  white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+  #console-layout .dashboard-gst .gst-ledger-header {
+    grid-template-columns: 1fr !important;
+    align-items: stretch !important;
+  }
+
+  #console-layout .dashboard-gst .gst-ledger-controls {
+    grid-template-columns: minmax(180px, 1fr) 140px 140px;
+  }
+}
+
+@media (max-width: 768px) {
+  #console-layout .dashboard-gst {
+    gap: var(--space-16) !important;
+  }
+
+  #console-layout .dashboard-gst .view-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  #console-layout .dashboard-gst .view-header h1 {
+    font-size: var(--font-size-24) !important;
+  }
+
+  #console-layout .dashboard-gst .view-actions,
+  #console-layout .dashboard-gst .view-actions button {
+    width: 100%;
+  }
+
+  #console-layout .dashboard-gst .grid:has(.gst-kpi-card) {
+    grid-template-columns: 1fr !important;
+  }
+
+  #console-layout .dashboard-gst .gst-ledger-controls {
+    grid-template-columns: 1fr !important;
+  }
+
+  #console-layout .dashboard-gst #gst-center-table {
+    min-width: 760px !important;
   }
 }
