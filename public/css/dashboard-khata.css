@@ -9408,3 +9408,290 @@ body.shell-drawer-open {
     width: 100% !important;
   }
 }
+
+/* Transactions repair - shared high-density ledger scaffold */
+#console-layout .dashboard-transactions {
+  gap: var(--space-24) !important;
+}
+
+#console-layout .dashboard-transactions .view-header {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: var(--space-16) !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+#console-layout .dashboard-transactions .view-header h1 {
+  margin: 8px 0 0 !important;
+  color: var(--ink) !important;
+  font-family: var(--font-heading) !important;
+  font-size: var(--font-size-32) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1.12 !important;
+  letter-spacing: 0 !important;
+}
+
+#console-layout .dashboard-transactions .view-header p:not(.dashboard-label) {
+  max-width: 680px !important;
+  margin: 8px 0 0 !important;
+  color: var(--ink-soft) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--font-size-14) !important;
+  line-height: 1.35 !important;
+}
+
+#console-layout .dashboard-transactions .view-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: var(--space-10) !important;
+  padding-top: 0 !important;
+  flex-wrap: nowrap !important;
+}
+
+#console-layout .dashboard-transactions .transactions-selection-count,
+#console-layout .dashboard-transactions .transactions-result-count {
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 28px !important;
+  padding: 0 10px !important;
+  border: 1px solid rgb(var(--color-rule) / 0.55) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  font-weight: var(--font-weight-regular) !important;
+  letter-spacing: 0 !important;
+  text-transform: uppercase !important;
+}
+
+#console-layout .dashboard-transactions #btn-bulk-approve-transactions,
+#console-layout .dashboard-transactions #btn-export-transactions {
+  min-height: 36px !important;
+  padding: 0 14px !important;
+  border-radius: var(--radius-8) !important;
+  font-size: var(--font-size-13) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1 !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-transactions .transactions-toolbar {
+  display: grid !important;
+  grid-template-columns: minmax(260px, 1fr) auto !important;
+  align-items: center !important;
+  gap: var(--space-12) !important;
+  min-height: 54px !important;
+  padding: var(--space-10) var(--space-12) !important;
+  border: 1px solid rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper-soft) !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-transactions .transactions-toolbar .toolbar-search {
+  min-height: 36px !important;
+  height: 36px !important;
+  padding: 0 12px !important;
+  gap: 10px !important;
+  border: 1px solid rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper) !important;
+  color: var(--ink-soft) !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-transactions .transactions-toolbar .toolbar-search svg {
+  width: 18px !important;
+  height: 18px !important;
+  color: rgb(var(--color-ink-muted) / 0.55) !important;
+  stroke-width: var(--icon-stroke-thin) !important;
+}
+
+#console-layout .dashboard-transactions .transactions-toolbar .toolbar-search input {
+  min-height: 0 !important;
+  color: var(--ink) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--font-size-13) !important;
+  line-height: 1.2 !important;
+}
+
+#console-layout .dashboard-transactions .transactions-toolbar .toolbar-search input::placeholder {
+  color: var(--ink-soft) !important;
+  opacity: 0.78 !important;
+}
+
+#console-layout .dashboard-transactions .toolbar-actions {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(120px, 150px)) auto !important;
+  align-items: center !important;
+  justify-content: end !important;
+  gap: var(--space-10) !important;
+  flex-wrap: nowrap !important;
+}
+
+#console-layout .dashboard-transactions .dropdown-select {
+  width: 100% !important;
+  min-height: 36px !important;
+  height: 36px !important;
+  padding: 0 28px 0 10px !important;
+  border: 1px solid rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-8) !important;
+  background-color: var(--paper) !important;
+  color: var(--ink) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--font-size-13) !important;
+  line-height: 1 !important;
+  box-shadow: none !important;
+}
+
+#console-layout .dashboard-transactions .transactions-table-card {
+  border: 1px solid rgb(var(--color-rule) / 0.58) !important;
+  border-radius: var(--radius-8) !important;
+  background: var(--paper-soft) !important;
+  box-shadow: none !important;
+  overflow: auto !important;
+}
+
+#console-layout .dashboard-transactions .transactions-ledger-table {
+  min-width: 1040px !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+  background: var(--paper-soft) !important;
+}
+
+#console-layout .dashboard-transactions .transactions-ledger-table th {
+  height: 36px !important;
+  padding: 0 14px !important;
+  border-bottom: 2px solid var(--ink) !important;
+  color: var(--ink) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1.1 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: uppercase !important;
+}
+
+#console-layout .dashboard-transactions .transactions-ledger-table td {
+  height: 48px !important;
+  padding: 8px 14px !important;
+  border-bottom: 1px solid rgb(var(--color-rule) / 0.65) !important;
+  background: var(--paper-soft) !important;
+  color: var(--ink) !important;
+  font-size: var(--font-size-13) !important;
+  line-height: 1.25 !important;
+}
+
+#console-layout .dashboard-transactions .transactions-ledger-table tr:last-child td {
+  border-bottom: 0 !important;
+}
+
+#console-layout .dashboard-transactions .transactions-ledger-table tbody tr:hover td,
+#console-layout .dashboard-transactions .transaction-row:has(.tx-checkbox:checked) td {
+  background: rgb(var(--color-stamp) / 0.06) !important;
+}
+
+#console-layout .dashboard-transactions .transactions-ledger-table input[type="checkbox"] {
+  width: 14px !important;
+  height: 14px !important;
+  border-color: rgb(var(--color-rule) / 0.9) !important;
+  border-radius: var(--radius-4) !important;
+  background-color: var(--paper) !important;
+}
+
+#console-layout .dashboard-transactions .transaction-client-cell,
+#console-layout .dashboard-transactions .transaction-category-cell {
+  overflow: hidden !important;
+  display: block !important;
+  color: var(--ink) !important;
+  font-size: var(--font-size-13) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: 1.2 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+#console-layout .dashboard-transactions .transaction-date-cell,
+#console-layout .dashboard-transactions .transactions-ledger-table .numeric,
+#console-layout .dashboard-transactions .transactions-ledger-table .numeric strong {
+  color: var(--ink) !important;
+  font-family: var(--font-mono) !important;
+  font-size: var(--font-size-12) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  text-align: right !important;
+}
+
+#console-layout .dashboard-transactions .transaction-row:focus-visible td {
+  outline: 2px solid rgb(var(--color-stamp) / 0.45) !important;
+  outline-offset: -2px !important;
+}
+
+@media (max-width: 1180px) {
+  #console-layout .dashboard-transactions .transactions-toolbar {
+    grid-template-columns: 1fr !important;
+  }
+
+  #console-layout .dashboard-transactions .toolbar-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto !important;
+    justify-content: stretch !important;
+  }
+}
+
+@media (max-width: 768px) {
+  #console-layout .dashboard-transactions {
+    gap: var(--space-16) !important;
+  }
+
+  #console-layout .dashboard-transactions .view-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  #console-layout .dashboard-transactions .view-header h1 {
+    font-size: var(--font-size-24) !important;
+  }
+
+  #console-layout .dashboard-transactions .view-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-items: stretch !important;
+    width: 100% !important;
+  }
+
+  #console-layout .dashboard-transactions .view-actions > *,
+  #console-layout .dashboard-transactions .transactions-selection-count {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  #console-layout .dashboard-transactions .transactions-toolbar {
+    padding: var(--space-12) !important;
+  }
+
+  #console-layout .dashboard-transactions .transactions-toolbar .toolbar-search {
+    width: 100% !important;
+  }
+
+  #console-layout .dashboard-transactions .toolbar-actions {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+  }
+
+  #console-layout .dashboard-transactions .transactions-result-count {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+
+  #console-layout .dashboard-transactions .transactions-ledger-table {
+    min-width: 840px !important;
+  }
+
+  #console-layout .dashboard-transactions .transactions-ledger-table th,
+  #console-layout .dashboard-transactions .transactions-ledger-table td {
+    padding-inline: 12px !important;
+  }
+}
