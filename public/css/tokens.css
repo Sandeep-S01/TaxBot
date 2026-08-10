@@ -7,14 +7,14 @@
 :root {
   /* Primitive palette */
   --color-transparent: transparent;
-  --color-paper: 248 248 244;
-  --color-paper-dim: 238 242 234;
-  --color-paper-soft: 252 252 248;
-  --color-ink: 32 40 32;
-  --color-ink-soft: 70 82 71;
-  --color-ink-muted: 118 129 116;
-  --color-rule: 223 227 216;
-  --color-rule-soft: 236 239 230;
+  --color-paper: 243 238 223;
+  --color-paper-dim: 234 227 205;
+  --color-paper-soft: 254 249 234;
+  --color-ink: 35 42 36;
+  --color-ink-soft: 91 100 89;
+  --color-ink-muted: 116 120 115;
+  --color-rule: 203 191 160;
+  --color-rule-soft: 203 191 160;
   --color-stamp: 178 58 46;
   --color-stamp-dark: 132 45 37;
   --color-sage: 71 101 82;
@@ -52,6 +52,7 @@
   --font-size-20: 20px;
   --font-size-24: 24px;
   --font-size-28: 28px;
+  --font-size-30: 30px;
   --font-size-32: 32px;
   --font-size-40: 40px;
   --font-size-48: 48px;
@@ -110,8 +111,8 @@
   --type-input-weight: var(--font-weight-regular);
   --type-sidebar-label-size: var(--font-size-14);
   --type-sidebar-label-line-height: var(--line-height-tight);
-  --type-sidebar-label-weight: var(--font-weight-medium);
-  --type-sidebar-active-weight: var(--font-weight-semibold);
+  --type-sidebar-label-weight: var(--font-weight-regular);
+  --type-sidebar-active-weight: var(--font-weight-medium);
   --type-header-control-size: var(--font-size-13);
   --type-header-control-line-height: var(--line-height-snug);
   --type-header-control-weight: var(--font-weight-medium);
@@ -119,7 +120,7 @@
   --type-metric-label-line-height: 1.45;
   --type-metric-label-weight: var(--font-weight-semibold);
   --type-metric-label-letter-spacing: 0.08em;
-  --type-metric-value-size: clamp(24px, 2vw, 30px);
+  --type-metric-value-size: var(--font-size-30);
   --type-metric-value-line-height: var(--line-height-none);
   --type-metric-value-weight: var(--font-weight-semibold);
   --type-metric-value-letter-spacing: -0.035em;
@@ -143,12 +144,12 @@
   --icon-size-brand-sm: 24px;
   --icon-size-brand-md: 28px;
   --icon-size-brand-lg: 32px;
-  --icon-stroke-thin: 1.75;
+  --icon-stroke-thin: 1.5;
   --icon-stroke-regular: 2;
   --icon-stroke-strong: 2.25;
   --icon-opacity-muted: 0.72;
   --icon-opacity-default: 1;
-  --icon-nav-size: var(--icon-size-xl);
+  --icon-nav-size: var(--icon-size-lg);
   --icon-action-size: var(--icon-size-lg);
   --icon-button-size: var(--icon-size-xl);
   --icon-inline-size: var(--icon-size-md);
@@ -263,12 +264,12 @@
   --shell-header-height: 56px;
   --shell-action-size: 36px;
   --shell-content-gutter: 24px;
-  --shell-sidebar-nav-height: 42px;
+  --shell-sidebar-nav-height: 40px;
   --shell-sidebar-nav-gap: 6px;
   --shell-sidebar-nav-radius: var(--radius-8);
   --shell-sidebar-nav-icon-slot: 24px;
   --shell-sidebar-nav-padding-x: 10px;
-  --shell-sidebar-active-bar-width: 3px;
+  --shell-sidebar-active-bar-width: 0px;
   --shell-sidebar-tooltip-offset: 12px;
   --shell-sidebar-tooltip-radius: var(--radius-8);
   --shell-sidebar-footer-height: 64px;

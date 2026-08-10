@@ -1418,9 +1418,47 @@ function renderDocuments() {
   const tbody = document.getElementById('global-documents-table-body');
   const searchInput = document.getElementById('doc-global-search');
   const folderChips = document.querySelectorAll('.doc-folder-chip');
-  const previewUploadBtn = document.getElementById('btn-preview-upload-document');
+  const topUploadBtn = document.getElementById('btn-upload-new-document');
   
   let currentFolder = 'all';
+
+  function requestDocumentUpload() {
+    showToast('Document upload pipeline is ready for file selection.', 'info');
+  }
+
+  function bindDocumentUploadButtons() {
+    document.querySelectorAll('#btn-upload-new-document, #btn-preview-upload-document, #btn-doc-empty-upload').forEach(button => {
+      button.onclick = requestDocumentUpload;
+    });
+  }
+
+  function renderDocumentEmptyRow(message) {
+    return `
+      <tr>
+        <td colspan="4">
+          <div class="document-table-empty">
+            <i data-lucide="file-text" aria-hidden="true"></i>
+            <p>${escapeHtml(message)}</p>
+            <button type="button" id="btn-doc-empty-upload">Upload a file</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }
+
+  function renderDocEmptyPreview() {
+    const previewPanel = document.getElementById('doc-preview-panel');
+    if (!previewPanel) return;
+    previewPanel.innerHTML = `
+      <div class="dashboard-empty-state preview-empty-state document-preview-empty">
+        <i data-lucide="file-plus" aria-hidden="true"></i>
+        <p>Select a document to review parsed fields, or upload a file to start a new ledger entry.</p>
+        <button class="btn-khata-primary dashboard-empty-action" id="btn-preview-upload-document">Upload Files</button>
+      </div>
+    `;
+    bindDocumentUploadButtons();
+    initIcons();
+  }
 
   function filterAndRender() {
     if (appDataState.clients.error) {
@@ -1447,7 +1485,12 @@ function renderDocuments() {
       return matchesSearch && matchesFolder;
     });
 
-    tbody.innerHTML = filtered.length === 0 ? renderTableEmptyState(4, 'No documents match these filters. Adjust search or upload a file.') : filtered.map(d => `
+    if (selectedDocId && !filtered.some(d => d.id === selectedDocId)) {
+      selectedDocId = null;
+      renderDocEmptyPreview();
+    }
+
+    tbody.innerHTML = filtered.length === 0 ? renderDocumentEmptyRow('No documents match these filters.') : filtered.map(d => `
       <tr class="document-list-row ledger-row ${selectedDocId === d.id ? 'active-row' : ''}" data-doc-id="${d.id}">
         <td><strong class="document-name-cell">${escapeHtml(d.name || '-')}</strong></td>
         <td><span class="document-client-cell">${escapeHtml(d.clientName || '-')}</span></td>
@@ -1464,6 +1507,8 @@ function renderDocuments() {
         renderDocPreview(selectedDocId);
       };
     });
+    bindDocumentUploadButtons();
+    initIcons();
   }
 
   folderChips.forEach(chip => {
@@ -1488,12 +1533,12 @@ function renderDocuments() {
   });
 
   searchInput.oninput = filterAndRender;
-  if (previewUploadBtn) {
-    previewUploadBtn.onclick = () => document.getElementById('btn-upload-new-document')?.click();
-  }
+  if (topUploadBtn) topUploadBtn.onclick = requestDocumentUpload;
 
   if (selectedDocId) {
     renderDocPreview(selectedDocId);
+  } else {
+    renderDocEmptyPreview();
   }
 
   filterAndRender();
@@ -1648,7 +1693,9 @@ async function renderGSTCenter() {
     const rows = report.clientBreakdown.map(client => {
       const netLiability = Math.max(0, client.outwardTax - client.inwardTax);
       const cObj = globalClientsList.find(c => c.id === client.clientId) || { filedStatus: 'Review Required' };
-      const filedStatus = client.calculationStatus === 'error' ? 'Review Required' : cObj.filedStatus;
+      const reportReady = client.calculationStatus === 'ok' && hasUsableGstin(client);
+      if (reportReady && cObj) cObj.filedStatus = 'Ready';
+      const filedStatus = client.calculationStatus === 'error' ? 'Review Required' : reportReady ? 'Ready' : cObj.filedStatus;
       return { ...client, netLiability, filedStatus };
     }).filter(client => {
       const text = [
